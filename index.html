@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Master CRM</title>
+    <title>Master CRM v2</title>
     <script src="https://telegram.org"></script>
     <script src="https://jsdelivr.net"></script>
     <style>
@@ -19,7 +19,9 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         #niche-screen { position: fixed; top:0; left:0; right:0; bottom:0; background: var(--bg-color); z-index: 99999; padding: 20px; display: none; flex-direction: column; justify-content: center; }
-        .niche-btn { background: white; border: 2px solid var(--primary-color); padding: 15px; margin-bottom: 10px; border-radius: 12px; font-size: 16px; font-weight: bold; text-align: left; color: var(--text-color); cursor: pointer; }
+        .niche-title { text-align: center; margin-bottom: 5px; color: var(--text-color); }
+        .niche-subtitle { text-align: center; color: gray; font-size: 14px; margin-bottom: 25px; }
+        .niche-btn { background: white; border: 2px solid var(--primary-color); padding: 18px; margin-bottom: 12px; border-radius: 14px; font-size: 16px; font-weight: bold; text-align: left; color: var(--text-color); cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
         .stat-card { background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color); }
         .stat-card.profit { border-left-color: var(--pink-pastel); }
@@ -49,15 +51,15 @@
 </head>
 <body>
     <div id="niche-screen">
-        <h2 style="text-align:center; margin-bottom:20px;">Чем вы занимаетесь?</h2>
-        <button class="niche-btn" onclick="selectNiche('bakery')">🎂 Кулинария / Кондитер</button>
-        <button class="niche-btn" onclick="selectNiche('nails')">💅 Маникюр / Педикюр</button>
-        <button class="niche-btn" onclick="selectNiche('makeup')">💄 Визаж / Ресницы / Брови</button>
-        <button class="niche-btn" onclick="selectNiche('handmade')">✂️ Швейное дело / Хэндмейд</button>
-        <button class="niche-btn" onclick="selectNiche('other')">🛠️ Другие услуги на дому</button>
+        <h2 class="niche-title">Добро пожаловать!</h2>
+        <p class="niche-subtitle">Выберите сферу для настройки рабочих экранов:</p>
+        <button class="niche-btn" onclick="selectNiche('bakery')">🎂 Кулинария / Домашний кондитер</button>
+        <button class="niche-btn" onclick="selectNiche('beauty')">💅 Бьюти-мастер (Маникюр / Визаж)</button>
+        <button class="niche-btn" onclick="selectNiche('handmade')">✂️ Хэндмейд / Ателье и швеи</button>
     </div>
     <header><h1 id="header-title">Календарь записей</h1></header>
     <div class="container">
+        <!-- ВКЛАДКА 1 -->
         <div id="tab-main" class="tab-content active">
             <div class="calendar-wrapper">
                 <div class="calendar-header">
@@ -71,20 +73,22 @@
             <h3 id="selected-date-title">Записи на сегодня</h3>
             <div class="item-list" id="day-orders-list"></div>
         </div>
+        <!-- ВКЛАДКА 2 -->
         <div id="tab-calc" class="tab-content">
             <button class="btn" onclick="openModal('ing-modal')">+ Добавить материал / ингредиент</button>
             <div style="background: var(--secondary-color); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                <h3>Быстрый расчет себестоимости</h3>
-                <div class="form-group"><label>Выберите материал</label><select id="calc-ing-select"></select></div>
-                <div class="form-group"><label id="calc-weight-label">Расход (г / мл / шт)</label><input type="number" id="calc-ing-weight" inputmode="numeric" placeholder="50"></div>
+                <h3 id="calc-page-title">Быстрый расчет</h3>
+                <div class="form-group"><label>Выберите материал со склада</label><select id="calc-ing-select"></select></div>
+                <div class="form-group"><label id="calc-weight-label">Расход</label><input type="number" id="calc-ing-weight" inputmode="numeric" placeholder="50"></div>
                 <button class="btn btn-pink" onclick="addIngredientToRecipe()">Добавить в расчет</button>
-                <h4>Состав расчета:</h4><div id="recipe-composition" style="font-size:14px; margin-bottom:10px;"></div>
-                <div style="font-size:16px; font-weight:bold;">Себестоимость материалов: <span id="recipe-cost">0</span> ₽</div>
-                <div style="font-size:14px; color:gray;">С учетом накладных расходов: <span id="recipe-total-cost">0</span> ₽</div>
+                <h4>Текущий состав калькуляции:</h4><div id="recipe-composition" style="font-size:14px; margin-bottom:10px; color:#555;"></div>
+                <div style="font-size:16px; font-weight:bold;">Материалы: <span id="recipe-cost">0</span> ₽</div>
+                <div style="font-size:14px; color:gray; margin-top:3px;">Итоговая себестоимость (с накладными): <span id="recipe-total-cost">0</span> ₽</div>
                 <button class="btn" onclick="clearRecipe()" style="margin-top:10px; background:var(--accent-color);">Сбросить расчет</button>
             </div>
-            <h3>Мои материалы на складе</h3><div class="item-list" id="ingredients-list"></div>
+            <h3 id="warehouse-title">Мой склад</h3><div class="item-list" id="ingredients-list"></div>
         </div>
+        <!-- ВКЛАДКА 3 -->
         <div id="tab-settings" class="tab-content">
             <div class="dashboard">
                 <div class="stat-card profit"><div>Чистая прибыль (Месяц)</div><div class="stat-val" id="total-profit">0 ₽</div></div>
@@ -92,135 +96,118 @@
                 <div class="stat-card expenses"><div>Все расходы</div><div class="stat-val" id="total-expenses">0 ₽</div></div>
             </div>
             <div style="background:white; padding:15px; border-radius:12px; margin-top:15px;">
-                <h3>Накладные расходы</h3>
-                <div class="form-group"><label>Процент наценки на амортизацию (%)</label><input type="number" id="setting-overhead" inputmode="numeric" value="15" onchange="saveOverhead(this.value)"></div>
-                <button class="btn" onclick="clearAllData()" style="background:var(--accent-color); margin-top:30px;">Очистить все данные аккаунта</button>
+                <h3>Опции аккаунта</h3>
+                <div class="form-group"><label>Процент на накладные расходы (%)</label><input type="number" id="setting-overhead" inputmode="numeric" value="15" onchange="saveOverhead(this.value)"></div>
+                <button class="btn" onclick="clearAllData()" style="background:var(--accent-color); margin-top:30px;">Сбросить и сменить сферу деятельности</button>
             </div>
         </div>
     </div>
+    <!-- МОДАЛЬНЫЕ ОКНА -->
     <div id="order-modal" class="modal"><div class="modal-content">
-        <h3>Новая запись</h3>
+        <h3 id="modal-order-title">Новая запись</h3>
         <div class="form-group"><label>Время записи</label><input type="time" id="order-time" value="12:00"></div>
-        <div class="form-group"><label>Клиент / Описание услуги</label><input type="text" id="order-name" placeholder="Анна: Маникюр + дизайн"></div>
+        <div class="form-group"><label id="modal-order-client-label">Клиент / Название услуги</label><input type="text" id="order-name" placeholder="Анна: Услуга"></div>
         <div class="form-group"><label>Стоимость для клиента (₽)</label><input type="number" id="order-price" inputmode="numeric" placeholder="2000"></div>
         <div class="form-group"><label>Себестоимость материалов (₽)</label><input type="number" id="order-cost" inputmode="numeric" value="0"></div>
-        <button class="btn" onclick="saveOrder()">Сохранить в календарь</button>
-        <button class="btn btn-pink" onclick="closeModal('order-modal')">Отмена</button>
+        <button class="btn" onclick="saveOrder()">Сохранить в календарь</button><button class="btn btn-pink" onclick="closeModal('order-modal')">Отмена</button>
     </div></div>
     <div id="ing-modal" class="modal"><div class="modal-content">
-        <h3>Новый материал</h3>
-        <div class="form-group"><label>Название</label><input type="text" id="ing-name" placeholder="Гель-лак / Творожный сыр"></div>
+        <h3 id="modal-ing-title">Добавить на склад</h3>
+        <div class="form-group"><label>Название материала</label><input type="text" id="ing-name" placeholder="Название"></div>
         <div class="form-group"><label>Цена за закупку (₽)</label><input type="number" id="ing-price" inputmode="numeric" placeholder="500"></div>
-        <div class="form-group"><label>Объем/Кол-во в упаковке (г/мл/шт)</label><input type="number" id="ing-weight" inputmode="numeric" placeholder="1000"></div>
-        <button class="btn" onclick="saveIngredient()">Добавить на склад</button>
-        <button class="btn btn-pink" onclick="closeModal('ing-modal')">Отмена</button>
+        <div class="form-group"><label id="modal-ing-weight-label">Объем / Кол-во в упаковке</label><input type="number" id="ing-weight" inputmode="numeric" placeholder="1000"></div>
+        <button class="btn" onclick="saveIngredient()">Добавить</button><button class="btn btn-pink" onclick="closeModal('ing-modal')">Отмена</button>
     </div></div>
+    <!-- НАВИГАЦИЯ -->
     <div class="nav-bar">
         <button class="nav-item active" id="btn-nav-main" onclick="switchTab('main', 'Календарь записей', this)"><span class="nav-icon">📅</span><span>Календарь</span></button>
-        <button class="nav-item" id="btn-nav-calc" onclick="switchTab('calc', 'Калькулятор', this)"><span class="nav-icon">🧮</span><span>Расчет</span></button>
-        <button class="nav-item" id="btn-nav-settings" onclick="switchTab('settings', 'Финансы и Опции', this)"><span class="nav-icon">📊</span><span>Финансы</span></button>
+        <button class="nav-item" id="btn-nav-calc" onclick="switchTab('calc', 'Расчет стоимости', this)"><span class="nav-icon">🧮</span><span id="nav-calc-label">Расчет</span></button>
+        <button class="nav-item" id="btn-nav-settings" onclick="switchTab('settings', 'Финансовый отчет', this)"><span class="nav-icon">📊</span><span>Финансы</span></button>
     </div>
     <script>
-        const supabaseUrl = "https://supabase.co";
+        const supabaseUrl = "https://iuvwljokevwkpxrxfrsi.supabase.co";
+        // ВСТАВЬ СВОЙ ДЛИННЫЙ КЛЮЧ ИЗ SUPABASE НА СТРОЧКУ НИЖЕ (вместо старого короткого sb_...):
         const supabaseKey = "sb_publishable_DIEHHGg9oul1DWz2JTbLqw_UTqOk9pf";
         const _supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+
         let tg = window.Telegram.WebApp; if(tg) { tg.expand(); tg.ready(); }
         let userId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? String(tg.initDataUnsafe.user.id) : "test_desktop_user";
-        let userNiche = "other"; let orders = []; let ingredients = [];
-        let currentRecipeCost = 0; let tempRecipeItems = [];
+        
+        let userNiche = localStorage.getItem('userNiche') || null; 
+        let orders = []; let ingredients = []; let currentRecipeCost = 0; let tempRecipeItems = [];
         let currentDate = new Date(); let selectedDateStr = new Date().toLocaleDateString();
 
-        async function initUser() {
-            let { data: profile } = await _supabase.from('profiles').select('*').eq('tg_id', userId).maybeSingle();
-            if (!profile) { document.getElementById('niche-screen').style.display = 'flex'; } 
-            else { userNiche = profile.niche; applyNicheSettings(); loadData(); }
+        function checkProfile() { 
+            if (!userNiche) { 
+                document.getElementById('niche-screen').style.display = 'flex'; 
+            } else { 
+                document.getElementById('niche-screen').style.display = 'none'; 
+                applyNicheLayout(); loadData(); 
+            } 
         }
-        async function selectNiche(niche) {
-            userNiche = niche; await _supabase.from('profiles').upsert({ tg_id: userId, niche: niche });
-            document.getElementById('niche-screen').style.display = 'none'; applyNicheSettings(); loadData();
+        function selectNiche(niche) { 
+            userNiche = niche; localStorage.setItem('userNiche', niche); 
+            document.getElementById('niche-screen').style.display = 'none'; 
+            applyNicheLayout(); loadData(); 
         }
-        function applyNicheSettings() {
-            if(userNiche === 'nails' || userNiche === 'makeup') { document.getElementById('calc-weight-label').innerText = "Расход материала (мл / шт)"; }
+        function applyNicheLayout() {
+            let nameField = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Мастер";
+            if (userNiche === 'bakery') {
+                document.getElementById('header-title').innerText = "Кондитер: " + nameField; document.getElementById('calc-page-title').innerText = "Быстрый расчет рецепта торта";
+                document.getElementById('calc-weight-label').innerText = "Вес ингредиента в рецепте (грамм / мл)"; document.getElementById('warehouse-title').innerText = "Мои продукты на складе";
+                document.getElementById('modal-order-client-label').innerText = "Имя клиента и название десерта"; document.getElementById('modal-ing-title').innerText = "Добавить продукт на склад";
+                document.getElementById('modal-ing-weight-label').innerText = "Вес/Объем упаковки (г/мл)"; document.getElementById('nav-calc-label').innerText = "Рецепты";
+            } else if (userNiche === 'beauty') {
+                document.getElementById('header-title').innerText = "Бьюти-мастер: " + nameField; document.getElementById('calc-page-title').innerText = "Расчет себестоимости процедуры";
+                document.getElementById('calc-weight-label').innerText = "Материал на сеанс (мл / шт)"; document.getElementById('warehouse-title').innerText = "Мои расходники и составы";
+                document.getElementById('modal-order-client-label').innerText = "Имя клиента и вид процедуры"; document.getElementById('modal-ing-title').innerText = "Добавить состав/материал";
+                document.getElementById('modal-ing-weight-label').innerText = "Объем флакона или кол-во в пачке (мл/шт)"; document.getElementById('nav-calc-label').innerText = "Процедуры";
+            } else if (userNiche === 'handmade') {
+                document.getElementById('header-title').innerText = "Мастерская: " + nameField; document.getElementById('calc-page-title').innerText = "Расчет себестоимости изделия";
+                document.getElementById('calc-weight-label').innerText = "Расход материала (метры / шт)"; document.getElementById('warehouse-title').innerText = "Мои ткани и фурнитура";
+                document.getElementById('modal-order-client-label').innerText = "Клиент и название изделия"; document.getElementById('modal-ing-title').innerText = "Добавить material на склад";
+                document.getElementById('modal-ing-weight-label').innerText = "Длина в рулоне или упаковке (м/шт)"; document.getElementById('nav-calc-label').innerText = "Изделия";
+            }
         }
-        async function loadData() {
-            let { data: o } = await _supabase.from('orders').select('*').eq('user_id', userId);
-            let { data: i } = await _supabase.from('ingredients').select('*').eq('user_id', userId);
-            orders = o || []; ingredients = i || [];
-            renderCalendar(); renderDashboard(); renderIngredients(); renderDayOrders();
+
+        async function loadData() { 
+            try { 
+                let { data: o } = await _supabase.from('orders').select('*').eq('user_id', userId); 
+                let { data: i } = await _supabase.from('ingredients').select('*').eq('user_id', userId); 
+                orders = o || []; ingredients = i || []; 
+                renderCalendar(); renderDashboard(); renderIngredients(); renderDayOrders(); 
+            } catch(e) { console.log("Ошибка базы."); } 
         }
-        function switchTab(tabId, title, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            element.classList.add('active'); document.getElementById('header-title').innerText = title;
-            if(tabId === 'calc') updateCalcSelect();
-        }
+        function switchTab(tabId, title, element) { document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active')); document.getElementById('tab-' + tabId).classList.add('active'); element.classList.add('active'); if(tabId === 'main') applyNicheLayout(); else document.getElementById('header-title').innerText = title; if(tabId === 'calc') updateCalcSelect(); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function saveOverhead(val) { localStorage.setItem('overhead', val); calculateRecipeTotal(); }
         function getOverhead() { return parseFloat(localStorage.getItem('overhead')) || 15; }
-
         function renderCalendar() {
-            let year = currentDate.getFullYear(); let month = currentDate.getMonth();
-            const months = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
-            document.getElementById('calendar-month-year').innerText = `${months[month]} ${year}`;
-            let grid = document.getElementById('calendar-grid-days'); grid.innerHTML = '';
-            const weekdays = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"]; weekdays.forEach(w => grid.innerHTML += `<div class="weekday">${w}</div>`);
-            let firstDay = new Date(year, month, 1).getDay(); let shift = firstDay === 0 ? 6 : firstDay - 1;
-            let daysInMonth = new Date(year, month + 1, 0).getDate();
+            let year = currentDate.getFullYear(); let month = currentDate.getMonth(); const months = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"]; document.getElementById('calendar-month-year').innerText = `${months[month]} ${year}`;
+            let grid = document.getElementById('calendar-grid-days'); grid.innerHTML = ''; const weekdays = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"]; weekdays.forEach(w => grid.innerHTML += `<div class="weekday">${w}</div>`);
+            let firstDay = new Date(year, month, 1).getDay(); let shift = firstDay === 0 ? 6 : firstDay - 1; let daysInMonth = new Date(year, month + 1, 0).getDate();
             for (let i = 0; i < shift; i++) grid.innerHTML += `<div></div>`;
-            for (let d = 1; d <= daysInMonth; d++) {
-                let dString = new Date(year, month, d).toLocaleDateString(); let hasOrder = orders.some(o => o.date === dString);
-                let isSelected = dString === selectedDateStr ? 'selected' : ''; let isToday = dString === new Date().toLocaleDateString() ? 'today' : '';
-                grid.innerHTML += `<div class="day ${isSelected} ${isToday}" onclick="selectDate('${dString}')">${d}${hasOrder ? '<div class="day-dot"></div>' : ''}</div>`;
-            }
+            for (let d = 1; d <= daysInMonth; d++) { let dString = new Date(year, month, d).toLocaleDateString(); let hasOrder = orders.some(o => o.date === dString); let isSelected = dString === selectedDateStr ? 'selected' : ''; let isToday = dString === new Date().toLocaleDateString() ? 'today' : ''; grid.innerHTML += `<div class="day ${isSelected} ${isToday}" onclick="selectDate('${dString}')">${d}${hasOrder ? '<div class="day-dot"></div>' : ''}</div>`; }
         }
         function prevMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
         function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
         function selectDate(dStr) { selectedDateStr = dStr; document.getElementById('selected-date-title').innerText = `Записи на ${dStr}`; renderCalendar(); renderDayOrders(); }
 
-        async function saveOrder() {
-            let name = document.getElementById('order-name').value; let price = parseFloat(document.getElementById('order-price').value) || 0;
-            let cost = parseFloat(document.getElementById('order-cost').value) || 0; let time = document.getElementById('order-time').value;
-            if(!name || price <= 0) return alert('Заполните поля');
-            let totalCost = cost + (cost * (getOverhead() / 100));
-            let newOrder = { user_id: userId, name: `[${time}] ${name}`, price, cost: totalCost, profit: price - totalCost, date: selectedDateStr };
-            await _supabase.from('orders').insert(newOrder); closeModal('order-modal'); document.getElementById('order-name').value = ''; loadData();
-        }
-        function renderDayOrders() {
-            let html = ''; let dayOrders = orders.filter(o => o.date === selectedDateStr);
-            dayOrders.forEach(o => { html += `<div class="item-card"><div><strong>${o.name}</strong></div><div style="text-align:right;"><span style="color:green; font-weight:bold;">+${o.price} ₽</span></div></div>`; });
-            document.getElementById('day-orders-list').innerHTML = html || '<div style="color:gray;text-align:center;padding:10px;">Нет записей на этот день</div>';
-        }
-        function renderDashboard() {
-            let rev = 0; let exp = 0; let prof = 0; orders.forEach(o => { rev += o.price; exp += o.cost; prof += o.profit; });
-            document.getElementById('total-revenue').innerText = Math.round(rev) + ' ₽'; document.getElementById('total-expenses').innerText = Math.round(exp) + ' ₽'; document.getElementById('total-profit').innerText = Math.round(prof) + ' ₽';
-        }
-        async function saveIngredient() {
-            let name = document.getElementById('ing-name').value; let price = parseFloat(document.getElementById('ing-price').value) || 0;
-            let weight = parseFloat(document.getElementById('ing-weight').value) || 0; if(!name || price <= 0 || weight <= 0) return alert('Ошибка ввода');
-            await _supabase.from('ingredients').insert({ user_id: userId, name, price, weight, cost_per_gram: price / weight });
-            closeModal('ing-modal'); document.getElementById('ing-name').value = ''; document.getElementById('ing-price').value = ''; document.getElementById('ing-weight').value = ''; loadData();
-        }
-        function renderIngredients() {
-            let html = ''; ingredients.forEach(i => { html += `<div class="item-card"><div><strong>${i.name}</strong></div><div>${parseFloat(i.cost_per_gram).toFixed(2)} ₽/ед</div></div>`; });
-            document.getElementById('ingredients-list').innerHTML = html;
-        }
-        function updateCalcSelect() {
-            let select = document.getElementById('calc-ing-select'); select.innerHTML = '';
-            ingredients.forEach((i, index) => { select.innerHTML += `<option value="${index}">${i.name}</option>`; });
-        }
-        function addIngredientToRecipe() {
-            let index = document.getElementById('calc-ing-select').value; let weight = parseFloat(document.getElementById('calc-ing-weight').value) || 0;
-            if(index === '' || weight <= 0) return alert('Укажите расход');
-            let cost = ingredients[index].cost_per_gram * weight; tempRecipeItems.push(`${ingredients[index].name} — ${Math.round(cost)}₽`); currentRecipeCost += cost;
-            document.getElementById('recipe-composition').innerHTML = tempRecipeItems.join('<br>'); document.getElementById('recipe-cost').innerText = Math.round(currentRecipeCost); calculateRecipeTotal(); document.getElementById('calc-ing-weight').value = '';
-        }
+        async function saveOrder() { let name = document.getElementById('order-name').value; let price = parseFloat(document.getElementById('order-price').value) || 0; let cost = parseFloat(document.getElementById('order-cost').value) || 0; let time = document.getElementById('order-time').value; if(!name || price <= 0) return alert('Заполните поля'); let totalCost = cost + (cost * (getOverhead() / 100)); await _supabase.from('orders').insert({ user_id: userId, name: `[${time}] ${name}`, price, cost: totalCost, profit: price - totalCost, date: selectedDateStr }); closeModal('order-modal'); document.getElementById('order-name').value = ''; loadData(); }
+        function renderDayOrders() { let html = ''; let dayOrders = orders.filter(o => o.date === selectedDateStr); dayOrders.forEach(o => { html += `<div class="item-card"><div><strong>${o.name}</strong></div><div style="text-align:right;"><span style="color:green; font-weight:bold;">+${o.price} ₽</span></div></div>`; }); document.getElementById('day-orders-list').innerHTML = html || '<div style="color:gray;text-align:center;padding:10px;">Нет записей</div>'; }
+        function renderDashboard() { let rev = 0; let exp = 0; let prof = 0; orders.forEach(o => { rev += o.price; exp += o.cost; prof += o.profit; }); document.getElementById('total-revenue').innerText = Math.round(rev) + ' ₽'; document.getElementById('total-expenses').innerText = Math.round(exp) + ' ₽'; document.getElementById('total-profit').innerText = Math.round(prof) + ' ₽'; }
+        async function saveIngredient() { let name = document.getElementById('ing-name').value; let price = parseFloat(document.getElementById('ing-price').value) || 0; let weight = parseFloat(document.getElementById('ing-weight').value) || 0; if(!name || price <= 0 || weight <= 0) return alert('Ошибка ввода'); await _supabase.from('ingredients').insert({ user_id: userId, name, price, weight, cost_per_gram: price / weight }); closeModal('ing-modal'); document.getElementById('ing-name').value = ''; document.getElementById('ing-price').value = ''; document.getElementById('ing-weight').value = ''; loadData(); }
+        function renderIngredients() { let html = ''; ingredients.forEach(i => { html += `<div class="item-card"><div><strong>${i.name}</strong></div><div>${parseFloat(i.cost_per_gram).toFixed(2)} ₽/ед</div></div>`; }); document.getElementById('ingredients-list').innerHTML = html; }
+        function updateCalcSelect() { let select = document.getElementById('calc-ing-select'); select.innerHTML = ''; ingredients.forEach((i, index) => { select.innerHTML += `<option value="${index}">${i.name}</option>`; }); }
+        function addIngredientToRecipe() { let index = document.getElementById('calc-ing-select').value; let weight = parseFloat(document.getElementById('calc-ing-weight').value) || 0; if(index === '' || weight <= 0) return alert('Укажите расход'); let cost = ingredients[index].cost_per_gram * weight; tempRecipeItems.push(`${ingredients[index].name} — ${Math.round(cost)}₽`); currentRecipeCost += cost; document.getElementById('recipe-composition').innerHTML = tempRecipeItems.join('<br>'); document.getElementById('recipe-cost').innerText = Math.round(currentRecipeCost); calculateRecipeTotal(); document.getElementById('calc-ing-weight').value = ''; }
         function calculateRecipeTotal() { document.getElementById('recipe-total-cost').innerText = Math.round(currentRecipeCost + (currentRecipeCost * (getOverhead() / 100))); }
         function clearRecipe() { currentRecipeCost = 0; tempRecipeItems = []; document.getElementById('recipe-composition').innerHTML = ''; document.getElementById('recipe-cost').innerText = '0'; document.getElementById('recipe-total-cost').innerText = '0'; }
-        async function clearAllData() { if(confirm('Удалить все данные?')) { await _supabase.from('orders').delete().eq('user_id', userId); await _supabase.from('ingredients').delete().eq('user_id', userId); await _supabase.from('profiles').delete().eq('tg_id', userId); window.location.reload(); } }
         
-        document.getElementById('setting-overhead').value = getOverhead(); initUser();
+        async function clearAllData() { if(confirm('Сбросить сферу деятельности?')) { localStorage.clear(); await _supabase.from('orders').delete().eq('user_id', userId); await _supabase.from('ingredients').delete().eq('user_id', userId); window.location.reload(); } }
+        
+        document.getElementById('setting-overhead').value = getOverhead();
+        checkProfile();
     </script>
 </body>
 </html>
