@@ -1,3 +1,459 @@
 <!DOCTYPE html>
-<html><head><meta charset='utf-8'><title>MasterApp Redesign</title></head>
-<body><h1>MasterApp Redesign</h1><p>Generated file placeholder.</p></body></html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>MasterApp Pro</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+body{
+padding-bottom:90px;
+}
+
+.glass{
+background:rgba(255,255,255,.06);
+backdrop-filter:blur(16px);
+}
+
+.active-tab{
+color:#38bdf8;
+}
+
+.page{
+display:none;
+}
+
+.page.active{
+display:block;
+}
+</style>
+</head>
+
+<body class="bg-slate-950 text-white">
+
+<div class="max-w-md mx-auto">
+
+<header class="p-4">
+<h1 class="text-3xl font-bold">
+MasterApp Pro
+</h1>
+
+<p class="text-slate-400">
+Панель мастера
+</p>
+</header>
+
+<!-- HOME -->
+
+<section id="home" class="page active p-4">
+
+<div class="glass rounded-3xl p-5 mb-4">
+
+<div class="text-slate-400">
+Ближайший заказ
+</div>
+
+<div class="text-xl font-bold">
+Монтаж кухни
+</div>
+
+<div class="text-sm text-slate-500">
+Завтра • 11:00
+</div>
+
+</div>
+
+<div class="grid grid-cols-3 gap-3">
+
+<div class="glass rounded-3xl p-4">
+<div class="text-slate-400 text-sm">
+Баланс
+</div>
+<div class="font-bold text-lg">
+₽124 500
+</div>
+</div>
+
+<div class="glass rounded-3xl p-4">
+<div class="text-slate-400 text-sm">
+Доход
+</div>
+<div class="font-bold text-lg text-green-400">
+₽180 000
+</div>
+</div>
+
+<div class="glass rounded-3xl p-4">
+<div class="text-slate-400 text-sm">
+Расход
+</div>
+<div class="font-bold text-lg text-red-400">
+₽55 500
+</div>
+</div>
+
+</div>
+
+</section>
+
+<!-- PROFESSIONS -->
+
+<section id="professions" class="page p-4">
+
+<h2 class="font-bold text-xl mb-4">
+Профессии
+</h2>
+
+<div class="grid grid-cols-2 gap-3" id="profGrid"></div>
+
+</section>
+
+<!-- CALENDAR -->
+
+<section id="calendar" class="page p-4">
+
+<h2 class="font-bold text-xl mb-4">
+Календарь
+</h2>
+
+<div
+id="calendarDays"
+class="flex gap-3 overflow-x-auto pb-2">
+</div>
+
+<div
+id="events"
+class="mt-4 space-y-3">
+</div>
+
+</section>
+
+<!-- FINANCE -->
+
+<section id="finance" class="page p-4">
+
+<div class="flex gap-2 mb-4">
+
+<button class="period px-4 py-2 rounded-xl bg-slate-800">
+Неделя
+</button>
+
+<button class="period px-4 py-2 rounded-xl bg-slate-800">
+Месяц
+</button>
+
+<button class="period px-4 py-2 rounded-xl bg-slate-800">
+Квартал
+</button>
+
+<button class="period px-4 py-2 rounded-xl bg-slate-800">
+Год
+</button>
+
+</div>
+
+<div class="glass rounded-3xl p-4">
+
+<canvas id="financeChart"></canvas>
+
+</div>
+
+</section>
+
+<!-- PROFILE -->
+
+<section id="profile" class="page p-4">
+
+<div class="glass rounded-3xl p-5">
+
+<div class="flex items-center gap-4 mb-4">
+
+<div
+class="w-20 h-20 rounded-full bg-sky-500 flex items-center justify-center text-3xl">
+<i class="fa-solid fa-user"></i>
+</div>
+
+<div>
+
+<div class="font-bold">
+Мастер
+</div>
+
+<div class="text-slate-400">
+Premium
+</div>
+
+</div>
+
+</div>
+
+<input
+id="profileName"
+class="w-full p-3 rounded-xl text-black mb-3"
+placeholder="Имя">
+
+<select
+id="profileProfession"
+class="w-full p-3 rounded-xl text-black mb-3">
+</select>
+
+<button
+onclick="exportExcel()"
+class="w-full bg-emerald-500 rounded-2xl p-3 mb-3">
+Экспорт Excel
+</button>
+
+<input
+type="file"
+id="excelImport"
+class="w-full mb-3">
+
+<button
+onclick="showPremium()"
+class="w-full bg-yellow-500 text-black rounded-2xl p-3">
+Активировать Premium
+</button>
+
+</div>
+
+</section>
+
+</div>
+
+<!-- NAV -->
+
+<nav
+class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800">
+
+<div class="grid grid-cols-5 py-3 text-center">
+
+<button onclick="openPage('home')">
+<i class="fa-solid fa-house"></i>
+</button>
+
+<button onclick="openPage('professions')">
+<i class="fa-solid fa-briefcase"></i>
+</button>
+
+<button onclick="openPage('calendar')">
+<i class="fa-solid fa-calendar"></i>
+</button>
+
+<button onclick="openPage('finance')">
+<i class="fa-solid fa-chart-pie"></i>
+</button>
+
+<button onclick="openPage('profile')">
+<i class="fa-solid fa-user"></i>
+</button>
+
+</div>
+
+</nav>
+
+<!-- PREMIUM -->
+
+<div
+id="premiumModal"
+class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-5">
+
+<div class="bg-slate-900 rounded-3xl p-6 w-full max-w-sm">
+
+<h2 class="font-bold text-xl mb-4">
+Premium
+</h2>
+
+<div class="space-y-2 mb-4">
+
+<button class="w-full bg-slate-800 p-3 rounded-xl">
+1 месяц — ₽299
+</button>
+
+<button class="w-full bg-slate-800 p-3 rounded-xl">
+6 месяцев — ₽1490
+</button>
+
+<button class="w-full bg-slate-800 p-3 rounded-xl">
+12 месяцев — ₽2490
+</button>
+
+</div>
+
+<button
+onclick="activatePremium()"
+class="w-full bg-yellow-500 text-black rounded-xl p-3">
+Оплатить
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const tg = window.Telegram?.WebApp;
+
+if(tg){
+tg.ready();
+tg.expand();
+}
+
+const professions = [
+
+"Электрик",
+"Сантехник",
+"Автомеханик",
+"Плиточник",
+"Отделочник",
+"Барбер",
+"Фотограф",
+"Клинер",
+"Репетитор",
+"Массажист",
+"Сборщик мебели",
+"Разработчик",
+"Дизайнер",
+"Маркетолог",
+"Кондитер"
+
+];
+
+const profGrid=document.getElementById("profGrid");
+const profileProfession=document.getElementById("profileProfession");
+
+professions.forEach(p=>{
+
+profGrid.innerHTML+=`
+<div class="glass rounded-3xl p-4">
+${p}
+</div>
+`;
+
+profileProfession.innerHTML+=`
+<option>${p}</option>
+`;
+
+});
+
+function openPage(id){
+
+document.querySelectorAll(".page")
+.forEach(p=>p.classList.remove("active"));
+
+document
+.getElementById(id)
+.classList.add("active");
+
+}
+
+const ctx=document
+.getElementById("financeChart");
+
+new Chart(ctx,{
+type:"doughnut",
+data:{
+labels:["Доход","Расход"],
+datasets:[
+{
+data:[180000,55000]
+}
+]
+}
+});
+
+function exportExcel(){
+
+const data=[
+{
+Дата:"2026-06-01",
+Категория:"Доход",
+Описание:"Заказ",
+Сумма:10000
+}
+];
+
+const ws=XLSX.utils.json_to_sheet(data);
+
+const wb=XLSX.utils.book_new();
+
+XLSX.utils.book_append_sheet(
+wb,
+ws,
+"Finance"
+);
+
+XLSX.writeFile(
+wb,
+"masterapp.xlsx"
+);
+
+}
+
+document
+.getElementById("excelImport")
+.addEventListener("change",e=>{
+
+const file=e.target.files[0];
+
+if(!file) return;
+
+const reader=new FileReader();
+
+reader.onload=(evt)=>{
+
+const wb=XLSX.read(
+evt.target.result,
+{type:"binary"}
+);
+
+alert("Импорт завершен");
+
+};
+
+reader.readAsBinaryString(file);
+
+});
+
+function showPremium(){
+
+document
+.getElementById("premiumModal")
+.classList.remove("hidden");
+
+}
+
+function activatePremium(){
+
+alert("Premium активирован");
+
+document
+.getElementById("premiumModal")
+.classList.add("hidden");
+
+}
+
+const calendar=document.getElementById("calendarDays");
+
+for(let i=1;i<=30;i++){
+
+calendar.innerHTML+=`
+<div
+class="min-w-[70px] glass rounded-2xl p-3 text-center cursor-pointer">
+${i}
+</div>
+`;
+
+}
+
+</script>
+
+</body>
+</html>
