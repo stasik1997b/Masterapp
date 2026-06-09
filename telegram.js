@@ -1,0 +1,1 @@
+window.TelegramClient = true;
