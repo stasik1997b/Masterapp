@@ -46,15 +46,13 @@
             </div>
             <div class="space-y-1">
                 <h2 class="text-2xl font-bold text-white tracking-tight">Добро пожаловать!</h2>
-                <p class="text-xs text-slate-400">Настроим рабочее окружение. Пожалуйста, укажите вашу основную специализацию:</p>
+                <p class="text-xs text-slate-400">Настроим рабочее окружение. Укажите вашу специализацию:</p>
             </div>
-
             <div class="space-y-2 pt-2">
                 <label class="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Ваша профессия</label>
-                <select id="welcomeProfSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-xs text-white focus:outline-none focus:border-sky-500">
-                    </select>
+                <select id="welcomeProfSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-xs text-white focus:outline-none">
+                </select>
             </div>
-
             <button onclick="completeOnboarding()" class="w-full bg-sky-500 text-slate-950 font-bold rounded-xl py-3.5 text-xs shadow-lg shadow-sky-500/10 transition active:scale-98">
                 Начать работу
             </button>
@@ -76,6 +74,16 @@
         <main class="flex-grow">
 
             <section id="home" class="page active space-y-3.5">
+                <div id="todayOrdersSummaryWidget" class="hidden bg-gradient-to-r from-amber-500/15 to-orange-500/10 border border-amber-500/20 rounded-2xl p-3.5 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-bell animate-pulse"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-amber-400 block">План на сегодня</span>
+                        <p class="text-xs text-slate-200 font-medium" id="todayOrdersCountText">У вас сегодня 0 записей</p>
+                    </div>
+                </div>
+
                 <div class="glass rounded-2xl p-4 bg-gradient-to-br from-slate-900/60 to-slate-950/20 border border-slate-900">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Баланс по текущей сфере</span>
                     <div class="text-2xl font-bold text-white mt-1" id="mainBalance">0 Р</div>
@@ -112,9 +120,9 @@
 
             <section id="calendar" class="page space-y-3.5">
                 <div class="flex items-center justify-between bg-slate-900/60 p-2 rounded-xl border border-slate-900">
-                    <button onclick="prevMonth()" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-950 text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <button onclick="prevMonth()" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-950 text-slate-400"><i class="fa-solid fa-chevron-left text-xs"></i></button>
                     <div class="text-xs font-bold text-white tracking-wide uppercase" id="calendarMonthYearLabel">...</div>
-                    <button onclick="nextMonth()" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-950 text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    <button onclick="nextMonth()" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-950 text-slate-400"><i class="fa-solid fa-chevron-right text-xs"></i></button>
                 </div>
 
                 <div class="glass rounded-2xl p-3">
@@ -149,19 +157,41 @@
 
                 <div id="sectionConfectioner" class="hidden space-y-3.5">
                     <div class="glass rounded-2xl p-3.5 space-y-2 border border-amber-500/10">
-                        <span class="text-[10px] font-bold uppercase text-amber-400 block"><i class="fa-solid fa-utensils mr-1"></i> Шаблоны ваших готовых блюд / изделий</span>
-                        <div id="confectionerProductsGrid" class="grid grid-cols-2 gap-2 max-h-[120px] overflow-y-auto no-scrollbar"></div>
-                        <button onclick="document.getElementById('addCakeProductForm').classList.toggle('hidden')" class="w-full text-center text-[10px] text-slate-400 hover:text-white bg-slate-900 py-1.5 rounded-lg border border-slate-800">+ Создать шаблон блюда/изделия</button>
+                        <span class="text-[10px] font-bold uppercase text-amber-400 block"><i class="fa-solid fa-utensils mr-1"></i> Шаблоны блюд и изделий</span>
+                        <div id="confectionerProductsGrid" class="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto no-scrollbar"></div>
+                        <button onclick="openNewCakeForm()" class="w-full text-center text-[10px] text-slate-400 hover:text-white bg-slate-900 py-1.5 rounded-lg border border-slate-800">+ Создать шаблон блюда/изделия</button>
                     </div>
 
-                    <div id="addCakeProductForm" class="hidden bg-slate-900/80 p-3 rounded-xl space-y-2 border border-slate-800">
-                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Новое блюдо или выпечка</span>
-                        <input id="cakeName" type="text" placeholder="Название (Торт, Пицца, Горячее)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input id="cakeCost" type="number" placeholder="Себестоимость (Р)" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
-                            <input id="cakePrice" type="number" placeholder="Цена продажи (Р)" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                    <div id="addCakeProductForm" class="hidden bg-slate-900/90 p-4 rounded-xl space-y-3 border border-slate-800">
+                        <div class="flex justify-between items-center">
+                            <span id="cakeFormTitle" class="text-[11px] font-bold uppercase text-amber-400">Новое блюдо или выпечка</span>
+                            <button onclick="closeCakeForm()" class="text-slate-500 text-xs hover:text-white"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        <button onclick="saveCakeProductTemplate()" class="w-full bg-amber-500 text-slate-950 text-xs font-bold py-2 rounded-lg">Сохранить в шаблоны</button>
+                        <input id="cakeEditId" type="hidden">
+                        <input id="cakeName" type="text" placeholder="Название (Торт, Пицца, Горячее)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-[9px] font-bold uppercase text-slate-500 block">Состав изделия (Ингредиенты):</label>
+                            <div id="cakeFormIngredientsList" class="space-y-1 max-h-[120px] overflow-y-auto no-scrollbar"></div>
+                            <div class="grid grid-cols-3 gap-1 pt-1">
+                                <input id="ingrNameInput" type="text" placeholder="Продукт" class="col-span-1 bg-slate-950 border border-slate-800 rounded-lg p-1 text-[11px] text-white focus:outline-none">
+                                <input id="ingrWeightInput" type="text" placeholder="Кол-во" class="bg-slate-950 border border-slate-800 rounded-lg p-1 text-[11px] text-white focus:outline-none">
+                                <input id="ingrCostInput" type="number" placeholder="Цена (Р)" class="bg-slate-950 border border-slate-800 rounded-lg p-1 text-[11px] text-white focus:outline-none">
+                            </div>
+                            <button type="button" onclick="addIngredientToCurrentTemplate()" class="w-full text-center text-[10px] text-sky-400 bg-sky-500/5 py-1 rounded border border-sky-500/10">+ Добавить ингредиент в состав</button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
+                            <div>
+                                <label class="text-[9px] text-slate-500 block font-bold">Итого себест. (Р)</label>
+                                <input id="cakeCost" type="number" placeholder="Расчет автоматически" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[9px] text-slate-500 block font-bold">Цена продажи (Р)</label>
+                                <input id="cakePrice" type="number" placeholder="Цена для клиента" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                            </div>
+                        </div>
+                        <button onclick="saveCakeProductTemplate()" class="w-full bg-amber-500 text-slate-950 text-xs font-bold py-2 rounded-lg">Сохранить шаблон</button>
                     </div>
 
                     <div class="glass rounded-2xl p-4 space-y-3">
@@ -214,7 +244,6 @@
 
             <section id="finance" class="page space-y-3.5">
                 <h2 class="font-bold text-base text-white">Финансовая аналитика</h2>
-                
                 <div class="glass rounded-2xl p-3 space-y-2 border border-slate-900">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-1">Формировать свой отчетный период</span>
                     <div class="grid grid-cols-2 gap-2">
@@ -251,14 +280,14 @@
                     <div class="space-y-1.5">
                         <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-0.5">Изменить основную специализацию</label>
                         <select id="profileProfessionSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500" onchange="changeMainProfession()">
-                            </select>
+                        </select>
                     </div>
 
                     <div class="pt-2 space-y-2">
                         <label class="text-[10px] font-bold uppercase text-slate-400 block px-0.5">Резервное копирование (Excel)</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="exportToExcel()" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5"><i class="fa-regular fa-file-excel"></i> Экспорт</button>
-                            <label class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer text-center">
+                            <button onclick="exportToExcel()" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5"><i class="fa-regular fa-file-excel"></i> Экспорт</button>
+                            <label class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer text-center">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> Импорт
                                 <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls">
                             </label>
@@ -266,7 +295,7 @@
                     </div>
 
                     <div class="pt-2 border-t border-slate-900">
-                        <button onclick="resetApplicationDatabase()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl py-2 text-[10px] font-bold uppercase tracking-wider transition active:scale-98">
+                        <button onclick="resetApplicationDatabase()" class="w-full bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl py-2 text-[10px] font-bold uppercase tracking-wider">
                             <i class="fa-solid fa-trash-can-arrow-up mr-1.5"></i> Сбросить всю историю и данные
                         </button>
                     </div>
@@ -291,44 +320,45 @@
         const tg = window.Telegram?.WebApp;
         if(tg) { tg.ready(); tg.expand(); }
 
-        // Расширенный список профессий (Пищевые/Кулинарные и Технические сгруппированы для логики)
+        const BOT_CONFIG = {
+            token: "8886303402:AAFkLKNCtVEC-Jnf8skmszWD45IgebwXVLY",
+            getChatId: function() { return window.Telegram?.WebApp?.initDataUnsafe?.user?.id || null; }
+        };
+
         const PROFESSIONS_LIST = [
             "Кондитер", "Кулинар", "Повар", "Пекарь / Су-шеф", 
             "Сборщик мебели", "Автомеханик", "Электрик", 
             "Сантехник", "Барбер / Парикмахер", "Мастер маникюра",
             "Фотограф", "Репетитор", "Клинер"
         ];
-
-        // Профессии, которым нужен кулинарный блок с шаблонами блюд/себестоимости вместо стройматериалов
         const FOOD_PROFESSIONS = ["Кондитер", "Кулинар", "Повар", "Пекарь / Су-шеф"];
 
         let state = JSON.parse(localStorage.getItem('masterapp_core_v3')) || {
             isFirstLaunch: true,
             currentProfession: "Кондитер",
             cakeTemplates: [
-                { id: 1, name: "Торт Свадебный (Кастом)", cost: 3500, price: 9500 },
-                { id: 2, name: "Бенто-торт Клубничный", cost: 4500, price: 12000 },
-                { id: 3, name: "Праздничный фуршет (Набор)", cost: 2500, price: 6500 }
+                { id: 1, name: "Торт Свадебный (Кастом)", cost: 3500, price: 9500, ingredients: [] },
+                { id: 2, name: "Бенто-торт Клубничный", cost: 1500, price: 4000, ingredients: [] }
             ],
             transactions: [],
             orders: [],
             selectedDate: ""
         };
 
-        let currentCalendarDate = new Date(); // Текущая дата по умолчанию
+        let currentCalendarDate = new Date();
         let confMode = "sale";
         let stdMode = "income";
         let chartInstance = null;
+        
+        // Временный массив для хранения ингредиентов в открытой форме создания/редактирования шаблона
+        let currentFormIngredients = [];
 
         window.addEventListener('DOMContentLoaded', () => {
             const username = tg?.initDataUnsafe?.user?.first_name || "Мастер";
             document.getElementById('tgGreeting').textContent = `Привет, ${username}!`;
             document.getElementById('profileName').textContent = username;
-
-            // Наполнение списков выбора профессий
             populateProfessionSelects();
 
-            // Автоматическая установка сегодняшнего и вчерашнего дня в фильтры для старта
             const todayStr = formatDate(new Date());
             const dynamicPastDate = new Date();
             dynamicPastDate.setDate(dynamicPastDate.getDate() - 7);
@@ -343,20 +373,61 @@
             }
         });
 
+        function sendTelegramBotMessage(text) {
+            const chatId = BOT_CONFIG.getChatId();
+            if (!chatId) return;
+            fetch(`https://api.telegram.org/bot${BOT_CONFIG.token}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: "HTML" })
+            }).catch(err => console.error(err));
+        }
+
+        function checkDailyAndHourlyNotifications() {
+            const now = new Date();
+            const todayStr = formatDate(now); 
+            const todayOrders = state.orders.filter(o => o.date === todayStr);
+            const widget = document.getElementById('todayOrdersSummaryWidget');
+            const widgetText = document.getElementById('todayOrdersCountText');
+            
+            if (todayOrders.length > 0) {
+                if(widget) widget.classList.remove('hidden');
+                let word = "записей"; const count = todayOrders.length;
+                if (count % 10 === 1 && count % 100 !== 11) word = "запись";
+                else if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) word = "записи";
+                if(widgetText) widgetText.innerHTML = `Внимание! На сегодня у вас запланировано <span class="text-amber-400 font-bold">${count}</span> ${word}.`;
+
+                const dailyKey = `tg_daily_summary_${todayStr}`;
+                if (!localStorage.getItem(dailyKey)) {
+                    sendTelegramBotMessage(`📅 <b>План работы на сегодня:</b>\nУ вас запланировано <b>${count}</b> ${word}.\nУдачного рабочего дня!`);
+                    localStorage.setItem(dailyKey, "true");
+                }
+            } else { if(widget) widget.classList.add('hidden'); }
+
+            const currentTotalMinutes = (now.getHours() * 60) + now.getMinutes();
+            todayOrders.forEach(order => {
+                if (!order.time) return;
+                const [orderH, orderM] = order.time.split(':').map(Number);
+                const minutesLeft = (orderH * 60 + orderM) - currentTotalMinutes;
+                if (minutesLeft > 0 && minutesLeft <= 60) {
+                    const alertKey = `tg_notified_order_${order.id}`;
+                    if (!localStorage.getItem(alertKey)) {
+                        let msg = `⏰ <b>Напоминание о записи через ${minutesLeft} мин!</b>\n\n👤 <b>Клиент:</b> ${order.title}\n🕒 <b>Время:</b> ${order.time}\n`;
+                        if (order.phone && order.phone !== 'Не указан') msg += `📞 <b>Телефон:</b> <code>${order.phone}</code>`;
+                        sendTelegramBotMessage(msg);
+                        localStorage.setItem(alertKey, "true");
+                    }
+                }
+            });
+        }
+
         function populateProfessionSelects() {
             const welcomeSelect = document.getElementById('welcomeProfSelect');
             const profileSelect = document.getElementById('profileProfessionSelect');
-            welcomeSelect.innerHTML = '';
-            profileSelect.innerHTML = '';
-
+            welcomeSelect.innerHTML = ''; profileSelect.innerHTML = '';
             PROFESSIONS_LIST.forEach(p => {
-                const opt1 = document.createElement('option');
-                opt1.value = p; opt1.textContent = p;
-                welcomeSelect.appendChild(opt1);
-
-                const opt2 = document.createElement('option');
-                opt2.value = p; opt2.textContent = p;
-                profileSelect.appendChild(opt2);
+                const opt1 = document.createElement('option'); opt1.value = p; opt1.textContent = p; welcomeSelect.appendChild(opt1);
+                const opt2 = document.createElement('option'); opt2.value = p; opt2.textContent = p; profileSelect.appendChild(opt2);
             });
         }
 
@@ -374,12 +445,12 @@
             document.getElementById('profileProfessionSelect').value = state.currentProfession;
             buildCalendar();
             updateUI();
+            setInterval(checkDailyAndHourlyNotifications, 60000);
         }
 
         function updateUI() {
             document.getElementById('headerBadge').textContent = state.currentProfession;
             document.getElementById('profileProfSub').textContent = state.currentProfession;
-            
             toggleAdaptiveAccountingView();
             calculateFinanceCards();
             renderHomeRecentLogs();
@@ -387,21 +458,19 @@
             renderDayOrders();
             renderCalcDayLogs();
             updateNextOrderWidget();
+            checkDailyAndHourlyNotifications();
         }
 
         function toggleAdaptiveAccountingView() {
             const confSec = document.getElementById('sectionConfectioner');
             const stdSec = document.getElementById('sectionStandardMaster');
-            
             if(FOOD_PROFESSIONS.includes(state.currentProfession)) {
-                confSec.classList.remove('hidden');
-                stdSec.classList.add('hidden');
-                document.getElementById('calcContextType').textContent = `Кулинарный Цех: ${state.currentProfession}`;
+                confSec.classList.remove('hidden'); stdSec.classList.add('hidden');
+                document.getElementById('calcContextType').textContent = `Кулинария: ${state.currentProfession}`;
                 renderCakeTemplates();
             } else {
-                confSec.classList.add('hidden');
-                stdSec.classList.remove('hidden');
-                document.getElementById('calcContextType').textContent = `Снабжение: ${state.currentProfession}`;
+                confSec.classList.add('hidden'); stdSec.classList.remove('hidden');
+                document.getElementById('calcContextType').textContent = `Учет: ${state.currentProfession}`;
             }
         }
 
@@ -411,127 +480,194 @@
             updateUI();
         }
 
-        // ШАБЛОНЫ ДЛЯ ПИЩЕВЫХ СФЕР
+        // РЕНДЕР ШАБЛОНОВ БЛЮД С КНОПКАМИ РЕДАКТИРОВАНИЯ И УДАЛЕНИЯ
         function renderCakeTemplates() {
-            const grid = document.getElementById('confectionerProductsGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('confectionerProductsGrid'); grid.innerHTML = '';
+            if(!state.cakeTemplates) state.cakeTemplates = [];
             state.cakeTemplates.forEach(c => {
                 grid.innerHTML += `
-                    <div onclick="selectCakeTemplateToForm('${c.name}', ${c.cost}, ${c.price})" class="bg-slate-900 border border-slate-800 p-2 rounded-xl text-left cursor-pointer hover:border-amber-500/40 transition">
-                        <div class="font-bold text-xs text-white truncate">${c.name}</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5">Себ: <span class="text-rose-400 font-semibold">${c.cost} Р</span></div>
-                        <div class="text-[10px] text-slate-400">Цена: <span class="text-emerald-400 font-semibold">${c.price} Р</span></div>
+                    <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl text-left hover:border-amber-500/30 transition flex flex-col justify-between relative group">
+                        <div onclick="selectCakeTemplateToForm('${c.name}', ${c.cost}, ${c.price})" class="cursor-pointer flex-grow pr-6">
+                            <div class="font-bold text-xs text-white truncate">${c.name}</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Себест: <span class="text-rose-400 font-medium">${c.cost} Р</span></div>
+                            <div class="text-[9px] text-slate-400">Продажа: <span class="text-emerald-400 font-medium">${c.price} Р</span></div>
+                        </div>
+                        <div class="absolute right-1 top-1 flex flex-col gap-1 opacity-80 group-hover:opacity-100">
+                            <button onclick="editCakeTemplate(${c.id})" class="text-slate-500 hover:text-sky-400 text-[10px] p-0.5"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteCakeTemplate(${c.id})" class="text-slate-500 hover:text-rose-400 text-[10px] p-0.5"><i class="fa-regular fa-trash-can"></i></button>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function saveCakeProductTemplate() {
-            const name = document.getElementById('cakeName').value;
-            const cost = document.getElementById('cakeCost').value;
-            const price = document.getElementById('cakePrice').value;
-            if(!name || !cost || !price) return;
+        // ФУНКЦИИ ФОРМЫ ШАБЛОНОВ БЛЮД
+        function openNewCakeForm() {
+            document.getElementById('addCakeProductForm').classList.remove('hidden');
+            document.getElementById('cakeFormTitle').textContent = "Новое блюдо или выпечка";
+            document.getElementById('cakeEditId').value = "";
+            document.getElementById('cakeName').value = "";
+            document.getElementById('cakeCost').value = "";
+            document.getElementById('cakePrice').value = "";
+            currentFormIngredients = [];
+            renderFormIngredientsList();
+        }
 
-            state.cakeTemplates.push({ id: Date.now(), name, cost: Number(cost), price: Number(price) });
-            document.getElementById('cakeName').value = '';
-            document.getElementById('cakeCost').value = '';
-            document.getElementById('cakePrice').value = '';
+        function closeCakeForm() {
             document.getElementById('addCakeProductForm').classList.add('hidden');
+        }
+
+        function addIngredientToCurrentTemplate() {
+            const nameInput = document.getElementById('ingrNameInput');
+            const weightInput = document.getElementById('ingrWeightInput');
+            const costInput = document.getElementById('ingrCostInput');
+            
+            if(!nameInput.value || !costInput.value) return;
+
+            currentFormIngredients.push({
+                name: nameInput.value,
+                weight: weightInput.value || "-",
+                cost: Number(costInput.value)
+            });
+
+            nameInput.value = ""; weightInput.value = ""; costInput.value = "";
+            renderFormIngredientsList();
+            recalculateTemplateCost();
+        }
+
+        function removeIngredientFromFormList(index) {
+            currentFormIngredients.splice(index, 1);
+            renderFormIngredientsList();
+            recalculateTemplateCost();
+        }
+
+        function renderFormIngredientsList() {
+            const container = document.getElementById('cakeFormIngredientsList');
+            container.innerHTML = '';
+            currentFormIngredients.forEach((ing, index) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-950 p-1.5 rounded-md text-[11px] border border-slate-900">
+                        <span class="text-slate-300">${ing.name} (${ing.weight})</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-rose-400 font-semibold">${ing.cost} Р</span>
+                            <button type="button" onclick="removeIngredientFromFormList(${index})" class="text-slate-600 hover:text-rose-400 text-[10px]"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function recalculateTemplateCost() {
+            const totalCost = currentFormIngredients.reduce((sum, ing) => sum + ing.cost, 0);
+            if(totalCost > 0) {
+                document.getElementById('cakeCost').value = totalCost;
+            }
+        }
+
+        function saveCakeProductTemplate() {
+            const idVal = document.getElementById('cakeEditId').value;
+            const name = document.getElementById('cakeName').value;
+            const cost = Number(document.getElementById('cakeCost').value) || 0;
+            const price = Number(document.getElementById('cakePrice').value) || 0;
+
+            if(!name) { alert("Укажите название блюда"); return; }
+
+            if(idVal) {
+                // Редактирование существующего
+                const idx = state.cakeTemplates.findIndex(c => c.id == idVal);
+                if(idx !== -1) {
+                    state.cakeTemplates[idx] = { id: Number(idVal), name, cost, price, ingredients: currentFormIngredients };
+                }
+            } else {
+                // Создание нового
+                state.cakeTemplates.push({ id: Date.now(), name, cost, price, ingredients: currentFormIngredients });
+            }
+
+            closeCakeForm();
             localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
             renderCakeTemplates();
         }
 
+        function editCakeTemplate(id) {
+            const item = state.cakeTemplates.find(c => c.id === id);
+            if(!item) return;
+
+            document.getElementById('addCakeProductForm').classList.remove('hidden');
+            document.getElementById('cakeFormTitle').textContent = "Редактировать шаблон";
+            document.getElementById('cakeEditId').value = item.id;
+            document.getElementById('cakeName').value = item.name;
+            document.getElementById('cakeCost').value = item.cost;
+            document.getElementById('cakePrice').value = item.price;
+            
+            currentFormIngredients = item.ingredients ? [...item.ingredients] : [];
+            renderFormIngredientsList();
+        }
+
+        function deleteCakeTemplate(id) {
+            if(confirm("Удалить этот готовый шаблон изделия?")) {
+                state.cakeTemplates = state.cakeTemplates.filter(c => c.id !== id);
+                localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
+                renderCakeTemplates();
+            }
+        }
+
         function selectCakeTemplateToForm(name, cost, price) {
             setConfMode('sale');
-            document.getElementById('confTitle').value = `Реализация: ${name} (Ориент. себест. ${cost} Р)`;
+            document.getElementById('confTitle').value = `Реализация: ${name}`;
             document.getElementById('confSum').value = price;
         }
 
+        // ОСТАЛЬНАЯ ЛОГИКА ОПЕРАЦИЙ
         function setConfMode(mode) {
             confMode = mode;
-            const bSale = document.getElementById('btnConfSale');
-            const bIngr = document.getElementById('btnConfIngr');
+            const bSale = document.getElementById('btnConfSale'); const bIngr = document.getElementById('btnConfIngr');
             const metrics = document.getElementById('confIngrMetrics');
-            
             if(mode === 'sale') {
                 bSale.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-emerald-500/20 text-emerald-400";
-                bIngr.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400";
-                metrics.classList.add('hidden');
+                bIngr.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400"; metrics.classList.add('hidden');
             } else {
                 bIngr.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-rose-500/20 text-rose-400";
-                bSale.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400";
-                metrics.classList.remove('hidden');
+                bSale.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400"; metrics.classList.remove('hidden');
             }
         }
 
         function submitConfTransaction() {
-            const title = document.getElementById('confTitle').value;
-            const sum = document.getElementById('confSum').value;
-            const w = document.getElementById('confWeight').value;
-            const u = document.getElementById('confUnit').value;
+            const title = document.getElementById('confTitle').value; const sum = document.getElementById('confSum').value;
+            const w = document.getElementById('confWeight').value; const u = document.getElementById('confUnit').value;
             if(!title || !sum) return;
-
             state.transactions.push({
-                id: Date.now(),
-                date: state.selectedDate,
-                type: confMode === 'sale' ? 'income' : 'expense',
-                amount: Number(sum),
-                desc: title,
-                weight: confMode === 'ingr' ? w : '',
-                unit: confMode === 'ingr' ? u : '',
-                prof: state.currentProfession
+                id: Date.now(), date: state.selectedDate, type: confMode === 'sale' ? 'income' : 'expense',
+                amount: Number(sum), desc: title, weight: confMode === 'ingr' ? w : '', unit: confMode === 'ingr' ? u : '', prof: state.currentProfession
             });
-            document.getElementById('confTitle').value = '';
-            document.getElementById('confSum').value = '';
-            document.getElementById('confWeight').value = '';
-            localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
-            updateUI();
+            document.getElementById('confTitle').value = ''; document.getElementById('confSum').value = ''; document.getElementById('confWeight').value = '';
+            localStorage.setItem('masterapp_core_v3', JSON.stringify(state)); updateUI();
         }
 
-        // ТЕХНИЧЕСКИЕ СФЕРЫ
         function setStdMode(mode) {
             stdMode = mode;
-            const bInc = document.getElementById('btnStdInc');
-            const bExp = document.getElementById('btnStdExp');
+            const bInc = document.getElementById('btnStdInc'); const bExp = document.getElementById('btnStdExp');
             const mBox = document.getElementById('stdMaterialBox');
-
             if(mode === 'income') {
                 bInc.className = "py-2 text-xs font-bold rounded-xl bg-emerald-500/20 text-emerald-400";
-                bExp.className = "py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400";
-                mBox.classList.add('hidden');
+                bExp.className = "py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400"; mBox.classList.add('hidden');
             } else {
                 bExp.className = "py-2 text-xs font-bold rounded-xl bg-rose-500/20 text-rose-400";
-                bInc.className = "py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400";
-                mBox.classList.remove('hidden');
+                bInc.className = "py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400"; mBox.classList.remove('hidden');
             }
         }
 
         function submitStdTransaction() {
-            const title = document.getElementById('stdTitle').value;
-            const sum = document.getElementById('stdSum').value;
-            const qty = document.getElementById('stdQty').value;
-            const unit = document.getElementById('stdUnitName').value;
+            const title = document.getElementById('stdTitle').value; const sum = document.getElementById('stdSum').value;
+            const qty = document.getElementById('stdQty').value; const unit = document.getElementById('stdUnitName').value;
             if(!title || !sum) return;
-
             state.transactions.push({
-                id: Date.now(),
-                date: state.selectedDate,
-                type: stdMode,
-                amount: Number(sum),
-                desc: title,
-                weight: stdMode === 'expense' ? qty : '',
-                unit: stdMode === 'expense' ? unit : '',
-                prof: state.currentProfession
+                id: Date.now(), date: state.selectedDate, type: stdMode, amount: Number(sum),
+                desc: title, weight: stdMode === 'expense' ? qty : '', unit: stdMode === 'expense' ? unit : '', prof: state.currentProfession
             });
-            document.getElementById('stdTitle').value = '';
-            document.getElementById('stdSum').value = '';
-            document.getElementById('stdQty').value = '';
-            document.getElementById('stdUnitName').value = '';
-            localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
-            updateUI();
+            document.getElementById('stdTitle').value = ''; document.getElementById('stdSum').value = ''; document.getElementById('stdQty').value = ''; document.getElementById('stdUnitName').value = '';
+            localStorage.setItem('masterapp_core_v3', JSON.stringify(state)); updateUI();
         }
 
-        // РАСЧЕТ БАЛАНСА
         function calculateFinanceCards() {
             let inc = 0, exp = 0;
             state.transactions.filter(t => t.prof === state.currentProfession).forEach(t => {
@@ -545,9 +681,7 @@
         function renderHomeRecentLogs() {
             const box = document.getElementById('homeRecentLogs'); box.innerHTML = '';
             const list = state.transactions.filter(t => t.prof === state.currentProfession);
-            if(list.length === 0) {
-                box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Операции отсутствуют</div>`; return;
-            }
+            if(list.length === 0) { box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Операции отсутствуют</div>`; return; }
             [...list].reverse().slice(0, 4).forEach(t => {
                 const isInc = t.type === 'income';
                 box.innerHTML += `
@@ -563,11 +697,8 @@
             const box = document.getElementById('calcDayLogs'); box.innerHTML = '';
             const p = state.selectedDate.split('-');
             document.getElementById('calcHistoryLabel').textContent = `Проводки за ${p[2]}/${p[1]}`;
-            
             const list = state.transactions.filter(t => t.date === state.selectedDate && t.prof === state.currentProfession);
-            if(list.length === 0) {
-                box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Нет записей за сегодня</div>`; return;
-            }
+            if(list.length === 0) { box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Нет записей за сегодня</div>`; return; }
             list.forEach(t => {
                 const isInc = t.type === 'income';
                 box.innerHTML += `
@@ -582,23 +713,16 @@
             });
         }
 
-        // МОДУЛЬ КАЛЕНДАРЯ
         function buildCalendar() {
             const monthsNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
             document.getElementById('calendarMonthYearLabel').textContent = `${monthsNames[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
-            
             const grid = document.getElementById('calendarGrid'); grid.innerHTML = '';
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
-
+            const year = currentCalendarDate.getFullYear(); const month = currentCalendarDate.getMonth();
             const firstDayIndex = new Date(year, month, 1).getDay();
             const shiftDays = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            for (let i = 0; i < shiftDays; i++) {
-                grid.innerHTML += `<div class="opacity-0 pointer-events-none"></div>`;
-            }
-
+            for (let i = 0; i < shiftDays; i++) { grid.innerHTML += `<div class="opacity-0 pointer-events-none"></div>`; }
             for (let i = 1; i <= daysInMonth; i++) {
                 const loopDateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
                 const isSelected = state.selectedDate === loopDateStr;
@@ -619,16 +743,12 @@
             state.selectedDate = dateStr;
             const parts = dateStr.split('-');
             document.getElementById('selectedDayLabel').textContent = `Записи на ${parts[2]}/${parts[1]}`;
-            buildCalendar();
-            localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
-            updateUI();
+            buildCalendar(); localStorage.setItem('masterapp_core_v3', JSON.stringify(state)); updateUI();
         }
 
         function renderCalendarDaysIndicators() {
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
+            const year = currentCalendarDate.getFullYear(); const month = currentCalendarDate.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-
             for (let i = 1; i <= daysInMonth; i++) {
                 const loopStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
                 const hasOrder = state.orders.some(o => o.date === loopStr);
@@ -641,31 +761,17 @@
         }
 
         function saveNewOrder() {
-            const title = document.getElementById('orderTitle').value;
-            const phone = document.getElementById('orderPhone').value;
-            const time = document.getElementById('orderTime').value;
-            if(!title) return;
-
-            state.orders.push({
-                id: Date.now(),
-                date: state.selectedDate,
-                time: time || "00:00",
-                title: title,
-                phone: phone || "Не указан"
-            });
-            document.getElementById('orderTitle').value = '';
-            document.getElementById('orderPhone').value = '';
-            document.getElementById('addOrderForm').classList.add('hidden');
-            localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
-            updateUI();
+            const title = document.getElementById('orderTitle').value; const phone = document.getElementById('orderPhone').value;
+            const time = document.getElementById('orderTime').value; if(!title) return;
+            state.orders.push({ id: Date.now(), date: state.selectedDate, time: time || "00:00", title: title, phone: phone || "Не указан" });
+            document.getElementById('orderTitle').value = ''; document.getElementById('orderPhone').value = ''; document.getElementById('addOrderForm').classList.add('hidden');
+            localStorage.setItem('masterapp_core_v3', JSON.stringify(state)); updateUI();
         }
 
         function renderDayOrders() {
             const box = document.getElementById('dayOrdersList'); box.innerHTML = '';
             const list = state.orders.filter(o => o.date === state.selectedDate);
-            if(list.length === 0) {
-                box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Записей нет</div>`; return;
-            }
+            if(list.length === 0) { box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Записей нет</div>`; return; }
             list.sort((a,b)=>a.time.localeCompare(b.time)).forEach(o => {
                 box.innerHTML += `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between text-xs">
@@ -699,51 +805,28 @@
             }
         }
 
-        // ДИНАМИЧЕСКИЙ ГРАФИК ПО СВОЕМУ ПЕРИОДУ ВРЕМЕНИ
         function renderChart() {
-            const fromVal = document.getElementById('reportDateFrom').value;
-            const toVal = document.getElementById('reportDateTo').value;
-            
+            const fromVal = document.getElementById('reportDateFrom').value; const toVal = document.getElementById('reportDateTo').value;
             if(!fromVal || !toVal) return;
-
             let inc = 0, exp = 0;
-            
-            // Фильтруем данные по выбранной профессии и строго по кастомным датам "С" и "По"
             state.transactions.filter(t => t.prof === state.currentProfession && t.date >= fromVal && t.date <= toVal).forEach(t => {
                 if(t.type === 'income') inc += t.amount; else exp += t.amount;
             });
-
             document.getElementById('chartPeriodInfo').innerHTML = `Период с <span class="text-white font-semibold">${fromVal.split('-')[2]}.${fromVal.split('-')[1]}</span> по <span class="text-white font-semibold">${toVal.split('-')[2]}.${toVal.split('-')[1]}</span>`;
-
             const ctx = document.getElementById('financeChart').getContext('2d');
             if(chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
-                data: { 
-                    labels: ['Доходы', 'Расходы'], 
-                    datasets: [{ data: [inc || 1, exp || 0], backgroundColor: ['#10b981', '#f43f5e'], borderWidth: 0 }] 
-                },
+                data: { labels: ['Доходы', 'Расходы'], datasets: [{ data: [inc || 1, exp || 0], backgroundColor: ['#10b981', '#f43f5e'], borderWidth: 0 }] },
                 options: { plugins: { legend: { display: false } }, cutout: '78%' }
             });
         }
 
-        // СБРОС ДАННЫХ И ВСЕЙ ИСТОРИИ ПРИЛОЖЕНИЯ
         function resetApplicationDatabase() {
-            if(confirm("Вы уверены, что хотите полностью очистить историю, шаблоны изделий, финансовые проводки и сбросить настройки? Это действие необратимо.")) {
+            if(confirm("Вы уверены, что хотите полностью очистить историю, шаблоны изделий, финансовые проводки и сбросить настройки?")) {
                 localStorage.removeItem('masterapp_core_v3');
-                state = {
-                    isFirstLaunch: true,
-                    currentProfession: "Кондитер",
-                    cakeTemplates: [
-                        { id: 1, name: "Торт Свадебный (Кастом)", cost: 3500, price: 9500 },
-                        { id: 2, name: "Бенто-торт Клубничный", cost: 4500, price: 12000 }
-                    ],
-                    transactions: [],
-                    orders: [],
-                    selectedDate: formatDate(new Date())
-                };
-                alert("База данных успешно очищена.");
-                location.reload(); // Перезапуск приложения для инициализации Onboarding экрана
+                localStorage.removeItem(`tg_daily_summary_${formatDate(new Date())}`);
+                location.reload();
             }
         }
 
