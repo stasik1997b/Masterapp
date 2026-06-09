@@ -12,10 +12,9 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
         body {
             font-family: 'Inter', sans-serif;
-            padding-bottom: 100px;
+            padding-bottom: 90px;
             -webkit-tap-highlight-color: transparent;
         }
         .glass {
@@ -25,13 +24,13 @@
         }
         .page {
             display: none;
-            animation: fadeIn 0.25s ease-in-out forwards;
+            animation: fadeIn 0.2s ease-in-out forwards;
         }
         .page.active {
             display: block;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -42,673 +41,524 @@
 
     <div class="max-w-md mx-auto min-h-screen flex flex-col justify-between relative px-4">
         
-        <header class="py-5 flex justify-between items-center border-b border-slate-900 mb-4">
+        <header class="py-4 flex justify-between items-center border-b border-slate-900 mb-3">
             <div>
-                <h1 class="text-2xl font-bold bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text text-transparent">MasterApp Pro</h1>
-                <p class="text-xs text-slate-500 font-medium">Рабочее пространство мастера</p>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text text-transparent">MasterApp Pro</h1>
+                <p class="text-[11px] text-slate-500 font-medium" id="tgUserGreeting">Авторизация...</p>
             </div>
-            <div class="text-xs px-3 py-1.5 rounded-full glass font-medium text-sky-400 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span> 
-                <span id="activeProfBadge">Все сферы</span>
+            <div class="text-xs px-2.5 py-1 rounded-full glass font-medium text-sky-400 flex items-center gap-1.5 border border-sky-500/10">
+                <i class="fa-solid fa-briefcase text-[10px]"></i>
+                <span id="globalProfBadge">Определение...</span>
             </div>
         </header>
 
         <main class="flex-grow">
 
-            <section id="home" class="page active space-y-4">
-                <div class="glass rounded-2xl p-4 flex items-center justify-between relative overflow-hidden group">
-                    <div class="absolute -right-4 -bottom-4 text-slate-800 text-7xl opacity-15 pointer-events-none">
-                        <i class="fa-solid fa-bolt-lightning"></i>
+            <section id="home" class="page active space-y-3.5">
+                <div class="glass rounded-2xl p-4 bg-gradient-to-br from-slate-900/60 to-slate-950/20 border border-slate-900">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block" id="balanceTitle">Текущий баланс</span>
+                    <div class="text-2xl font-bold text-white mt-1" id="mainBalance">0 Р</div>
+                    <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-900">
+                        <div>
+                            <span class="text-[9px] text-slate-500 block uppercase font-bold">Всего заработано</span>
+                            <span class="text-sm font-bold text-emerald-400" id="mainIncome">0 Р</span>
+                        </div>
+                        <div>
+                            <span class="text-[9px] text-slate-500 block uppercase font-bold">Расход / Материалы</span>
+                            <span class="text-sm font-bold text-rose-400" id="mainExpense">0 Р</span>
+                        </div>
                     </div>
-                    <div class="space-y-1 z-10">
-                        <span class="text-[10px] uppercase tracking-wider font-bold text-sky-400">Ближайший заказ</span>
-                        <h3 class="text-base font-semibold text-white" id="homeNextOrderTitle">Заказов пока нет</h3>
-                        <p class="text-xs text-slate-400 flex items-center gap-1" id="homeNextOrderTime">
+                </div>
+
+                <div class="glass rounded-2xl p-3.5 flex items-center justify-between">
+                    <div class="space-y-0.5">
+                        <span class="text-[9px] uppercase tracking-wider font-bold text-sky-400">Следующая запись</span>
+                        <h3 class="text-sm font-semibold text-white" id="nextOrderTitle">Записей нет</h3>
+                        <p class="text-[11px] text-slate-400 flex items-center gap-1" id="nextOrderTime">
                             <i class="fa-regular fa-clock text-sky-400"></i> Свободный график
                         </p>
                     </div>
-                    <button onclick="openPage('calendar')" class="w-9 h-9 rounded-xl bg-slate-900/60 flex items-center justify-center text-slate-400 hover:text-white transition">
+                    <button onclick="openPage('calendar')" class="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center text-slate-400">
                         <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2.5">
-                    <div class="glass rounded-2xl p-3 flex flex-col justify-between">
-                        <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Баланс</span>
-                        <div class="text-sm font-bold text-white mt-1 truncate" id="cardBalance">0 ₽</div>
+                <div class="glass rounded-2xl p-3 space-y-2">
+                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Последние действия по вашей сфере</h4>
+                    <div id="homeRecentLogs" class="space-y-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
+                        </div>
+                </div>
+            </section>
+
+
+            <section id="calendar" class="page space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-bold text-base text-white">График работы и записи</h2>
+                    <span class="text-xs text-sky-400 font-medium">Июнь 2026</span>
+                </div>
+
+                <div class="glass rounded-2xl p-3">
+                    <div class="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-slate-500 uppercase mb-2">
+                        <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
                     </div>
-                    <div class="glass rounded-2xl p-3 flex flex-col justify-between border-l-2 border-emerald-500/40">
-                        <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Доходы</span>
-                        <div class="text-sm font-bold text-emerald-400 mt-1 truncate" id="cardIncome">0 ₽</div>
-                    </div>
-                    <div class="glass rounded-2xl p-3 flex flex-col justify-between border-l-2 border-rose-500/40">
-                        <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Расходы</span>
-                        <div class="text-sm font-bold text-rose-400 mt-1 truncate" id="cardExpense">0 ₽</div>
-                    </div>
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 text-center text-xs">
+                        </div>
                 </div>
 
                 <div class="glass rounded-2xl p-4 space-y-3">
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Быстрая операция</h4>
+                    <div class="flex justify-between items-center border-b border-slate-900 pb-2">
+                        <h4 class="text-xs font-semibold text-slate-300" id="selectedDayLabel">Записи на сегодня</h4>
+                        <button onclick="document.getElementById('addOrderForm').classList.toggle('hidden')" class="text-[11px] text-sky-400 bg-sky-500/5 px-2 py-1 rounded-lg border border-sky-500/10">+ Создать запись</button>
+                    </div>
+
+                    <div id="addOrderForm" class="hidden bg-slate-900/60 p-3 rounded-xl space-y-2 border border-slate-800">
+                        <input id="orderTitle" type="text" placeholder="Имя клиента или описание задачи" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input id="orderTime" type="time" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                            <button onclick="saveNewOrder()" class="bg-sky-500 text-slate-950 text-xs font-bold py-2 rounded-lg">Добавить</button>
+                        </div>
+                    </div>
+
+                    <div id="dayOrdersList" class="space-y-2 max-h-[140px] overflow-y-auto no-scrollbar">
+                        </div>
+                </div>
+            </section><section id="calculator" class="page space-y-3.5">
+                <h2 class="font-bold text-base text-white">Калькулятор и Учет материалов</h2>
+
+                <div class="glass rounded-2xl p-4 space-y-3">
                     <div class="flex gap-2">
-                        <input id="quickAmount" type="number" placeholder="Сумма ₽" class="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-                        <select id="quickType" class="bg-slate-900/80 border border-slate-800 rounded-xl px-2 py-2 text-xs text-slate-300 focus:outline-none">
-                            <option value="income">Доход</option>
-                            <option value="expense">Расход</option>
-                        </select>
-                        <button onclick="addQuickTransaction()" class="bg-sky-500 text-slate-950 font-bold px-4 rounded-xl text-sm hover:bg-sky-400 transition">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
+                        <button onclick="setCalcType('income')" id="btnTypeInc" class="flex-1 py-2 text-xs font-bold rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Доход / Работа</button>
+                        <button onclick="setCalcType('expense')" id="btnTypeExp" class="flex-1 py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400">Расход / Материал</button>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Название позиции или услуги</label>
+                        <input id="calcDesc" type="text" placeholder="Напр., Оплата за заказ или закупка лака" class="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+
+                    <div id="materialCalcBlock" class="hidden grid grid-cols-2 gap-2 p-2.5 bg-slate-950/40 rounded-xl border border-slate-900">
+                        <div>
+                            <label class="text-[9px] font-bold uppercase text-slate-500">Кол-во / Вес</label>
+                            <input id="calcWeight" type="number" step="0.01" placeholder="Напр. 10 или 2.5" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold uppercase text-slate-500">Ед. измерения</label>
+                            <select id="calcUnit" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-300 focus:outline-none">
+                                <option value="шт.">Штуки (шт.)</option>
+                                <option value="кг">Килограммы (кг)</option>
+                                <option value="г">Граммы (г)</option>
+                                <option value="л">Литры (л)</option>
+                                <option value="упак.">Упаковки</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase text-slate-500 block mb-1">Итоговая цена (Р)</label>
+                            <input id="calcAmount" type="number" placeholder="Сумма" class="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="submitCalculatorTransaction()" class="w-full bg-sky-500 text-slate-950 text-xs font-bold py-2.5 rounded-xl hover:bg-sky-400 transition">
+                                <i class="fa-solid fa-square-plus mr-1"></i> Записать в базу
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="space-y-2">
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">Последние транзакции</h4>
-                    <div id="recentTransactionsList" class="space-y-2 max-h-[190px] overflow-y-auto no-scrollbar">
+                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1" id="calcHistoryLabel">Проводки за день</h4>
+                    <div id="calcDayLogs" class="space-y-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
                         </div>
                 </div>
             </section>
 
 
-            <section id="professions" class="page space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-lg text-white">Управление сферами</h2>
-                    <span class="text-xs text-slate-500" id="profCount">15 доступно</span>
-                </div>
-                
-                <div id="professionContextScreen" class="hidden glass rounded-2xl p-4 space-y-4 border border-sky-500/20 bg-slate-900/40">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-2.5">
-                            <div id="ctxProfIcon" class="w-9 h-9 rounded-xl flex items-center justify-center text-sm"></div>
-                            <h3 id="ctxProfTitle" class="font-bold text-base text-white">Название</h3>
-                        </div>
-                        <button onclick="closeProfContext()" class="text-xs text-slate-400 hover:text-white bg-slate-800 px-2.5 py-1 rounded-lg">Назад</button>
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <span class="text-xs font-medium text-slate-400">Специфичные категории расходов:</span>
-                        <div id="ctxDynamicTags" class="flex flex-wrap gap-1.5"></div>
-                    </div>
+            <section id="finance" class="page space-y-3.5">
+                <h2 class="font-bold text-base text-white">Финансовый отчет</h2>
 
-                    <div class="bg-slate-950/60 p-3 rounded-xl space-y-2 border border-slate-900">
-                        <span class="text-[11px] uppercase text-slate-500 font-bold">Добавить операцию по сфере</span>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input id="ctxAmount" type="number" placeholder="Сумма ₽" class="bg-slate-900 rounded-lg p-2 text-xs text-white focus:outline-none">
-                            <input id="ctxDesc" type="text" placeholder="Описание / Заметка" class="bg-slate-900 rounded-lg p-2 text-xs text-white focus:outline-none">
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="addCtxTransaction('income')" class="w-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold py-2 rounded-lg hover:bg-emerald-500/30 transition">+ Доход</button>
-                            <button onclick="addCtxTransaction('expense')" class="w-full bg-rose-500/20 text-rose-400 text-xs font-semibold py-2 rounded-lg hover:bg-rose-500/30 transition">- Расход</button>
-                        </div>
-                    </div>
+                <div class="flex gap-1 bg-slate-900 p-1 rounded-xl border border-slate-900">
+                    <button onclick="changePeriod('week', this)" class="period-tab flex-1 text-center py-1.5 text-[11px] rounded-lg bg-sky-500 text-slate-950 font-medium">Неделя</button>
+                    <button onclick="changePeriod('month', this)" class="period-tab flex-1 text-center py-1.5 text-[11px] rounded-lg text-slate-400">Месяц</button>
+                    <button onclick="changePeriod('quarter', this)" class="period-tab flex-1 text-center py-1.5 text-[11px] rounded-lg text-slate-400">Квартал</button>
+                    <button onclick="changePeriod('all', this)" class="period-tab flex-1 text-center py-1.5 text-[11px] rounded-lg text-slate-400">Всё время</button>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2" id="profGrid">
-                    </div>
-            </section>
-<section id="calendar" class="page space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-lg text-white">Календарь расписания</h2>
-                    <span class="text-xs text-sky-400 font-medium" id="currentMonthYear">Июнь 2026</span>
-                </div>
-
-                <div class="glass rounded-2xl p-3">
-                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-                        <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
-                    </div>
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 text-center text-sm">
-                        </div>
-                </div>
-
-                <div class="glass rounded-2xl p-4 space-y-3">
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400" id="selectedDayTitle">События дня</h4>
-                        <span class="text-[11px] text-sky-400 cursor-pointer hover:underline" onclick="toggleAddOrderForm()">+ Добавить заказ</span>
-                    </div>
-
-                    <div id="addOrderForm" class="hidden bg-slate-900/60 p-3 rounded-xl space-y-2 border border-slate-800">
-                        <input id="orderTitle" type="text" placeholder="Что нужно сделать? (напр. Монтаж кухни)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-sky-500">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input id="orderTime" type="time" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
-                            <button onclick="saveNewOrder()" class="bg-sky-500 text-slate-950 text-xs font-bold py-2 rounded-lg hover:bg-sky-400 transition">Сохранить</button>
-                        </div>
-                    </div>
-
-                    <div id="dayEventsList" class="space-y-2 max-h-[150px] overflow-y-auto no-scrollbar">
-                        </div>
-                </div>
-            </section>
-
-
-            <section id="finance" class="page space-y-4">
-                <h2 class="font-bold text-lg text-white">Аналитика доходов</h2>
-
-                <div class="flex gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-900 overflow-x-auto no-scrollbar">
-                    <button onclick="setFinancePeriod('week', this)" class="period-btn flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg bg-sky-500 text-slate-950 transition">Неделя</button>
-                    <button onclick="setFinancePeriod('month', this)" class="period-btn flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition">Месяц</button>
-                    <button onclick="setFinancePeriod('quarter', this)" class="period-btn flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition">Квартал</button>
-                    <button onclick="setFinancePeriod('year', this)" class="period-btn flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition">Год</button>
-                    <button onclick="setFinancePeriod('all', this)" class="period-btn flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition">Все</button>
-                </div>
-
-                <div class="glass rounded-2xl p-4 flex flex-col items-center justify-center relative min-h-[220px]">
-                    <div class="w-full max-w-[180px] mx-auto">
+                <div class="glass rounded-2xl p-4 flex flex-col items-center justify-center relative min-h-[200px]">
+                    <div class="w-full max-w-[170px] mx-auto">
                         <canvas id="financeChart"></canvas>
-                    </div>
-                    <div id="chartNoData" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm rounded-2xl hidden flex items-center justify-center text-xs text-slate-400">
-                        Нет данных за выбранный период
-                    </div>
-                </div>
-
-                <div class="glass rounded-2xl p-4 space-y-2">
-                    <div class="flex justify-between text-xs text-slate-400">
-                        <span>Эффективность (Доход / Расход)</span>
-                        <span id="periodEfficiency" class="text-emerald-400 font-semibold">0%</span>
-                    </div>
-                    <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
-                        <div id="efficiencyProgress" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all" style="width: 0%"></div>
                     </div>
                 </div>
             </section>
 
 
             <section id="profile" class="page space-y-4">
-                <h2 class="font-bold text-lg text-white">Личный кабинет</h2>
+                <h2 class="font-bold text-base text-white">Управление аккаунтом</h2>
 
                 <div class="glass rounded-2xl p-4 space-y-4">
-                    <div class="flex items-center gap-3.5 pb-4 border-b border-slate-900">
-                        <div class="relative group">
-                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-xl text-white font-bold shadow-lg shadow-sky-500/10" id="profileAvatar">
-                                <i class="fa-solid fa-user-gear"></i>
-                            </div>
+                    <div class="flex items-center gap-3 pb-3 border-b border-slate-900">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-lg font-bold text-white shadow-lg">
+                            <i class="fa-solid fa-user-tie"></i>
                         </div>
-                        <div class="space-y-0.5">
-                            <div class="flex items-center gap-1.5">
-                                <span class="font-bold text-base text-white" id="lblProfileName">Мастер</span>
-                                <span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full font-bold border border-amber-500/20" id="premiumStatusBadge">Free</span>
-                            </div>
-                            <p class="text-xs text-slate-400" id="lblProfileProf">Сфера не выбрана</p>
+                        <div>
+                            <h3 class="font-bold text-sm text-white" id="profileName">Мастер</h3>
+                            <p class="text-xs text-sky-400" id="profileProfSub">Профессия</p>
                         </div>
                     </div>
 
-                    <div class="space-y-2.5">
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Ваше имя</label>
-                            <input id="profileName" type="text" placeholder="Введите имя" class="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 mt-1" oninput="updateProfileData()">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Основное мастерство</label>
-                            <select id="profileProfession" class="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-sky-500 mt-1" onchange="updateProfileData()">
-                                </select>
-                        </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-0.5">Ваша основная профессия</label>
+                        <select id="profileProfessionSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500" onchange="changeMainProfession()">
+                            <option value="Сборщик мебели">Сборщик мебели</option>
+                            <option value="Электрик">Электрик</option>
+                            <option value="Сантехник">Сантехник</option>
+                            <option value="Автомеханик">Автомеханик</option>
+                            <option value="Плиточник">Плиточник</option>
+                            <option value="Отделочник">Отделочник</option>
+                            <option value="Барбер">Барбер</option>
+                            <option value="Фотограф">Фотограф</option>
+                            <option value="Клинер">Клинер</option>
+                            <option value="Репетитор">Репетитор</option>
+                            <option value="Массажист">Массажист</option>
+                            <option value="Кондитер">Кондитер</option>
+                            <option value="Повар">Повар</option>
+                        </select>
+                        <p class="text-[10px] text-slate-500 px-0.5">Внимание: все финансовые вкладки и записи будут автоматически перенастроены под эту сферу деятельности.</p>
                     </div>
 
                     <div class="pt-2 space-y-2">
-                        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-1">Резервное копирование и отчеты</label>
+                        <label class="text-[10px] font-bold uppercase text-slate-400 block px-0.5">Резервное копирование данных (Excel)</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="exportExcel()" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-2 transition">
-                                <i class="fa-regular fa-file-excel text-sm"></i> Экспорт Excel
+                            <button onclick="exportToExcel()" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                                <i class="fa-regular fa-file-excel"></i> Экспорт
                             </button>
-                            <label class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer text-center">
-                                <i class="fa-solid fa-cloud-arrow-up text-sm"></i> Импорт Excel
+                            <label class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer text-center">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Импорт
                                 <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls">
                             </label>
                         </div>
                     </div>
 
-                    <button id="btnPremiumTrigger" onclick="showPremium()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-bold rounded-xl p-3 text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-amber-500/10">
-                        <i class="fa-solid fa-crown"></i> Активировать Premium подписку
+                    <button onclick="triggerPayment()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold rounded-xl p-2.5 text-xs flex items-center justify-center gap-2 transition active:scale-98">
+                        <i class="fa-solid fa-credit-card"></i> Подключить Premium (Тест платежа)
                     </button>
                 </div>
             </section>
 
         </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-900 z-40 safe-bottom">
-            <div class="max-w-md mx-auto grid grid-cols-5 py-2.5 text-center">
-                <button onclick="openPage('home')" id="nav-home" class="flex flex-col items-center gap-1 text-sky-400 transition">
-                    <i class="fa-solid fa-house text-base"></i>
-                    <span class="text-[9px] font-medium">Главная</span>
+        <nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-900 z-40">
+            <div class="max-w-md mx-auto grid grid-cols-5 py-2">
+                <button onclick="openPage('home')" id="nav-home" class="flex flex-col items-center gap-1 text-sky-400">
+                    <i class="fa-solid fa-house text-sm"></i><span class="text-[9px]">Обзор</span>
                 </button>
-                <button onclick="openPage('professions')" id="nav-professions" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition">
-                    <i class="fa-solid fa-briefcase text-base"></i>
-                    <span class="text-[9px] font-medium">Сферы</span>
+                <button onclick="openPage('calendar')" id="nav-calendar" class="flex flex-col items-center gap-1 text-slate-500">
+                    <i class="fa-solid fa-calendar text-sm"></i><span class="text-[9px]">Записи</span>
                 </button>
-                <button onclick="openPage('calendar')" id="nav-calendar" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition">
-                    <i class="fa-solid fa-calendar-days text-base"></i>
-                    <span class="text-[9px] font-medium">Календарь</span>
+                <button onclick="openPage('calculator')" id="nav-calculator" class="flex flex-col items-center gap-1 text-slate-500">
+                    <i class="fa-solid fa-calculator text-sm"></i><span class="text-[9px]">Учет</span>
                 </button>
-                <button onclick="openPage('finance')" id="nav-finance" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition">
-                    <i class="fa-solid fa-chart-pie text-base"></i>
-                    <span class="text-[9px] font-medium">Финансы</span>
+                <button onclick="openPage('finance')" id="nav-finance" class="flex flex-col items-center gap-1 text-slate-500">
+                    <i class="fa-solid fa-chart-pie text-sm"></i><span class="text-[9px]">Отчеты</span>
                 </button>
-                <button onclick="openPage('profile')" id="nav-profile" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition">
-                    <i class="fa-solid fa-user-astronaut text-base"></i>
-                    <span class="text-[9px] font-medium">Профиль</span>
+                <button onclick="openPage('profile')" id="nav-profile" class="flex flex-col items-center gap-1 text-slate-500">
+                    <i class="fa-solid fa-user-gear text-sm"></i><span class="text-[9px]">Профиль</span>
                 </button>
             </div>
         </nav>
 
-        <div id="premiumModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 w-full max-w-xs space-y-4 shadow-2xl relative">
-                <button onclick="closePremium()" class="absolute right-3 top-3 text-slate-500 hover:text-white transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="text-center space-y-1">
-                    <div class="w-10 h-10 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg mx-auto border border-amber-500/20">
-                        <i class="fa-solid fa-crown"></i>
-                    </div>
-                    <h3 class="font-bold text-base text-white">MasterApp Premium</h3>
-                    <p class="text-[11px] text-slate-400">Откройте безлимитный экспорт, автобэкапы и продвинутые графики</p>
-                </div>
-
-                <div class="space-y-2" id="premiumTariffs">
-                    <button onclick="selectTariff(this, 299)" class="w-full bg-slate-950/80 hover:bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-left text-xs flex justify-between items-center transition group">
-                        <span class="text-slate-300">1 месяц</span>
-                        <span class="font-bold text-amber-400 group-hover:scale-105 transition-transform">299 ₽</span>
-                    </button>
-                    <button onclick="selectTariff(this, 1490)" class="w-full bg-slate-950/80 hover:bg-slate-950 border border-amber-500/30 p-2.5 rounded-xl text-left text-xs flex justify-between items-center transition relative group">
-                        <span class="absolute -top-2 right-3 text-[8px] bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Выгода</span>
-                        <span class="text-slate-300">6 месяцев</span>
-                        <span class="font-bold text-amber-400 group-hover:scale-105 transition-transform">1 490 ₽</span>
-                    </button>
-                    <button onclick="selectTariff(this, 2490)" class="w-full bg-slate-950/80 hover:bg-slate-950 border border-slate-800 p-2.5 rounded-xl text-left text-xs flex justify-between items-center transition group">
-                        <span class="text-slate-300">12 месяцев</span>
-                        <span class="font-bold text-amber-400 group-hover:scale-105 transition-transform">2 490 ₽</span>
-                    </button>
-                </div>
-
-                <button onclick="activatePremium()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold rounded-xl py-2.5 text-xs hover:from-amber-400 hover:to-yellow-300 transition">
-                    Оплатить тариф
-                </button>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram?.WebApp;
         if (tg) {
             tg.ready();
             tg.expand();
-            if (tg.backgroundColor) document.body.style.backgroundColor = tg.backgroundColor;
         }
 
-        // Общая база данных приложения в LocalStorage
-        let appState = JSON.parse(localStorage.getItem('masterapp_db')) || {
-            profile: { name: tg?.initDataUnsafe?.user?.first_name || "Мастер", profession: "Сборщик мебели", isPremium: false },
+        // База данных приложения в LocalStorage
+        let state = JSON.parse(localStorage.getItem('masterapp_pro_db')) || {
+            currentProfession: "Сборщик мебели",
             transactions: [
-                { id: 1, date: "2026-06-08", type: "income", amount: 12000, desc: "Сборка гарнитура", prof: "Сборщик мебели" },
-                { id: 2, date: "2026-06-09", type: "expense", amount: 1500, desc: "Покупка петель и фурнитуры", prof: "Сборщик мебели" }
+                { id: 1, date: "2026-06-08", type: "income", amount: 7500, desc: "Выполнение заказа", weight: "", unit: "", prof: "Сборщик мебели" },
+                { id: 2, date: "2026-06-09", type: "expense", amount: 1200, desc: "Мебельная фурнитура и крепеж", weight: "15", unit: "шт.", prof: "Сборщик мебели" }
             ],
             orders: [
-                { id: 101, date: "2026-06-10", time: "11:00", title: "Монтаж встроенной кухни", prof: "Сборщик мебели" }
+                { id: 101, date: "2026-06-09", time: "14:00", title: "Клиент: Сборка шкафа-купе" }
             ],
-            currentProfessionContext: null,
             selectedDate: "2026-06-09",
-            financePeriod: "month"
+            activePeriod: "month"
         };
 
-        // Справочник всех 15 профессий, их иконок, цветов и умных тегов
-        const professionsData = {
-            "Сборщик мебели": { icon: "fa-couch", color: "text-amber-400", bg: "bg-amber-500/10", tags: ["Фурнитура", "Крепеж", "Доставка", "Расходники", "Новый инструмент"] },
-            "Электрик": { icon: "fa-plug", color: "text-yellow-400", bg: "bg-yellow-500/10", tags: ["Кабель", "Автоматы", "Подрозетники", "Клеммы", "Изолента"] },
-            "Сантехник": { icon: "fa-droplet", color: "text-sky-400", bg: "bg-sky-500/10", tags: ["Трубы", "Смеситель", "Фитинги", "Герметик", "Прокладки"] },
-            "Автомеханик": { icon: "fa-screwdriver-wrench", color: "text-orange-400", bg: "bg-orange-500/10", tags: ["Запчасти", "Масло", "Фильтры", "Тормозная жидкость"] },
-            "Плиточник": { icon: "fa-border-all", color: "text-teal-400", bg: "bg-teal-500/10", tags: ["Плиточный клей", "Затирка", "СВП системы", "Алмазные диски"] },
-            "Отделочник": { icon: "fa-paint-roller", color: "text-lime-400", bg: "bg-lime-500/10", tags: ["Шпатлевка", "Грунтовка", "Краска", "Валики/Кисти", "Правило"] },
-            "Барбер": { icon: "fa-scissors", color: "text-stone-300", bg: "bg-stone-500/10", tags: ["Шампуни", "Воск/Помада", "Лезвия", "Дезинфекция", "Стайлинг"] },
-            "Фотограф": { icon: "fa-camera", color: "text-indigo-400", bg: "bg-indigo-500/10", tags: ["Аренда студии", "Ретушь", "Техника", "Реклама", "Транспорт"] },
-            "Клинер": { icon: "fa-sparkles", color: "text-cyan-400", bg: "bg-cyan-500/10", tags: ["Бытовая химия", "Тряпки/Губки", "Пакеты", "Химчистка"] },
-            "Репетитор": { icon: "fa-graduation-cap", color: "text-violet-400", bg: "bg-violet-500/10", tags: ["Учебные материалы", "Подписка Zoom", "Канцелярия"] },
-            "Массажист": { icon: "fa-hand-sparkles", color: "text-emerald-400", bg: "bg-emerald-500/10", tags: ["Масла", "Одноразовые простыни", "Ароматерапия"] },
-            "Разработчик": { icon: "fa-code", color: "text-blue-400", bg: "bg-blue-500/10", tags: ["Сервер / Хостинг", "API сервисы", "Софт / Подписки"] },
-            "Дизайнер": { icon: "fa-palette", color: "text-pink-400", bg: "bg-pink-500/10", tags: ["Шрифты / Стоки", "Плагины", "Курсы / Референсы"] },
-            "Маркетолог": { icon: "fa-rectangle-ad", color: "text-purple-400", bg: "bg-purple-500/10", tags: ["Бюджет на рекламу", "Сервисы парсинга", "Прокси"] },
-            "Кондитер": { icon: "fa-cake-candles", color: "text-rose-400", bg: "bg-rose-500/10", tags: ["Ингредиенты", "Формы / Упаковка", "Декор", "Красители"] }
-        };
-
+        let currentCalcType = "income";
         let financeChartInstance = null;
 
         function saveState() {
-            localStorage.setItem('masterapp_db', JSON.stringify(appState));
-            updateAllUI();
+            localStorage.setItem('masterapp_pro_db', JSON.stringify(state));
+            updateUI();
         }
 
-        // Роутинг страниц
-        function openPage(pageId) {
+        function openPage(id) {
             document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-            document.getElementById(pageId).classList.add("active");
-
+            document.getElementById(id).classList.add("active");
             document.querySelectorAll("nav button").forEach(btn => {
                 btn.classList.remove("text-sky-400");
                 btn.classList.add("text-slate-500");
             });
-            const activeNav = document.getElementById(`nav-${pageId}`);
-            if (activeNav) {
-                activeNav.classList.remove("text-slate-500");
-                activeNav.classList.add("text-sky-400");
-            }
-            if(pageId === 'finance') renderFinanceChart();
+            document.getElementById(`nav-${id}`).classList.remove("text-slate-500");
+            document.getElementById(`nav-${id}`).classList.add("text-sky-400");
+            if (id === 'finance') renderChart();
         }
 
-        // Инициализация при запуске
         window.addEventListener('DOMContentLoaded', () => {
-            initProfessions();
-            initCalendar();
-            updateAllUI();
+            // Инициализация имени пользователя из Telegram
+            const username = tg?.initDataUnsafe?.user?.first_name || "Мастер";
+            document.getElementById('tgUserGreeting').textContent = `Привет, ${username}!`;
+            document.getElementById('profileName').textContent = username;
+
+            document.getElementById('profileProfessionSelect').value = state.currentProfession;
+            
+            buildCalendar();
+            updateUI();
         });
 
-        function updateAllUI() {
-            calculateFinancials();
-            renderRecentTransactions();
-            renderCalendarDays();
-            renderCurrentDayOrders();
-            updateHomeNextOrderWidget();
+        function updateUI() {
+            document.getElementById('globalProfBadge').textContent = state.currentProfession;
+            document.getElementById('profileProfSub').textContent = state.currentProfession;
             
-            // Синхронизация данных профиля
-            document.getElementById('profileName').value = appState.profile.name;
-            document.getElementById('lblProfileName').textContent = appState.profile.name;
-            document.getElementById('lblProfileProf').textContent = appState.profile.profession;
-            document.getElementById('profileProfession').value = appState.profile.profession;
-            
-            if (appState.profile.isPremium) {
-                document.getElementById('premiumStatusBadge').textContent = "Pro";
-                document.getElementById('premiumStatusBadge').className = "text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-bold border border-emerald-500/20";
-                document.getElementById('btnPremiumTrigger').className = "hidden";
-            }
+            calculateFinanceCards();
+            renderHomeRecentLogs();
+            renderCalendarDaysIndicators();
+            renderDayOrders();
+            renderCalcDayLogs();
+            updateNextOrderWidget();
         }
 
-        // Расчет финансов на главной
-        function calculateFinancials() {
+        // Смена профессии в Профиле
+        function changeMainProfession() {
+            state.currentProfession = document.getElementById('profileProfessionSelect').value;
+            saveState();
+        }
+
+        // Калькуляция финансов по ТЕКУЩЕЙ профессии
+        function calculateFinanceCards() {
             let inc = 0, exp = 0;
-            appState.transactions.forEach(t => {
+            state.transactions.filter(t => t.prof === state.currentProfession).forEach(t => {
                 if (t.type === 'income') inc += Number(t.amount);
                 else exp += Number(t.amount);
             });
-            document.getElementById('cardBalance').textContent = `${inc - exp} ₽`;
-            document.getElementById('cardIncome').textContent = `${inc} ₽`;
-            document.getElementById('cardExpense').textContent = `${exp} ₽`;
+            document.getElementById('mainBalance').textContent = `${inc - exp} Р`;
+            document.getElementById('mainIncome').textContent = `${inc} Р`;
+            document.getElementById('mainExpense').textContent = `${exp} Р`;
         }
 
-        // Лента транзакций на главной
-        function renderRecentTransactions() {
-            const list = document.getElementById('recentTransactionsList');
-            list.innerHTML = '';
-            if (appState.transactions.length === 0) {
-                list.innerHTML = `<div class="text-xs text-slate-600 text-center py-4">Операций пока не зарегистрировано</div>`;
+        // Переключение типов в калькуляторе
+        function setCalcType(type) {
+            currentCalcType = type;
+            const bInc = document.getElementById('btnTypeInc');
+            const bExp = document.getElementById('btnTypeExp');
+            const mBlock = document.getElementById('materialCalcBlock');
+
+            if (type === 'income') {
+                bInc.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                bExp.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400";
+                mBlock.classList.add('hidden');
+            } else {
+                bExp.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30";
+                bInc.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400";
+                mBlock.classList.remove('hidden');
+            }
+        }
+
+        // Добавление данных из калькулятора
+        function submitCalculatorTransaction() {
+            const desc = document.getElementById('calcDesc').value;
+            const amount = document.getElementById('calcAmount').value;
+            const weight = document.getElementById('calcWeight').value;
+            const unit = document.getElementById('calcUnit').value;
+
+            if (!desc || !amount || amount <= 0) return;
+
+            state.transactions.push({
+                id: Date.now(),
+                date: state.selectedDate,
+                type: currentCalcType,
+                amount: Number(amount),
+                desc: desc,
+                weight: currentCalcType === 'expense' ? weight : "",
+                unit: currentCalcType === 'expense' ? unit : "",
+                prof: state.currentProfession
+            });
+
+            document.getElementById('calcDesc').value = '';
+            document.getElementById('calcAmount').value = '';
+            document.getElementById('calcWeight').value = '';
+            saveState();
+        }
+
+        // Списки и ленты
+        function renderHomeRecentLogs() {
+            const box = document.getElementById('homeRecentLogs');
+            box.innerHTML = '';
+            const list = state.transactions.filter(t => t.prof === state.currentProfession);
+            if (list.length === 0) {
+                box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Операций ещё нет</div>`;
                 return;
             }
-            [...appState.transactions].reverse().slice(0, 5).forEach(t => {
+            [...list].reverse().slice(0, 4).forEach(t => {
                 const isInc = t.type === 'income';
-                const pData = professionsData[t.prof] || { icon: "fa-wallet", color: "text-slate-400" };
-                list.innerHTML += `
-                    <div class="glass rounded-xl p-2.5 flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center ${pData.color}">
-                                <i class="fa-solid ${pData.icon}"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-white">${t.desc || 'Без описания'}</div>
-                                <div class="text-[10px] text-slate-500">${t.prof} • ${t.date}</div>
-                            </div>
-                        </div>
-                        <span class="font-bold ${isInc ? 'text-emerald-400' : 'text-rose-400'}">${isInc ? '+' : '-'}${t.amount} ₽</span>
+                box.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-900/40 p-2 rounded-xl text-xs">
+                        <span class="text-slate-300 truncate max-w-[200px]">${t.desc} ${t.weight ? `(${t.weight} ${t.unit})` : ''}</span>
+                        <span class="${isInc ? 'text-emerald-400' : 'text-rose-400'} font-bold">${isInc ? '+' : '-'}${t.amount} Р</span>
                     </div>
                 `;
             });
         }
 
-        // Добавление быстрой транзакции с главной
-        function addQuickTransaction() {
-            const amt = document.getElementById('quickAmount').value;
-            const type = document.getElementById('quickType').value;
-            if(!amt || amt <= 0) return;
-
-            appState.transactions.push({
-                id: Date.now(),
-                date: new Date().toISOString().split('T')[0],
-                type: type,
-                amount: Number(amt),
-                desc: type === 'income' ? 'Прямой доход' : 'Расход на задачи',
-                prof: appState.profile.profession
-            });
-            document.getElementById('quickAmount').value = '';
-            saveState();
-        }
-
-        // Раздел профессий: генерация сетки
-        function initProfessions() {
-            const grid = document.getElementById('profGrid');
-            const select = document.getElementById('profileProfession');
-            grid.innerHTML = '';
-            select.innerHTML = '';
-
-            Object.keys(professionsData).forEach(p => {
-                const data = professionsData[p];
-                grid.innerHTML += `
-                    <div onclick="openProfContext('${p}')" class="glass rounded-2xl p-3.5 flex flex-col justify-between items-start cursor-pointer hover:border-slate-700 transition active:scale-98">
-                        <div class="w-8 h-8 rounded-xl ${data.bg} ${data.color} flex items-center justify-center text-sm mb-3">
-                            <i class="fa-solid ${data.icon}"></i>
-                        </div>
-                        <div>
-                            <div class="font-semibold text-xs text-white">${p}</div>
-                            <span class="text-[9px] text-slate-500">Нажми для учета</span>
-                        </div>
-                    </div>
-                `;
-                select.innerHTML += `<option value="${p}">${p}</option>`;
-            });
-        }
-
-        // Контекстное меню конкретной профессии
-        function openProfContext(profName) {
-            appState.currentProfessionContext = profName;
-            document.getElementById('profGrid').classList.add('hidden');
-            const screen = document.getElementById('professionContextScreen');
-            screen.classList.remove('hidden');
-
-            const pData = professionsData[profName];
-            document.getElementById('ctxProfTitle').textContent = profName;
-            document.getElementById('ctxProfIcon').className = `w-9 h-9 rounded-xl ${pData.bg} ${pData.color} flex items-center justify-center text-sm`;
-            document.getElementById('ctxProfIcon').innerHTML = `<i class="fa-solid ${pData.icon}"></i>`;
+        function renderCalcDayLogs() {
+            const box = document.getElementById('calcDayLogs');
+            const dayNum = state.selectedDate.split('-')[2];
+            document.getElementById('calcHistoryLabel').textContent = `Проводки за ${dayNum} июня`;
+            box.innerHTML = '';
             
-            document.getElementById('activeProfBadge').textContent = profName;
-
-            // Вывод умных тегов
-            const tagsBox = document.getElementById('ctxDynamicTags');
-            tagsBox.innerHTML = '';
-            pData.tags.forEach(t => {
-                tagsBox.innerHTML += `
-                    <button onclick="document.getElementById('ctxDesc').value='${t}'" class="bg-slate-900 hover:bg-slate-800 text-[10px] text-slate-300 px-2 py-1 rounded-md border border-slate-800 transition">
-                        ${t}
-                    </button>
+            const list = state.transactions.filter(t => t.date === state.selectedDate && t.prof === state.currentProfession);
+            if(list.length === 0) {
+                box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Нет записей за этот день</div>`;
+                return;
+            }
+            list.forEach(t => {
+                const isInc = t.type === 'income';
+                box.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-900/80 px-3 py-2 rounded-xl text-xs border border-slate-900">
+                        <div>
+                            <span class="text-white block font-medium">${t.desc}</span>
+                            ${t.weight ? `<span class="text-[10px] text-slate-500">Кол-во: ${t.weight} ${t.unit}</span>` : ''}
+                        </div>
+                        <span class="${isInc ? 'text-emerald-400' : 'text-rose-400'} font-bold">${isInc ? '+' : '-'}${t.amount} Р</span>
+                    </div>
                 `;
             });
         }
 
-        function closeProfContext() {
-            appState.currentProfessionContext = null;
-            document.getElementById('professionContextScreen').classList.add('hidden');
-            document.getElementById('profGrid').classList.remove('hidden');
-            document.getElementById('activeProfBadge').textContent = "Все сферы";
-        }
-
-        function addCtxTransaction(type) {
-            const amt = document.getElementById('ctxAmount').value;
-            const desc = document.getElementById('ctxDesc').value;
-            if(!amt || amt <= 0) return;
-
-            appState.transactions.push({
-                id: Date.now(),
-                date: appState.selectedDate,
-                type: type,
-                amount: Number(amt),
-                desc: desc || `Операция по ${appState.currentProfessionContext}`,
-                prof: appState.currentProfessionContext
-            });
-
-            document.getElementById('ctxAmount').value = '';
-            document.getElementById('ctxDesc').value = '';
-            saveState();
-        }
-
-        // Раздел: Календарь
-        function initCalendar() {
-            appState.selectedDate = "2026-06-09"; 
-        }
-
-        function renderCalendarDays() {
+        // Календарь и записи
+        function buildCalendar() {
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
-            
-            // Рендерим фиксированный июнь 2026 года для примера (начинается в Понедельник, 30 дней)
             for (let i = 1; i <= 30; i++) {
-                const currentLoopDate = `2026-06-${i.toString().padStart(2, '0')}`;
-                const isSelected = appState.selectedDate === currentLoopDate;
-                
-                // Проверка транзакций/заказов на этот день для вывода индикатора
-                const hasActivity = appState.transactions.some(t => t.date === currentLoopDate) || appState.orders.some(o => o.date === currentLoopDate);
-
+                const dayStr = `2026-06-${i.toString().padStart(2, '0')}`;
                 grid.innerHTML += `
-                    <div onclick="selectCalendarDay('${currentLoopDate}')" class="aspect-square flex flex-col items-center justify-center rounded-xl cursor-pointer transition relative ${isSelected ? 'bg-sky-500 text-slate-950 font-bold shadow-lg shadow-sky-500/20' : 'glass hover:bg-slate-900 text-white'}">
+                    <div onclick="selectDay('${dayStr}')" id="cal-day-${i}" class="aspect-square flex flex-col items-center justify-center rounded-xl cursor-pointer transition relative glass text-white text-xs">
                         <span>${i}</span>
-                        ${hasActivity && !isSelected ? '<span class="w-1 h-1 bg-sky-400 rounded-full absolute bottom-1"></span>' : ''}
+                        <span class="indicator w-1 h-1 bg-sky-400 rounded-full absolute bottom-1 hidden"></span>
                     </div>
                 `;
             }
+            selectDay(state.selectedDate);
         }
 
-        function selectCalendarDay(dateStr) {
-            appState.selectedDate = dateStr;
-            const dayNum = dateStr.split('-')[2];
-            document.getElementById('selectedDayTitle').textContent = `События: ${dayNum} июня`;
+        function selectDay(dayStr) {
+            state.selectedDate = dayStr;
+            const dayNum = Number(dayStr.split('-')[2]);
+            document.getElementById('selectedDayLabel').textContent = `Записи на ${dayNum} июня`;
+            
+            for (let i = 1; i <= 30; i++) {
+                const el = document.getElementById(`cal-day-${i}`);
+                if(el) el.className = "aspect-square flex flex-col items-center justify-center rounded-xl cursor-pointer transition relative glass text-white text-xs";
+            }
+            const activeEl = document.getElementById(`cal-day-${dayNum}`);
+            if(activeEl) activeEl.className = "aspect-square flex flex-col items-center justify-center rounded-xl cursor-pointer transition relative bg-sky-500 text-slate-950 font-bold shadow-md shadow-sky-500/20 text-xs";
+            
             saveState();
         }
 
-        function toggleAddOrderForm() {
-            const f = document.getElementById('addOrderForm');
-            f.classList.toggle('hidden');
+        function renderCalendarDaysIndicators() {
+            for (let i = 1; i <= 30; i++) {
+                const dayStr = `2026-06-${i.toString().padStart(2, '0')}`;
+                const hasOrder = state.orders.some(o => o.date === dayStr);
+                const el = document.getElementById(`cal-day-${i}`);
+                if(el) {
+                    const ind = el.querySelector('.indicator');
+                    if(ind) {
+                        if(hasOrder) ind.classList.remove('hidden');
+                        else ind.classList.add('hidden');
+                    }
+                }
+            }
         }
 
         function saveNewOrder() {
             const title = document.getElementById('orderTitle').value;
             const time = document.getElementById('orderTime').value;
-            if(!title) return;
+            if (!title) return;
 
-            appState.orders.push({
+            state.orders.push({
                 id: Date.now(),
-                date: appState.selectedDate,
+                date: state.selectedDate,
                 time: time || "00:00",
-                title: title,
-                prof: appState.profile.profession
+                title: title
             });
-
             document.getElementById('orderTitle').value = '';
-            document.getElementById('orderTime').value = '';
             document.getElementById('addOrderForm').classList.add('hidden');
             saveState();
         }
 
-        function renderCurrentDayOrders() {
-            const box = document.getElementById('dayEventsList');
+        function renderDayOrders() {
+            const box = document.getElementById('dayOrdersList');
             box.innerHTML = '';
-            
-            const dayOrders = appState.orders.filter(o => o.date === appState.selectedDate);
-            const dayFinances = appState.transactions.filter(t => t.date === appState.selectedDate);
-
-            if(dayOrders.length === 0 && dayFinances.length === 0) {
-                box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">На этот день ничего не запланировано</div>`;
+            const dayList = state.orders.filter(o => o.date === state.selectedDate);
+            if(dayList.length === 0) {
+                box.innerHTML = `<div class="text-[11px] text-slate-600 text-center py-2">Свободный день, записей нет</div>`;
                 return;
             }
-
-            dayOrders.forEach(o => {
+            dayList.sort((a,b) => a.time.localeCompare(b.time)).forEach(o => {
                 box.innerHTML += `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between text-xs">
                         <div class="flex items-center gap-2">
-                            <i class="fa-regular fa-clock text-sky-400"></i>
+                            <i class="fa-regular fa-clock text-sky-400 text-[11px]"></i>
                             <div>
                                 <span class="font-medium text-white">${o.title}</span>
-                                <span class="text-[10px] text-slate-500 block">${o.time} • ${o.prof}</span>
+                                <span class="text-[10px] text-slate-500 block">${o.time}</span>
                             </div>
                         </div>
                         <button onclick="deleteOrder(${o.id})" class="text-slate-600 hover:text-rose-400 transition"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                 `;
             });
-
-            dayFinances.forEach(f => {
-                box.innerHTML += `
-                    <div class="bg-slate-900/40 rounded-xl p-2 flex justify-between items-center text-[11px]">
-                        <span class="text-slate-400"><i class="fa-solid fa-coins mr-1"></i> ${f.desc}</span>
-                        <span class="${f.type === 'income' ? 'text-emerald-400' : 'text-rose-400'} font-bold">${f.type === 'income' ? '+' : '-'}${f.amount} ₽</span>
-                    </div>
-                `;
-            });
         }
 
         function deleteOrder(id) {
-            appState.orders = appState.orders.filter(o => o.id !== id);
+            state.orders = state.orders.filter(o => o.id !== id);
             saveState();
         }
 
-        function updateHomeNextOrderWidget() {
-            const futureOrders = appState.orders.sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
-            if(futureOrders.length > 0) {
-                document.getElementById('homeNextOrderTitle').textContent = futureOrders[0].title;
-                document.getElementById('homeNextOrderTime').innerHTML = `<i class="fa-regular fa-clock text-sky-400"></i> ${futureOrders[0].date} в ${futureOrders[0].time}`;
+        function updateNextOrderWidget() {
+            const future = state.orders.filter(o => o.date >= "2026-06-09").sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+            if(future.length > 0) {
+                document.getElementById('nextOrderTitle').textContent = future[0].title;
+                document.getElementById('nextOrderTime').innerHTML = `<i class="fa-regular fa-clock text-sky-400"></i> ${future[0].date.split('-')[2]} июня в ${future[0].time}`;
             } else {
-                document.getElementById('homeNextOrderTitle').textContent = "Заказов пока нет";
-                document.getElementById('homeNextOrderTime').innerHTML = `<i class="fa-regular fa-clock text-sky-400"></i> Свободный график`;
+                document.getElementById('nextOrderTitle').textContent = "Записей пока нет";
+                document.getElementById('nextOrderTime').innerHTML = `<i class="fa-regular fa-clock text-sky-400"></i> Свободный график`;
             }
         }
 
-        // Раздел: Аналитика и Графики (Chart.js)
-        function setFinancePeriod(period, btn) {
-            appState.financePeriod = period;
-            document.querySelectorAll('.period-btn').forEach(b => {
-                b.className = "period-btn flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition";
+        // Финансы и периоды (Chart.js)
+        function changePeriod(per, btn) {
+            state.activePeriod = per;
+            document.querySelectorAll('.period-tab').forEach(b => {
+                b.className = "period-tab flex-1 text-center py-1.5 text-[11px] rounded-lg text-slate-400";
             });
-            btn.className = "period-btn flex-1 text-center py-2 px-3 text-xs font-medium rounded-lg bg-sky-500 text-slate-950 font-semibold transition";
-            renderFinanceChart();
+            btn.className = "period-tab flex-1 text-center py-1.5 text-[11px] rounded-lg bg-sky-500 text-slate-950 font-medium";
+            renderChart();
         }
 
-        function renderFinanceChart() {
-            let totalIncome = 0;
-            let totalExpense = 0;
-
-            // Фильтрация транзакций на базе выбранного селектора периодов
-            const now = new Date("2026-06-09"); // Текущее модельное время
-            appState.transactions.forEach(t => {
-                const tDate = new Date(t.date);
-                const diffTime = Math.abs(now - tDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                let include = false;
-                if(appState.financePeriod === 'week' && diffDays <= 7) include = true;
-                else if(appState.financePeriod === 'month' && diffDays <= 30) include = true;
-                else if(appState.financePeriod === 'quarter' && diffDays <= 90) include = true;
-                else if(appState.financePeriod === 'year' && diffDays <= 365) include = true;
-                else if(appState.financePeriod === 'all') include = true;
-
-                if(include) {
-                    if(t.type === 'income') totalIncome += t.amount;
-                    else totalExpense += t.amount;
-                }
+        function renderChart() {
+            let inc = 0, exp = 0;
+            state.transactions.filter(t => t.prof === state.currentProfession).forEach(t => {
+                if(t.type === 'income') inc += t.amount;
+                else exp += t.amount;
             });
-
-            // Рендер прогресс-бара эффективности
-            const total = totalIncome + totalExpense;
-            const efficiency = totalIncome > 0 ? Math.round((totalIncome / (total || 1)) * 100) : 0;
-            document.getElementById('periodEfficiency').textContent = `${efficiency}%`;
-            document.getElementById('efficiencyProgress').style.width = `${efficiency}%`;
-
-            if(totalIncome === 0 && totalExpense === 0) {
-                document.getElementById('chartNoData').classList.remove('hidden');
-                return;
-            } else {
-                document.getElementById('chartNoData').classList.add('hidden');
-            }
 
             const ctx = document.getElementById('financeChart').getContext('2d');
             if (financeChartInstance) financeChartInstance.destroy();
@@ -716,100 +566,69 @@
             financeChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Доход', 'Расход'],
+                    labels: ['Доходы', 'Расходы'],
                     datasets: [{
-                        data: [totalIncome, totalExpense],
+                        data: [inc || 1, exp || 0],
                         backgroundColor: ['#10b981', '#f43f5e'],
-                        borderWidth: 0,
-                        hoverOffset: 4
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     plugins: { legend: { display: false } },
-                    cutout: '75%'
+                    cutout: '78%'
                 }
             });
         }
 
-        // Обновление настроек Личного Кабинета
-        function updateProfileData() {
-            appState.profile.name = document.getElementById('profileName').value || "Мастер";
-            appState.profile.profession = document.getElementById('profileProfession').value;
-            saveState();
+        // Платеж и резервное копирование
+        function triggerPayment() {
+            alert("Функция оплаты симулирована: тестовый шлюз Telegram API активен. Запрос передан.");
         }
 
-        // Оплата и Премиум логика
-        function showPremium() { document.getElementById('premiumModal').classList.remove('hidden'); }
-        function closePremium() { document.getElementById('premiumModal').classList.add('hidden'); }
-        function selectTariff(btn, price) {
-            document.querySelectorAll('#premiumTariffs button').forEach(b => b.classList.remove('border-amber-400'));
-            btn.classList.add('border-amber-400');
-        }
-        function activatePremium() {
-            appState.profile.isPremium = true;
-            alert("Платеж успешно симулирован! Подписка Pro активирована.");
-            closePremium();
-            saveState();
-        }
-
-        // ЭКСПОРТ В EXCEL (SheetJS)
-        function exportExcel() {
-            if(appState.transactions.length === 0) {
-                alert("Нет транзакций для выгрузки.");
+        function exportToExcel() {
+            const profData = state.transactions.filter(t => t.prof === state.currentProfession);
+            if(profData.length === 0) {
+                alert("Нет транзакций для выгрузки по данной профессии.");
                 return;
             }
-            const structuredData = appState.transactions.map(t => ({
-                "ID Операции": t.id,
-                "Дата проведения": t.date,
-                "Тип транзакции": t.type === 'income' ? "Доход" : "Расход",
-                "Сумма (Руд.)": t.amount,
-                "Назначение / Описание": t.desc,
-                "Профессиональная категория": t.prof
+            const rows = profData.map(t => ({
+                "Дата": t.date,
+                "Тип операции": t.type === 'income' ? "Доход" : "Расход",
+                "Сумма (Р)": t.amount,
+                "Описание позиций / Материалы": t.desc,
+                "Объем / Количество": t.weight || "-",
+                "Ед. изм.": t.unit || "-",
+                "Сфера деятельности": t.prof
             }));
-
-            const worksheet = XLSX.utils.json_to_sheet(structuredData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Финансовый отчет");
-            
-            // Автоматическое форматирование ширины колонок для удобства чтения человеком
-            const maxW = [{wch:15},{wch:18},{wch:15},{wch:15},{wch:30},{wch:25}];
-            worksheet['!cols'] = maxW;
-
-            XLSX.writeFile(workbook, `MasterApp_Report_${appState.profile.name}.xlsx`);
+            const ws = XLSX.utils.json_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Отчёт мастера");
+            XLSX.writeFile(wb, `MasterApp_${state.currentProfession}.xlsx`);
         }
 
-        // ИМПОРТ ИЗ EXCEL
         document.getElementById('excelImport').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = (evt) => {
                 try {
-                    const data = evt.target.result;
-                    const workbook = XLSX.read(data, { type: 'binary' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonRows = XLSX.utils.sheet_to_json(worksheet);
-
-                    if(jsonRows.length === 0) throw new Error("Файл пуст или поврежден");
-
-                    // Восстановление структуры данных из Excel
-                    const importedTransactions = jsonRows.map(row => ({
-                        id: row["ID Операции"] || Date.now(),
-                        date: row["Дата проведения"] || new Date().toISOString().split('T')[0],
-                        type: row["Тип транзакции"] === "Доход" ? "income" : "expense",
-                        amount: Number(row["Сумма (Руд.)"]) || 0,
-                        desc: row["Назначение / Описание"] || "Импортированная транзакция",
-                        prof: row["Профессиональная категория"] || appState.profile.profession
+                    const workbook = XLSX.read(evt.target.result, { type: 'binary' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
+                    
+                    state.transactions = json.map(r => ({
+                        id: Date.now() + Math.random(),
+                        date: r["Дата"] || "2026-06-09",
+                        type: r["Тип операции"] === "Доход" ? "income" : "expense",
+                        amount: Number(r["Сумма (Р)"]) || 0,
+                        desc: r["Описание позиций / Материалы"] || "Импорт",
+                        weight: r["Объем / Количество"] === "-" ? "" : r["Объем / Количество"],
+                        unit: r["Ед. изм."] === "-" ? "" : r["Ед. изм."],
+                        prof: r["Сфера деятельности"] || state.currentProfession
                     }));
-
-                    appState.transactions = importedTransactions;
-                    alert(`Импорт завершен! Успешно загружено ${importedTransactions.length} транзакций.`);
+                    alert("Импорт завершен успешно!");
                     saveState();
-                } catch(err) {
-                    alert("Ошибка импорта. Проверьте структуру Excel файла.");
-                }
+                } catch(c) { alert("Ошибка структуры файла Excel."); }
             };
             reader.readAsBinaryString(file);
         });
