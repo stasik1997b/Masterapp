@@ -4,150 +4,140 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MasterApp Pro</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            padding-bottom: 90px;
-            -webkit-tap-highlight-color: transparent;
-        }
         .glass {
-            background: rgba(30, 41, 59, 0.45);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
         }
-        .page {
-            display: none;
-            animation: fadeIn 0.2s ease-in-out forwards;
-        }
-        .page.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .page { display: none; }
+        .page.active { display: block; }
+        /* Кастомный скрытый скроллбар */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-sky-500 selection:text-slate-950 select-none pb-24">
 
-    <div id="onboardingScreen" class="hidden fixed inset-0 bg-slate-950 z-50 flex flex-col justify-between p-6">
-        <div class="space-y-4 my-auto max-w-md mx-auto w-full">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-2xl shadow-xl shadow-sky-500/10">
-                <i class="fa-solid fa-wand-magic-sparkles text-white"></i>
+    <div id="onboardingScreen" class="hidden fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between p-6">
+        <div class="space-y-6 my-auto max-w-sm mx-auto text-center">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-purple-600 flex items-center justify-center text-3xl shadow-lg shadow-indigo-500/20">
+                <i class="fa-solid fa-crown text-white"></i>
             </div>
-            <div class="space-y-1">
-                <h2 class="text-2xl font-bold text-white tracking-tight">Добро пожаловать!</h2>
-                <p class="text-xs text-slate-400">Настроим рабочее окружение. Укажите вашу специализацию:</p>
+            <div class="space-y-2">
+                <h1 class="text-2xl font-black tracking-tight text-white">MasterApp Pro</h1>
+                <p class="text-xs text-slate-400 leading-relaxed">Добро пожаловать в персональный цифровой блокнот. Учет заказов, калькуляция себестоимости изделий и финансовая аналитика в одном месте.</p>
             </div>
-            <div class="space-y-2 pt-2">
-                <label class="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Ваша профессия</label>
-                <select id="welcomeProfSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-xs text-white focus:outline-none">
-                </select>
+            <div class="glass border border-slate-800 rounded-2xl p-4 space-y-3 text-left">
+                <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-0.5">Выберите ваше основное направление:</label>
+                <select id="welcomeProfSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500"></select>
             </div>
-            <button onclick="completeOnboarding()" class="w-full bg-sky-500 text-slate-950 font-bold rounded-xl py-3.5 text-xs shadow-lg shadow-sky-500/10 transition active:scale-98">
-                Начать работу
-            </button>
         </div>
+        <button onclick="completeOnboarding()" class="w-full max-w-sm mx-auto bg-white text-slate-950 text-xs font-bold uppercase tracking-wider py-3.5 rounded-xl shadow-md active:scale-[0.98] transition">
+            Начать работу
+        </button>
     </div>
 
-    <div id="appContainer" class="max-w-md mx-auto min-h-screen flex flex-col justify-between relative px-4">
+    <div id="appContainer" class="max-w-md mx-auto px-4 pt-4 space-y-4">
         
-        <header class="py-4 flex justify-between items-center border-b border-slate-900 mb-3">
+        <header class="flex justify-between items-center bg-slate-900/20 py-2 px-1 rounded-xl">
             <div>
-                <h1 class="text-xl font-bold bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text text-transparent">MasterApp Pro</h1>
-                <p class="text-[11px] text-slate-500 font-medium" id="tgGreeting">Авторизация...</p>
+                <h1 class="text-lg font-black text-white tracking-tight flex items-center gap-1.5">MasterApp <span class="text-xs font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20 px-1.5 py-0.5 rounded-md">Pro</span></h1>
+                <p class="text-[11px] text-slate-500 font-medium" id="tgGreeting">Привет, Мастер!</p>
             </div>
-            <div class="text-xs px-2.5 py-1 rounded-full glass font-medium text-sky-400 border border-sky-500/10" id="headerBadge">
-                Сфера
-            </div>
+            <span id="headerBadge" class="text-[9px] uppercase tracking-wider font-extrabold bg-slate-900 border border-slate-800 text-slate-400 px-2.5 py-1 rounded-full">Загрузка...</span>
         </header>
 
-        <main class="flex-grow">
+        <main>
 
             <section id="home" class="page active space-y-3.5">
-                <div id="todayOrdersSummaryWidget" class="hidden bg-gradient-to-r from-amber-500/15 to-orange-500/10 border border-amber-500/20 rounded-2xl p-3.5 flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
-                        <i class="fa-solid fa-bell animate-pulse"></i>
-                    </div>
+                
+                <div id="todayOrdersSummaryWidget" class="hidden bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-3 flex gap-3 items-center">
+                    <div class="text-amber-400 text-base"><i class="fa-solid fa-bell-concierge animate-bounce"></i></div>
+                    <p class="text-[11px] text-slate-300 leading-tight" id="todayOrdersCountText">На сегодня запланированы записи.</p>
+                </div>
+
+                <div class="glass border border-slate-900 rounded-3xl p-4 space-y-4 relative overflow-hidden shadow-xl">
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl"></div>
                     <div>
-                        <span class="text-[10px] uppercase font-bold tracking-wider text-amber-400 block">План на сегодня</span>
-                        <p class="text-xs text-slate-200 font-medium" id="todayOrdersCountText">У вас сегодня 0 записей</p>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-0.5">Чистая прибыль (Все время)</span>
+                        <div class="text-3xl font-black text-white tracking-tight mt-0.5" id="mainBalance">0 Р</div>
                     </div>
-                </div>
-
-                <div class="glass rounded-2xl p-4 bg-gradient-to-br from-slate-900/60 to-slate-950/20 border border-slate-900">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Баланс по текущей сфере</span>
-                    <div class="text-2xl font-bold text-white mt-1" id="mainBalance">0 Р</div>
-                    <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-900">
+                    <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-900/60">
                         <div>
-                            <span class="text-[9px] text-slate-500 block uppercase font-bold">Оборот доходов</span>
-                            <span class="text-sm font-bold text-emerald-400" id="mainIncome">0 Р</span>
+                            <span class="text-[9px] text-slate-500 font-bold uppercase block"><i class="fa-solid fa-arrow-trend-up text-emerald-500 mr-1"></i> Оборот / Доходы</span>
+                            <div class="text-sm font-bold text-slate-200 mt-0.5" id="mainIncome">0 Р</div>
                         </div>
                         <div>
-                            <span class="text-[9px] text-slate-500 block uppercase font-bold">Расходы бизнеса</span>
-                            <span class="text-sm font-bold text-rose-400" id="mainExpense">0 Р</span>
+                            <span class="text-[9px] text-slate-500 font-bold uppercase block"><i class="fa-solid fa-arrow-trend-down text-rose-500 mr-1"></i> Все расходы</span>
+                            <div class="text-sm font-bold text-slate-200 mt-0.5" id="mainExpense">0 Р</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="glass rounded-2xl p-3.5 flex items-center justify-between">
+                <div class="glass rounded-2xl p-3.5 border border-slate-900 flex justify-between items-center shadow-md">
                     <div class="space-y-0.5">
-                        <span class="text-[9px] uppercase tracking-wider font-bold text-sky-400">Следующий клиент</span>
-                        <h3 class="text-sm font-semibold text-white" id="nextClientName">Записей нет</h3>
-                        <p class="text-[11px] text-slate-400 flex items-center gap-1" id="nextClientTime">
-                            <i class="fa-regular fa-clock text-sky-400"></i> План пуст
-                        </p>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 block">Ближайшее событие</span>
+                        <div class="text-xs font-bold text-white truncate max-w-[190px]" id="nextClientName">Записей нет</div>
+                        <div class="text-[10px] text-slate-400 flex items-center gap-1.5" id="nextClientTime">
+                            <i class="fa-regular fa-clock text-sky-400"></i> Свободный календарь
+                        </div>
                     </div>
-                    <button onclick="openPage('calendar')" class="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center text-slate-400">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
+                    <button onclick="openPage('calendar')" class="bg-slate-900 border border-slate-800 text-[11px] font-semibold px-3 py-1.5 rounded-xl hover:text-white"><i class="fa-solid fa-calendar-plus mr-1 text-sky-400"></i> План</button>
                 </div>
 
-                <div class="glass rounded-2xl p-3 space-y-2">
-                    <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Последние операции</h4>
-                    <div id="homeRecentLogs" class="space-y-1.5 max-h-[160px] overflow-y-auto no-scrollbar"></div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Последние денежные операции</h3>
+                        <button onclick="openPage('calculator')" class="text-[10px] font-bold text-sky-400 hover:underline">Все операции</button>
+                    </div>
+                    <div id="homeRecentLogs" class="space-y-1.5"></div>
                 </div>
             </section>
 
             <section id="calendar" class="page space-y-3.5">
-                <div class="flex items-center justify-between bg-slate-900/60 p-2 rounded-xl border border-slate-900">
-                    <button onclick="prevMonth()" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-950 text-slate-400"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                    <div class="text-xs font-bold text-white tracking-wide uppercase" id="calendarMonthYearLabel">...</div>
-                    <button onclick="nextMonth()" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-950 text-slate-400"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                <div class="flex justify-between items-center">
+                    <h2 class="font-bold text-base text-white">Календарь заказов</h2>
+                    <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl p-0.5">
+                        <button onclick="prevMonth()" class="p-1 px-2 text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="calendarMonthYearLabel" class="text-[11px] font-bold px-1 text-slate-300">Месяц 2026</span>
+                        <button onclick="nextMonth()" class="p-1 px-2 text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
                 </div>
 
-                <div class="glass rounded-2xl p-3">
-                    <div class="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-slate-500 uppercase mb-2">
+                <div class="glass border border-slate-900 rounded-2xl p-3.5 shadow-inner">
+                    <div class="grid grid-cols-7 text-center text-[9px] font-black uppercase text-slate-500 tracking-wider mb-2">
                         <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
                     </div>
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 text-center text-xs"></div>
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
                 </div>
 
-                <div class="glass rounded-2xl p-4 space-y-3">
-                    <div class="flex justify-between items-center border-b border-slate-900 pb-2">
-                        <h4 class="text-xs font-semibold text-slate-300" id="selectedDayLabel">Записи</h4>
-                        <button onclick="document.getElementById('addOrderForm').classList.toggle('hidden')" class="text-[10px] text-sky-400 bg-sky-500/5 px-2 py-1 rounded-lg border border-sky-500/10">+ Записать клиента</button>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <h3 id="selectedDayLabel" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Записи</h3>
+                        <button onclick="document.getElementById('addOrderForm').classList.remove('hidden')" class="text-[10px] font-bold text-sky-400">+ Добавить запись</button>
                     </div>
 
-                    <div id="addOrderForm" class="hidden bg-slate-900/60 p-3 rounded-xl space-y-2 border border-slate-800">
-                        <input id="orderTitle" type="text" placeholder="Имя клиента / Описание услуги" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input id="orderPhone" type="tel" placeholder="+7 (999) 000-00-00" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
-                            <input id="orderTime" type="time" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                    <div id="addOrderForm" class="hidden bg-slate-900/90 p-4 rounded-xl space-y-3 border border-slate-800">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold uppercase text-sky-400">Новое событие / заказ</span>
+                            <button onclick="document.getElementById('addOrderForm').classList.add('hidden')" class="text-slate-500 text-xs hover:text-white"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        <button onclick="saveNewOrder()" class="w-full bg-sky-500 text-slate-950 text-xs font-bold py-2 rounded-lg">Зарегистрировать запись</button>
+                        <input id="orderTitle" type="text" placeholder="Имя клиента или суть заказа" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        <input id="orderPhone" type="tel" placeholder="Телефон клиента (для уведомления)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        <div>
+                            <label class="text-[9px] text-slate-500 font-bold uppercase block mb-1">Время визита / готовности:</label>
+                            <input id="orderTime" type="time" value="12:00" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        </div>
+                        <button onclick="saveNewOrder()" class="w-full bg-sky-500 text-slate-950 text-xs font-bold py-2 rounded-lg">Запланировать</button>
                     </div>
 
-                    <div id="dayOrdersList" class="space-y-2 max-h-[140px] overflow-y-auto no-scrollbar"></div>
+                    <div id="dayOrdersList" class="space-y-1.5"></div>
                 </div>
             </section><section id="calculator" class="page space-y-3.5">
                 <div class="flex justify-between items-center">
@@ -224,7 +214,7 @@
                             <button onclick="setStdMode('income')" id="btnStdInc" class="py-2 text-xs font-bold rounded-xl bg-emerald-500/20 text-emerald-400">Доход / Услуга</button>
                             <button onclick="setStdMode('expense')" id="btnStdExp" class="py-2 text-xs font-bold rounded-xl bg-slate-900 text-slate-400">Затраты / Расходники</button>
                         </div>
-                        <input id="stdTitle" type="text" placeholder="Что было сделано или куплено?" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none">
+                        <input id="stdTitle" type="text" placeholder="What was done or bought?" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white focus:outline-none">
                         <div id="stdMaterialBox" class="hidden grid grid-cols-2 gap-2">
                             <input id="stdQty" type="number" placeholder="Количество" class="bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none">
                             <input id="stdUnitName" type="text" placeholder="Ед. изм. (шт, м)" class="bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none">
@@ -278,19 +268,19 @@
                     </div>
 
                     <div class="space-y-1.5">
-                        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-0.5">Изменить основную специализацию</label>
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-0.5">Изменить основзацию</label>
                         <select id="profileProfessionSelect" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500" onchange="changeMainProfession()">
                         </select>
                     </div>
 
-                    <div class="pt-2 space-y-2">
-                        <label class="text-[10px] font-bold uppercase text-slate-400 block px-0.5">Резервное копирование (Excel)</label>
+                    <div class="pt-2 space-y-2 border-t border-slate-900/60">
+                        <label class="text-[10px] font-bold uppercase text-slate-400 block px-0.5">Резервное копирование данных</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="exportToExcel()" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5"><i class="fa-regular fa-file-excel"></i> Экспорт</button>
-                            <label class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer text-center">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Импорт
-                                <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls">
-                            </label>
+                            <button onclick="backupDataToTelegramChat()" class="bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-xl p-2.5 text-[11px] font-semibold flex items-center justify-center gap-1.5"><i class="fa-solid fa-paper-plane"></i> Копия в Telegram</button>
+                            <button onclick="importDataFromTextCode()" class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl p-2.5 text-[11px] font-semibold flex items-center justify-center gap-1.5"><i class="fa-solid fa-key"></i> Восстановить</button>
+                        </div>
+                        <div class="grid grid-cols-1 mt-1">
+                            <button onclick="exportToExcel()" class="w-full bg-emerald-500/5 text-emerald-400 border border-emerald-500/10 rounded-xl py-2 text-[10px] font-medium flex items-center justify-center gap-1"><i class="fa-regular fa-file-excel"></i> Выгрузить Excel-отчет</button>
                         </div>
                     </div>
 
@@ -318,7 +308,14 @@
 
     <script>
         const tg = window.Telegram?.WebApp;
-        if(tg) { tg.ready(); tg.expand(); }
+        if(tg) { 
+            tg.ready(); 
+            tg.expand();
+            // Включаем защиту от случайного закрытия свайпом вниз
+            if(typeof tg.enableClosingConfirmation === 'function') {
+                tg.enableClosingConfirmation();
+            }
+        }
 
         const BOT_CONFIG = {
             token: "8886303402:AAFkLKNCtVEC-Jnf8skmszWD45IgebwXVLY",
@@ -349,8 +346,6 @@
         let confMode = "sale";
         let stdMode = "income";
         let chartInstance = null;
-        
-        // Временный массив для хранения ингредиентов в открытой форме создания/редактирования шаблона
         let currentFormIngredients = [];
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -381,6 +376,29 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: "HTML" })
             }).catch(err => console.error(err));
+        }
+
+        function backupDataToTelegramChat() {
+            const chatId = BOT_CONFIG.getChatId();
+            if(!chatId) { alert("Функция доступна только при запуске внутри Telegram"); return; }
+            const secureString = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+            const msg = `📦 <b>Ваша резервная копия MasterApp Pro</b>\n\nСкопируйте код ниже полностью, чтобы восстановить ваши данные на другом устройстве:\n\n<code>${secureString}</code>`;
+            sendTelegramBotMessage(msg);
+            alert("Код резервной копии отправлен в ваш диалог с ботом!");
+        }
+
+        function importDataFromTextCode() {
+            const code = prompt("Вставьте текстовый код резервной копии, полученный от бота:");
+            if(!code) return;
+            try {
+                const decrypted = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+                if(decrypted && typeof decrypted === 'object' && decrypted.currentProfession) {
+                    state = decrypted;
+                    localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
+                    alert("Данные успешно восстановлены!");
+                    location.reload();
+                } else { alert("Неверный формат кода"); }
+            } catch(e) { alert("Ошибка импорта. Убедитесь, что скопировали код целиком."); }
         }
 
         function checkDailyAndHourlyNotifications() {
@@ -480,7 +498,6 @@
             updateUI();
         }
 
-        // РЕНДЕР ШАБЛОНОВ БЛЮД С КНОПКАМИ РЕДАКТИРОВАНИЯ И УДАЛЕНИЯ
         function renderCakeTemplates() {
             const grid = document.getElementById('confectionerProductsGrid'); grid.innerHTML = '';
             if(!state.cakeTemplates) state.cakeTemplates = [];
@@ -501,7 +518,6 @@
             });
         }
 
-        // ФУНКЦИИ ФОРМЫ ШАБЛОНОВ БЛЮД
         function openNewCakeForm() {
             document.getElementById('addCakeProductForm').classList.remove('hidden');
             document.getElementById('cakeFormTitle').textContent = "Новое блюдо или выпечка";
@@ -513,37 +529,26 @@
             renderFormIngredientsList();
         }
 
-        function closeCakeForm() {
-            document.getElementById('addCakeProductForm').classList.add('hidden');
-        }
+        function closeCakeForm() { document.getElementById('addCakeProductForm').classList.add('hidden'); }
 
         function addIngredientToCurrentTemplate() {
             const nameInput = document.getElementById('ingrNameInput');
             const weightInput = document.getElementById('ingrWeightInput');
             const costInput = document.getElementById('ingrCostInput');
-            
             if(!nameInput.value || !costInput.value) return;
-
-            currentFormIngredients.push({
-                name: nameInput.value,
-                weight: weightInput.value || "-",
-                cost: Number(costInput.value)
-            });
-
+            currentFormIngredients.push({ name: nameInput.value, weight: weightInput.value || "-", cost: Number(costInput.value) });
             nameInput.value = ""; weightInput.value = ""; costInput.value = "";
-            renderFormIngredientsList();
-            recalculateTemplateCost();
+            renderFormIngredientsList(); recalculateTemplateCost();
         }
 
         function removeIngredientFromFormList(index) {
             currentFormIngredients.splice(index, 1);
-            renderFormIngredientsList();
-            recalculateTemplateCost();
+            renderFormIngredientsList(); recalculateTemplateCost();
         }
 
+        // Рендеринг списка добавленных продуктов
         function renderFormIngredientsList() {
-            const container = document.getElementById('cakeFormIngredientsList');
-            container.innerHTML = '';
+            const container = document.getElementById('cakeFormIngredientsList'); container.innerHTML = '';
             currentFormIngredients.forEach((ing, index) => {
                 container.innerHTML += `
                     <div class="flex justify-between items-center bg-slate-950 p-1.5 rounded-md text-[11px] border border-slate-900">
@@ -559,9 +564,7 @@
 
         function recalculateTemplateCost() {
             const totalCost = currentFormIngredients.reduce((sum, ing) => sum + ing.cost, 0);
-            if(totalCost > 0) {
-                document.getElementById('cakeCost').value = totalCost;
-            }
+            if(totalCost > 0) { document.getElementById('cakeCost').value = totalCost; }
         }
 
         function saveCakeProductTemplate() {
@@ -569,36 +572,22 @@
             const name = document.getElementById('cakeName').value;
             const cost = Number(document.getElementById('cakeCost').value) || 0;
             const price = Number(document.getElementById('cakePrice').value) || 0;
-
             if(!name) { alert("Укажите название блюда"); return; }
-
             if(idVal) {
-                // Редактирование существующего
                 const idx = state.cakeTemplates.findIndex(c => c.id == idVal);
-                if(idx !== -1) {
-                    state.cakeTemplates[idx] = { id: Number(idVal), name, cost, price, ingredients: currentFormIngredients };
-                }
-            } else {
-                // Создание нового
-                state.cakeTemplates.push({ id: Date.now(), name, cost, price, ingredients: currentFormIngredients });
-            }
-
-            closeCakeForm();
-            localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
-            renderCakeTemplates();
+                if(idx !== -1) { state.cakeTemplates[idx] = { id: Number(idVal), name, cost, price, ingredients: currentFormIngredients }; }
+            } else { state.cakeTemplates.push({ id: Date.now(), name, cost, price, ingredients: currentFormIngredients }); }
+            closeCakeForm(); localStorage.setItem('masterapp_core_v3', JSON.stringify(state)); renderCakeTemplates();
         }
 
         function editCakeTemplate(id) {
-            const item = state.cakeTemplates.find(c => c.id === id);
-            if(!item) return;
-
+            const item = state.cakeTemplates.find(c => c.id === id); if(!item) return;
             document.getElementById('addCakeProductForm').classList.remove('hidden');
             document.getElementById('cakeFormTitle').textContent = "Редактировать шаблон";
             document.getElementById('cakeEditId').value = item.id;
             document.getElementById('cakeName').value = item.name;
             document.getElementById('cakeCost').value = item.cost;
             document.getElementById('cakePrice').value = item.price;
-            
             currentFormIngredients = item.ingredients ? [...item.ingredients] : [];
             renderFormIngredientsList();
         }
@@ -606,8 +595,7 @@
         function deleteCakeTemplate(id) {
             if(confirm("Удалить этот готовый шаблон изделия?")) {
                 state.cakeTemplates = state.cakeTemplates.filter(c => c.id !== id);
-                localStorage.setItem('masterapp_core_v3', JSON.stringify(state));
-                renderCakeTemplates();
+                localStorage.setItem('masterapp_core_v3', JSON.stringify(state)); renderCakeTemplates();
             }
         }
 
@@ -617,7 +605,6 @@
             document.getElementById('confSum').value = price;
         }
 
-        // ОСТАЛЬНАЯ ЛОГИКА ОПЕРАЦИЙ
         function setConfMode(mode) {
             confMode = mode;
             const bSale = document.getElementById('btnConfSale'); const bIngr = document.getElementById('btnConfIngr');
