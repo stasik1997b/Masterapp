@@ -1,11 +1,10 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Masterapp</title><script src="https://telegram.org"></script>
-<style>:root{--bg-color:#f7f9f8;--primary-color:#a8dadc;--secondary-color:#f1faee;--accent-color:#e63946;--text-color:#1d3557;--card-bg:#ffffff;--mint-dark:#457b9d;--pink-pastel:#ffb5a7}body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background-color:var(--bg-color);color:var(--text-color);margin:0;padding:0;padding-bottom:90px}header{background-color:var(--secondary-color);padding:15px;text-align:center;border-bottom:2px solid var(--primary-color)}header h1{margin:0;font-size:18px;color:var(--mint-dark)}.container{padding:15px}.tab-content{display:none}.tab-content.active{display:block}#niche-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-color);z-index:99999;padding:20px;display:none;flex-direction:column;justify-content:center}.niche-btn{background:#fff;border:2px solid var(--primary-color);padding:18px;margin-bottom:12px;border-radius:14px;font-size:16px;font-weight:700;text-align:left;color:var(--text-color);cursor:pointer}.dashboard{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:15px}.stat-card{background:var(--card-bg);padding:15px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);border-left:5px solid var(--primary-color)}.stat-card.profit{border-left-color:var(--pink-pastel)}.stat-card.expenses{border-left-color:var(--accent-color)}.stat-val{font-size:22px;font-weight:700;margin-top:5px}.calendar-wrapper{background:#fff;padding:12px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:15px}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:700}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}.weekday{font-size:12px;color:#888;font-weight:700;padding-bottom:5px}.day{padding:10px 0;font-size:14px;border-radius:8px;cursor:pointer;position:relative;font-weight:500}.day.today{border:2px solid var(--mint-dark)}.day.selected{background-color:var(--primary-color);color:var(--text-color);font-weight:700}.day-dot{width:5px;height:5px;background:var(--pink-pastel);border-radius:50%;position:absolute;bottom:3px;left:50%;transform:translateX(-50%)}.btn{background-color:var(--mint-dark);color:#fff;border:none;padding:15px;border-radius:8px;width:100%;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:15px;touch-action:manipulation}.btn-pink{background-color:var(--pink-pastel);color:var(--text-color)}.form-group{margin-bottom:12px}label{display:block;margin-bottom:5px;font-size:14px;font-weight:600}input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:16px;background:#fff;color:var(--text-color)}.item-card{background:var(--card-bg);padding:12px;border-radius:10px;margin-bottom:10px;box-shadow:0 2px 4px rgba(0,0,0,.03);display:flex;justify-content:space-between;align-items:center}.nav-bar{position:fixed;bottom:0;left:0;right:0;height:70px;background-color:var(--card-bg);display:flex;border-top:1px solid #e0e0e0;z-index:9999}.nav-item{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:#888;cursor:pointer}.nav-item.active{color:var(--mint-dark);font-weight:700}.nav-icon{font-size:20px;margin-bottom:2px}.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);padding:20px;align-items:center;justify-content:center;z-index:10000}.modal-content{background:#fff;padding:20px;border-radius:15px;width:100%;max-width:400px}</style></head>
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Masterapp</title><script src="https://telegram.org"></script><style>:root{--bg-color:#f7f9f8;--primary-color:#a8dadc;--secondary-color:#f1faee;--accent-color:#e63946;--text-color:#1d3557;--card-bg:#ffffff;--mint-dark:#457b9d;--pink-pastel:#ffb5a7}body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background-color:var(--bg-color);color:var(--text-color);margin:0;padding:0;padding-bottom:90px}header{background-color:var(--secondary-color);padding:15px;text-align:center;border-bottom:2px solid var(--primary-color)}header h1{margin:0;font-size:18px;color:var(--mint-dark)}.container{padding:15px}.tab-content{display:none}.tab-content.active{display:block}#niche-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-color);z-index:99999;padding:20px;display:none;flex-direction:column;justify-content:center}.niche-btn{background:#fff;border:2px solid var(--primary-color);padding:18px;margin-bottom:12px;border-radius:14px;font-size:16px;font-weight:700;text-align:left;color:var(--text-color);cursor:pointer}.dashboard{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:15px}.stat-card{background:var(--card-bg);padding:15px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,.05);border-left:5px solid var(--primary-color)}.stat-card.profit{border-left-color:var(--pink-pastel)}.stat-card.expenses{border-left-color:var(--accent-color)}.stat-val{font-size:22px;font-weight:700;margin-top:5px}.calendar-wrapper{background:#fff;padding:12px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:15px}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:700}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}.weekday{font-size:12px;color:#888;font-weight:700;padding-bottom:5px}.day{padding:10px 0;font-size:14px;border-radius:8px;cursor:pointer;position:relative;font-weight:500}.day.today{border:2px solid var(--mint-dark)}.day.selected{background-color:var(--primary-color);color:var(--text-color);font-weight:700}.day-dot{width:5px;height:5px;background:var(--pink-pastel);border-radius:50%;position:absolute;bottom:3px;left:50%;transform:translateX(-50%)}.btn{background-color:var(--mint-dark);color:#fff;border:none;padding:15px;border-radius:8px;width:100%;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:15px;touch-action:manipulation}.btn-pink{background-color:var(--pink-pastel);color:var(--text-color)}.form-group{margin-bottom:12px}label{display:block;margin-bottom:5px;font-size:14px;font-weight:600}input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:16px;background:#fff;color:var(--text-color)}.item-card{background:var(--card-bg);padding:12px;border-radius:10px;margin-bottom:10px;box-shadow:0 2px 4px rgba(0,0,0,.03);display:flex;justify-content:space-between;align-items:center}.nav-bar{position:fixed;bottom:0;left:0;right:0;height:70px;background-color:var(--card-bg);display:flex;border-top:1px solid #e0e0e0;z-index:9999}.nav-item{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:#888;cursor:pointer}.nav-item.active{color:var(--mint-dark);font-weight:700}.nav-icon{font-size:20px;margin-bottom:2px}.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);padding:20px;align-items:center;justify-content:center;z-index:10000}.modal-content{background:#fff;padding:20px;border-radius:15px;width:100%;max-width:400px}</style></head>
 <body>
     <div id="niche-screen"><h2 style="text-align:center;margin-bottom:20px">Чем вы занимаетесь?</h2><button class="niche-btn" onclick="selectNiche('bakery')">🎂 Кулинария / Домашний кондитер</button><button class="niche-btn" onclick="selectNiche('beauty')">💅 Бьюти-мастер (Маникюр / Визаж)</button><button class="niche-btn" onclick="selectNiche('handmade')">✂️ Хэндмейд / Ателье и швеи</button></div>
     <header><h1 id="header-title">Календарь записей</h1></header>
     <div class="container">
         <div id="tab-main" class="tab-content active"><div class="calendar-wrapper"><div class="calendar-header"><button onclick="prevMonth()" style="background:none;border:none;font-size:18px;color:var(--mint-dark)">◀</button><span id="calendar-month-year"></span><button onclick="nextMonth()" style="background:none;border:none;font-size:18px;color:var(--mint-dark)">▶</button></div><div class="calendar-grid" id="calendar-grid-days"></div></div><button class="btn btn-pink" onclick="openModal('order-modal')">+ Добавить запись / Заказ</button><h3>Записи на дату</h3><div class="item-list" id="day-orders-list"></div></div>
-        <div id="tab-calc" class="tab-content"><button class="btn" onclick="openModal('ing-modal')">+ Добавить материал</button><div style="background:var(--secondary-color);padding:15px;border-radius:12px;margin-bottom:20px"><h3>Быстрый расчет</h3><div class="form-group"><label>Выберите материал</label><select id="calc-ing-select"></select></div><div class="form-group"><label id="calc-weight-label">Расход</label><input type="number" id="calc-ing-weight" inputmode="numeric" placeholder="50"></div><button class="btn btn-pink" onclick="addIngredientToRecipe()">Добавить в расчет</button><h4>Состав калькуляции:</h4><div id="recipe-composition" style="font-size:14px;margin-bottom:10px;color:#555"></div><div style="font-size:16px;font-weight:700">Materials: <span id="recipe-cost">0</span> ₽</div><div style="font-size:14px;color:gray">С накладными: <span id="recipe-total-cost">0</span> ₽</div><button class="btn" onclick="clearRecipe()" style="margin-top:10px;background:var(--accent-color)">Сбросить расчет</button></div><h3>Мой склад</h3><div class="item-list" id="ingredients-list"></div></div>
+        <div id="tab-calc" class="tab-content"><button class="btn" onclick="openModal('ing-modal')">+ Добавить материал</button><div style="background:var(--secondary-color);padding:15px;border-radius:12px;margin-bottom:20px"><h3>Быстрый расчет</h3><div class="form-group"><label>Выберите материал</label><select id="calc-ing-select"></select></div><div class="form-group"><label id="calc-weight-label">Расход</label><input type="number" id="calc-ing-weight" inputmode="numeric" placeholder="50"></div><button class="btn btn-pink" onclick="addIngredientToRecipe()">Добавить в расчет</button><h4>Состав калькуляции:</h4><div id="recipe-composition" style="font-size:14px;margin-bottom:10px;color:#555"></div><div style="font-size:16px;font-weight:700">Материалы: <span id="recipe-cost">0</span> ₽</div><div style="font-size:14px;color:gray">С накладными: <span id="recipe-total-cost">0</span> ₽</div><button class="btn" onclick="clearRecipe()" style="margin-top:10px;background:var(--accent-color)">Сбросить расчет</button></div><h3>Мой склад</h3><div class="item-list" id="ingredients-list"></div></div>
         <div id="tab-settings" class="tab-content"><div class="dashboard"><div class="stat-card profit"><div>Чистая прибыль (Месяц)</div><div class="stat-val" id="total-profit">0 ₽</div></div><div class="stat-card"><div>Общая выручка</div><div class="stat-val" id="total-revenue">0 ₽</div></div><div class="stat-card expenses"><div>Все расходы</div><div class="stat-val" id="total-expenses">0 ₽</div></div></div><div style="background:#fff;padding:15px;border-radius:12px;margin-top:15px"><h3>Опции</h3><div class="form-group"><label>Накладные расходы (%)</label><input type="number" id="setting-overhead" inputmode="numeric" value="15" onchange="saveOverhead(this.value)"></div><button class="btn" onclick="clearAllData()" style="background:var(--accent-color);margin-top:30px;border:none">Сбросить сферу деятельности</button></div></div>
     </div>
     <div id="order-modal" class="modal"><div class="modal-content"><h3>Новая запись</h3><div class="form-group"><label>Время записи</label><input type="time" id="order-time" value="12:00"></div><div class="form-group"><label id="modal-order-client-label">Клиент / Услуга</label><input type="text" id="order-name" placeholder="Анна: Услуга"></div><div class="form-group"><label>Стоимость (₽)</label><input type="number" id="order-price" inputmode="numeric" placeholder="2000"></div><div class="form-group"><label>Материалы (₽)</label><input type="number" id="order-cost" inputmode="numeric" value="0"></div><button class="btn" onclick="saveOrder()">Сохранить</button><button class="btn btn-pink" onclick="closeModal('order-modal')">Отмена</button></div></div>
@@ -13,37 +12,28 @@
     <div class="nav-bar"><button class="nav-item active" onclick="switchTab('main','Календарь записей',this)"><span class="nav-icon">📅</span><span>Календарь</span></button><button class="nav-item" onclick="switchTab('calc','Расчет стоимости',this)"><span class="nav-icon">🧮</span><span id="nav-calc-label">Расчет</span></button><button class="nav-item" onclick="switchTab('settings','Финансовый отчет',this)"><span class="nav-icon">📊</span><span>Финансы</span></button></div>
     <script>
         let tg = window.Telegram.WebApp;
-        let userNiche = null; let orders = []; let ingredients = [];
+        let userNiche = localStorage.getItem('userNiche') || null; 
+        let orders = JSON.parse(localStorage.getItem('orders')) || []; 
+        let ingredients = JSON.parse(localStorage.getItem('ingredients')) || [];
         let currentRecipeCost = 0; let tempRecipeItems = [];
         let currentDate = new Date(); let selectedDateStr = new Date().toLocaleDateString();
 
-        function getTelegramData(key, callback) {
-            if (tg && tg.CloudStorage) {
-                tg.CloudStorage.getItem(key, function(err, value) {
-                    if (!err && value) { callback(JSON.parse(value)); } 
-                    else { let local = localStorage.getItem(key); callback(local ? JSON.parse(local) : null); }
-                });
-            } else { let local = localStorage.getItem(key); callback(local ? JSON.parse(local) : null); }
-        }
-
-        function setTelegramData(key, value) {
-            let strValue = JSON.stringify(value);
-            if (tg && tg.CloudStorage) { tg.CloudStorage.setItem(key, strValue); }
-            localStorage.setItem(key, strValue);
-        }
-
         function checkProfile() {
-            getTelegramData('userNiche', function(niche) {
-                userNiche = niche;
-                if (!userNiche) { document.getElementById('niche-screen').style.display = 'flex'; } 
-                else { document.getElementById('niche-screen').style.display = 'none'; applyNicheLayout(); loadData(); }
-            });
+            if (!userNiche) { 
+                document.getElementById('niche-screen').style.display = 'flex'; 
+            } else { 
+                document.getElementById('niche-screen').style.display = 'none'; 
+                applyNicheLayout(); 
+                loadData(); 
+            }
         }
 
         function selectNiche(niche) {
-            userNiche = niche; setTelegramData('userNiche', niche);
+            userNiche = niche; 
+            localStorage.setItem('userNiche', niche);
             document.getElementById('niche-screen').style.display = 'none';
-            applyNicheLayout(); loadData();
+            applyNicheLayout(); 
+            loadData();
         }
 
         function applyNicheLayout() {
@@ -64,13 +54,10 @@
         }
 
         function loadData() {
-            getTelegramData('orders', function(loadedOrders) {
-                orders = loadedOrders || [];
-                getTelegramData('ingredients', function(loadedIngredients) {
-                    ingredients = loadedIngredients || [];
-                    renderCalendar(); renderDashboard(); renderIngredients(); renderDayOrders();
-                });
-            });
+            renderCalendar(); 
+            renderDashboard(); 
+            renderIngredients(); 
+            renderDayOrders();
         }
 
         function switchTab(e, t, a) {
@@ -107,7 +94,8 @@
             if (!e || t <= 0) return alert('Заполните поля');
             let r = a + a * (getOverhead() / 100);
             orders.push({ name: `[${n}] ${e}`, price: t, cost: r, profit: t - r, date: selectedDateStr });
-            setTelegramData('orders', orders); closeModal('order-modal');
+            localStorage.setItem('orders', JSON.stringify(orders)); 
+            closeModal('order-modal');
             document.getElementById('order-name').value = ""; loadData();
         }
 
@@ -128,7 +116,8 @@
             let e = document.getElementById('ing-name').value, t = parseFloat(document.getElementById('ing-price').value) || 0, a = parseFloat(document.getElementById('ing-weight').value) || 0;
             if (!e || t <= 0 || a <= 0) return alert('Ошибка ввода');
             ingredients.push({ name: e, price: t, weight: a, cost_per_gram: t / a });
-            setTelegramData('ingredients', ingredients); closeModal('ing-modal');
+            localStorage.setItem('ingredients', JSON.stringify(ingredients)); 
+            closeModal('ing-modal');
             document.getElementById('ing-name').value = ""; document.getElementById('ing-price').value = ""; document.getElementById('ing-weight').value = ""; loadData();
         }
 
@@ -157,7 +146,6 @@
         
         function clearAllData() {
             if (confirm('Сбросить сферу деятельности и стереть данные?')) {
-                if (tg && tg.CloudStorage) { tg.CloudStorage.removeItem('userNiche'); tg.CloudStorage.removeItem('orders'); tg.CloudStorage.removeItem('ingredients'); }
                 localStorage.clear(); window.location.reload();
             }
         }
