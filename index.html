@@ -33,7 +33,7 @@
                         <div class="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500"><i class="fa-solid fa-cake-candles text-xl"></i></div>
                         <div>
                             <div class="font-bold text-white group-hover:text-indigo-400">Кондитер / Пекарь</div>
-                            <div class="text-xs text-slate-500">Рецепты, калькуляция тортов, ингредиенты</div>
+                            <div class="text-xs text-slate-500">Рецепты, калькуляция тортов, ingredients</div>
                         </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-indigo-400"></i>
@@ -374,12 +374,11 @@
             renderOrders();
         }
 
-        // МОДУЛЬ: ДИНАМИЧЕСКИЙ КАЛЬКУЛЯТОР (ВОССТАНОВЛЕН)
+        // МОДУЛЬ: ДИНАМИЧЕСКИЙ КАЛЬКУЛЯТОР
         function buildCalculatorInputs() {
             const container = document.getElementById('calcItemsContainer');
             container.innerHTML = '';
             
-            // Генерируем 3 базовые строки для старта
             for (let i = 0; i < 3; i++) {
                 addCalcItemRow();
             }
@@ -478,25 +477,28 @@
             const dailyOrders = state.orders.filter(o => o.date === selectedDateStr);
             
             if (dailyOrders.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-slate-500 text-sm bg-slate-950 rounded-2xl border border-dashed border-slate-800"><i class="fa-regular fa-folder-open text-xl mb-2 block"></i>Нет записей на этот day</div>`;
+                list.innerHTML = `<div class="text-center py-8 text-slate-500 text-sm bg-slate-950 rounded-2xl border border-dashed border-slate-800"><i class="fa-regular fa-folder-open text-xl mb-2 block"></i>Нет записей на этот день</div>`;
                 return;
             }
             
             dailyOrders.forEach(order => {
                 const card = document.createElement('div');
                 card.className = "bg-slate-950 border border-slate-800 p-4 rounded-2xl flex justify-between items-center shadow-sm";
+                
+                const prepayText = order.prepayment > 0 ? `<span class="bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-md font-semibold">Предоплата: ${order.prepayment} ₽</span>` : '';
+                
                 card.innerHTML = `
                     <div>
                         <div class="font-bold text-white text-sm">${order.client}</div>
                         <div class="text-xs text-slate-400 mb-1">${order.product}</div>
                         <div class="flex space-x-2 text-[10px]">
                             <span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md font-semibold">Цена: ${order.price} ₽</span>
-                            \${order.prepayment > 0 ? `<span class="bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-md font-semibold">Предоплата: \${order.prepayment} ₽</span>` : ''}
+                            ${prepayText}
                         </div>
                     </div>
                     <div class="flex space-x-1">
-                        <button onclick="editOrder('\${order.id}')" class="p-2 text-slate-400 hover:text-white bg-slate-900 rounded-xl"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteOrder('\${order.id}')" class="p-2 text-rose-500 hover:bg-rose-500/10 bg-slate-900 rounded-xl"><i class="fa-solid fa-trash text-xs"></i></button>
+                        <button onclick="editOrder('${order.id}')" class="p-2 text-slate-400 hover:text-white bg-slate-900 rounded-xl"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteOrder('${order.id}')" class="p-2 text-rose-500 hover:bg-rose-500/10 bg-slate-900 rounded-xl"><i class="fa-solid fa-trash text-xs"></i></button>
                     </div>
                 `;
                 list.appendChild(card);
