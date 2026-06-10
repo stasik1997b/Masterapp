@@ -27,13 +27,13 @@
             <h1 id="tgGreeting" class="text-3xl font-extrabold text-white tracking-tight mb-2">Привет, Мастер!</h1>
             <p class="text-slate-400 max-w-sm mb-8">Добро пожаловать в MasterAPP. Давайте настроим профиль. Выберите вашу основную специализацию:</p>
             
-            <div class="w-full max-w-sm space-y-3">
+            <div class="w-full max-w-sm space-y-3 max-h-[50vh] overflow-y-auto no-scrollbar pr-1">
                 <button onclick="selectProfession('Кондитер')" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500 text-left p-4 rounded-2xl flex items-center justify-between transition-all group">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500"><i class="fa-solid fa-cake-candles text-xl"></i></div>
                         <div>
                             <div class="font-bold text-white group-hover:text-indigo-400">Кондитер / Пекарь</div>
-                            <div class="text-xs text-slate-500">Рецепты, калькуляция тортов, ingredients</div>
+                            <div class="text-xs text-slate-500">Рецепты, калькуляция тортов, ингредиенты</div>
                         </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-indigo-400"></i>
@@ -44,6 +44,36 @@
                         <div>
                             <div class="font-bold text-white group-hover:text-indigo-400">Сборщик мебели</div>
                             <div class="text-xs text-slate-500">Чертежи, выезды, учёт фурнитуры и крепежа</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-indigo-400"></i>
+                </button>
+                <button onclick="selectProfession('Швея / Портной')" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500 text-left p-4 rounded-2xl flex items-center justify-between transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500"><i class="fa-solid fa-scissors text-xl"></i></div>
+                        <div>
+                            <div class="font-bold text-white group-hover:text-indigo-400">Швея / Портной</div>
+                            <div class="text-xs text-slate-500">Мерки, лекала, расход ткани и фурнитуры</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-indigo-400"></i>
+                </button>
+                <button onclick="selectProfession('Мастер автосервиса')" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500 text-left p-4 rounded-2xl flex items-center justify-between transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500"><i class="fa-solid fa-car text-xl"></i></div>
+                        <div>
+                            <div class="font-bold text-white group-hover:text-indigo-400">Мастер автосервиса</div>
+                            <div class="text-xs text-slate-500">Учёт запчастей, нормы времени, марки авто</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-indigo-400"></i>
+                </button>
+                <button onclick="selectProfession('Строитель / Ремонтник')" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500 text-left p-4 rounded-2xl flex items-center justify-between transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500"><i class="fa-solid fa-helmet-safety text-xl"></i></div>
+                        <div>
+                            <div class="font-bold text-white group-hover:text-indigo-400">Строитель / Ремонтник</div>
+                            <div class="text-xs text-slate-500">Сметы, закупки стройматериалов, этапы работ</div>
                         </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-indigo-400"></i>
@@ -103,7 +133,16 @@
                 <div class="bg-slate-950 border border-slate-800/60 rounded-2xl p-4 space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 id="calcTitle" class="font-bold text-white flex items-center"><i class="fa-solid fa-basket-shopping text-indigo-500 mr-2"></i>Расчет изделия</h3>
-                        <button onclick="addCalcItemRow()" class="bg-slate-900 border border-slate-800 text-indigo-400 hover:text-indigo-300 text-xs px-2.5 py-1.5 rounded-xl flex items-center"><i class="fa-solid fa-plus mr-1"></i> Компонент</button>
+                        <div class="flex space-x-1">
+                            <select id="foodTemplatesSelect" onchange="applyFoodTemplate(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 text-xs px-2 py-1.5 rounded-xl hidden focus:outline-none">
+                                <option value="">-- Шаблоны блюд --</option>
+                                <option value="biscuit">Классический бисквит</option>
+                                <option value="cream">Крем-чиз на сливках</option>
+                                <option value="ganache">Шоколадный ганаш</option>
+                                <option value="caramel">Домашняя карамель</option>
+                            </select>
+                            <button onclick="addCalcItemRow()" class="bg-slate-900 border border-slate-800 text-indigo-400 hover:text-indigo-300 text-xs px-2.5 py-1.5 rounded-xl flex items-center"><i class="fa-solid fa-plus mr-1"></i> Компонент</button>
+                        </div>
                     </div>
                     
                     <div id="calcItemsContainer" class="space-y-3 max-h-[40vh] overflow-y-auto pr-1 no-scrollbar"></div>
@@ -169,6 +208,18 @@
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Специализация аккаунта</label>
                         <select id="settingProfession" onchange="updateAccountProfession(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm focus:border-indigo-500 focus:outline-none"></select>
                     </div>
+                    
+                    <div class="pt-4 border-t border-slate-800 space-y-3">
+                        <div class="text-sm font-semibold text-white"><i class="fa-solid fa-database text-indigo-400 mr-2"></i>Резервное копирование</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="exportBackupData()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 py-2 rounded-xl text-xs flex items-center justify-center font-medium transition-all"><i class="fa-solid fa-download mr-1.5"></i> Экспорт JSON</button>
+                            <label class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 py-2 rounded-xl text-xs flex items-center justify-center font-medium transition-all cursor-pointer text-center">
+                                <i class="fa-solid fa-upload mr-1.5"></i> Импорт JSON
+                                <input type="file" id="importBackupFile" onchange="importBackupData(event)" class="hidden" accept=".json">
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="pt-4 border-t border-slate-800 flex justify-between items-center">
                         <div>
                             <div class="text-sm font-semibold text-white">Сброс данных приложения</div>
@@ -256,7 +307,7 @@
         const tg = window.Telegram?.WebApp;
         if (tg) tg.expand(); 
 
-        // Глобальное состояние приложения и текущий Telegram ID
+        // Изоляция аккаунтов по ID
         let currentTelegramId = null;
         let state = {
             isFirstLaunch: true,
@@ -268,7 +319,32 @@
         let currentDate = new Date();
         let selectedDateStr = formatDate(new Date());
 
-        // ТОЧКА ВХОДА: Инициализация по Telegram ID
+        // База данных предустановленных шаблонов блюд для кондитеров
+        const foodTemplates = {
+            biscuit: [
+                { name: 'Мука пшеничная', qty: 200, price: 0.06 },
+                { name: 'Сахар-песок', qty: 150, price: 0.07 },
+                { name: 'Яйца куриные (шт)', qty: 4, price: 12 },
+                { name: 'Разрыхлитель', qty: 10, price: 0.4 }
+            ],
+            cream: [
+                { name: 'Творожный сыр', qty: 400, price: 0.55 },
+                { name: 'Сливки 33%', qty: 200, price: 0.45 },
+                { name: 'Сахарная пудра', qty: 80, price: 0.12 }
+            ],
+            ganache: [
+                { name: 'Темный шоколад', qty: 200, price: 0.9 },
+                { name: 'Сливки 33%', qty: 200, price: 0.45 },
+                { name: 'Сливочное масло', qty: 30, price: 0.8 }
+            ],
+            caramel: [
+                { name: 'Сахар-песок', qty: 220, price: 0.07 },
+                { name: 'Сливки 33%', qty: 160, price: 0.45 },
+                { name: 'Сливочное масло', qty: 60, price: 0.8 },
+                { name: 'Соль морская', qty: 5, price: 0.2 }
+            ]
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
             if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 currentTelegramId = tg.initDataUnsafe.user.id;
@@ -357,12 +433,16 @@
             document.getElementById('profileRole').textContent = state.profession;
             document.getElementById('settingProfession').value = state.profession;
             
-            // Настройка заголовков под выбранную профессию
             const calcTitle = document.getElementById('calcTitle');
+            const templatesSelect = document.getElementById('foodTemplatesSelect');
+            
+            // Динамическая адаптация калькулятора под ремесло
             if (state.profession === 'Кондитер') {
                 calcTitle.innerHTML = `<i class="fa-solid fa-cake-candles text-indigo-500 mr-2"></i>Расчет рецепта`;
+                templatesSelect.classList.remove('hidden');
             } else {
                 calcTitle.innerHTML = `<i class="fa-solid fa-screwdriver-wrench text-indigo-500 mr-2"></i>Расчет фурнитуры`;
+                templatesSelect.classList.add('hidden');
             }
 
             const today = new Date();
@@ -374,33 +454,48 @@
             renderOrders();
         }
 
-        // МОДУЛЬ: ДИНАМИЧЕСКИЙ КАЛЬКУЛЯТОР
+        // МОДУЛЬ: ДИНАМИЧЕСКИЙ КАЛЬКУЛЯТОР С ШАБЛОНАМИ
         function buildCalculatorInputs() {
             const container = document.getElementById('calcItemsContainer');
             container.innerHTML = '';
-            
             for (let i = 0; i < 3; i++) {
                 addCalcItemRow();
             }
         }
 
-        function addCalcItemRow() {
+        function addCalcItemRow(name = '', qty = '', price = '') {
             const container = document.getElementById('calcItemsContainer');
             const row = document.createElement('div');
             row.className = "grid grid-cols-3 gap-2 items-center bg-slate-900/60 p-2 rounded-xl border border-slate-800/40 calc-item-row";
             
-            const placeholderName = state.profession === 'Кондитер' ? 'Сахар / Мука' : 'Петли / Крепеж';
-            const placeholderUnit = state.profession === 'Кондитер' ? 'Вес (г/шт)' : 'Кол-во (шт)';
+            let placeholderName = 'Компонент';
+            let placeholderUnit = 'Кол-во';
+            
+            if (state.profession === 'Кондитер') { placeholderName = 'Сахар / Мука'; placeholderUnit = 'Вес (г/шт)'; }
+            else if (state.profession === 'Сборщик мебели') { placeholderName = 'Петли / Направляющие'; placeholderUnit = 'Кол-во (шт)'; }
+            else if (state.profession === 'Швея / Портной') { placeholderName = 'Ткань / Молния'; placeholderUnit = 'Метры / шт'; }
 
             row.innerHTML = `
-                <input type="text" class="bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white focus:outline-none" placeholder="${placeholderName}">
-                <input type="number" oninput="calculateTotalRecipePrice()" class="bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white text-center focus:outline-none item-qty" placeholder="${placeholderUnit}">
+                <input type="text" class="bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white focus:outline-none" placeholder="${placeholderName}" value="${name}">
+                <input type="number" oninput="calculateTotalRecipePrice()" class="bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white text-center focus:outline-none item-qty" placeholder="${placeholderUnit}" value="${qty}">
                 <div class="flex space-x-1 items-center">
-                    <input type="number" oninput="calculateTotalRecipePrice()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white text-center focus:outline-none item-price" placeholder="Цена за ед.">
+                    <input type="number" oninput="calculateTotalRecipePrice()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white text-center focus:outline-none item-price" placeholder="Цена за ед." value="${price}">
                     <button onclick="this.parentElement.parentElement.remove(); calculateTotalRecipePrice();" class="text-slate-600 hover:text-rose-400 p-1"><i class="fa-solid fa-trash-can text-xs"></i></button>
                 </div>
             `;
             container.appendChild(row);
+        }
+
+        function applyFoodTemplate(templateKey) {
+            if (!templateKey || !foodTemplates[templateKey]) return;
+            const container = document.getElementById('calcItemsContainer');
+            container.innerHTML = '';
+            
+            foodTemplates[templateKey].forEach(item => {
+                addCalcItemRow(item.name, item.qty, item.price);
+            });
+            calculateTotalRecipePrice();
+            document.getElementById('foodTemplatesSelect').value = '';
         }
 
         function calculateTotalRecipePrice() {
@@ -632,6 +727,41 @@
             document.getElementById('reportResultCard').classList.remove('hidden');
         }
 
+        // МОДУЛЬ: РЕЗЕРВНОЕ КОПИРОВАНИЕ (БЭКАПЫ)
+        function exportBackupData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `masterapp_backup_${selectedDateStr}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importBackupData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    if (importedState.profession && Array.isArray(importedState.orders)) {
+                        state = importedState;
+                        state.isFirstLaunch = false;
+                        saveUserData();
+                        initApp();
+                        alert("Данные успешно импортированы из резервной копии!");
+                    } else {
+                        alert("Ошибка: Неверный формат файла резервной копии.");
+                    }
+                } catch (err) {
+                    alert("Ошибка чтения файла резервной копии.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
         // МОДУЛЬ: ОПЦИИ И НАСТРОЙКИ
         function updateAccountProfession(newProf) {
             state.profession = newProf;
@@ -640,7 +770,7 @@
         }
 
         function clearAllData() {
-            if (confirm("Вы уверены? Это действие безвозвратно удалит вашу личную базу данных на этом аккаунте.")) {
+            if (confirm("Вы уверены? Это действие безвозвратно удалит вашу локальную базу данных на этом аккаунте.")) {
                 localStorage.removeItem(`masterapp_db_user_${currentTelegramId}`);
                 location.reload();
             }
@@ -649,7 +779,13 @@
         // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ИНТЕРФЕЙСА
         function populateProfessionSelects() {
             const select = document.getElementById('settingProfession');
-            select.innerHTML = `<option value="Кондитер">Кондитер / Пекарь</option><option value="Сборщик мебели">Сборщик мебели</option>`;
+            select.innerHTML = `
+                <option value="Кондитер">Кондитер / Пекарь</option>
+                <option value="Сборщик мебели">Сборщик мебели</option>
+                <option value="Швея / Портной">Швея / Портной</option>
+                <option value="Мастер автосервиса">Мастер автосервиса</option>
+                <option value="Строитель / Ремонтник">Строитель / Ремонтник</option>
+            `;
         }
 
         function formatDate(date) {
