@@ -6,7 +6,8 @@
     <title>MasterAPP Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></link>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -76,13 +77,13 @@
 
     <div id="appContainer" class="flex-1 flex flex-col max-w-md mx-auto w-full pb-24 relative overflow-hidden bg-slate-900 shadow-2xl">
         
-        <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
+        <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-b-slate-800/80 px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center shadow-lg shadow-orange-500/20">
                     <i class="fa-solid fa-crown text-slate-900 text-xs"></i>
                 </div>
                 <div>
-                    <h1 class="text-sm font-bold tracking-wide text-white">MasterAPP <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 ml-1">PRO</span></h1>
+                    <h1 class="text-sm font-bold tracking-wide text-white">Мастер <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 ml-1">PRO</span></h1>
                     <p id="userRoleBadge" class="text-[10px] text-slate-400">Загрузка профиля...</p>
                 </div>
             </div>
@@ -96,11 +97,11 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
+        <main id="tabView-calendar" class="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
             
             <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-3.5 backdrop-blur-sm">
                 <div class="flex items-center justify-between mb-3.5 px-1">
-                    <h3 id="calendarMonthYear" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Март 2026</h3>
+                    <h3 id="calendarMonthYear" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Загрузка...</h3>
                     <div class="flex gap-1">
                         <button onclick="changeMonth(-1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-95"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
                         <button onclick="changeMonth(1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-95"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
@@ -124,7 +125,43 @@
                 </div>
                 <div id="ordersListContainer" class="space-y-2.5"></div>
             </section>
-        </main><nav class="absolute bottom-0 left-0 right-0 z-40 bg-slate-900/95 border-t border-slate-800/80 px-6 py-2 flex justify-around items-center backdrop-blur-lg max-w-md mx-auto">
+        </main>
+
+        <main id="tabView-analytics" class="hidden flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
+            <section class="grid grid-cols-2 gap-3">
+                <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Выручка (Общая)</p>
+                    <h3 id="financeTotalRevenue" class="text-lg font-black text-white">0 ₽</h3>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Предоплаты</p>
+                    <h3 id="financeTotalPrepayments" class="text-lg font-black text-amber-400">0 ₽</h3>
+                </div>
+            </section>
+
+            <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-slate-400 tracking-wide uppercase">Журнал расходов</h3>
+                    <button onclick="openExpenseModal()" class="text-[11px] font-semibold text-orange-400 bg-orange-500/10 px-2.5 py-1 rounded-xl border border-orange-500/20 active:scale-95 transition-all">+ Расход</button>
+                </div>
+                <div id="expensesListContainer" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar"></div>
+            </section>
+        </main>
+
+        <main id="tabView-warehouse" class="hidden flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar">
+            <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-slate-400 tracking-wide uppercase">Материалы и ресурсы</h3>
+                    <div class="flex gap-1.5">
+                        <button onclick="openManageTemplatesModal()" class="text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20 active:scale-95 transition-all">Шаблоны</button>
+                        <button onclick="openWarehouseModal()" class="text-[11px] font-semibold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 active:scale-95 transition-all">+ Ресурс</button>
+                    </div>
+                </div>
+                <div id="warehouseListContainer" class="space-y-2"></div>
+            </section>
+        </main>
+
+        <nav class="absolute bottom-0 left-0 right-0 z-40 bg-slate-900/95 border-t border-slate-800/80 px-6 py-2 flex justify-around items-center backdrop-blur-lg max-w-md mx-auto">
             <button onclick="switchTab('calendar')" id="tabBtn-calendar" class="flex flex-col items-center gap-1 text-amber-500 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-500/5"><i class="fa-solid fa-calendar-alt text-base"></i></div>
                 <span class="text-[10px] font-bold tracking-wide">Заказы</span>
@@ -141,40 +178,6 @@
 
     </div>
 
-    <div id="view-analytics" class="hidden flex-1 flex flex-col max-w-md mx-auto w-full pb-24 px-4 pt-4 space-y-4 overflow-y-auto no-scrollbar bg-slate-900">
-        <section class="grid grid-cols-2 gap-3">
-            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm">
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Выручка (Общая)</p>
-                <h3 id="financeTotalRevenue" class="text-lg font-black text-white">0 ₽</h3>
-            </div>
-            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm">
-                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Предоплаты</p>
-                <h3 id="financeTotalPrepayments" class="text-lg font-black text-amber-400">0 ₽</h3>
-            </div>
-        </section>
-
-        <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm space-y-3.5">
-            <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold text-slate-400 tracking-wide uppercase">Журнал расходов</h3>
-                <button onclick="openExpenseModal()" class="text-[11px] font-semibold text-orange-400 bg-orange-500/10 px-2.5 py-1 rounded-xl border border-orange-500/20 active:scale-95 transition-all">+ Расход</button>
-            </div>
-            <div id="expensesListContainer" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar"></div>
-        </section>
-    </div>
-
-    <div id="view-warehouse" class="hidden flex-1 flex flex-col max-w-md mx-auto w-full pb-24 px-4 pt-4 space-y-4 overflow-y-auto no-scrollbar bg-slate-900">
-        <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm space-y-3.5">
-            <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold text-slate-400 tracking-wide uppercase">Материалы и ресурсы</h3>
-                <div class="flex gap-1.5">
-                    <button onclick="openManageTemplatesModal()" class="text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20 active:scale-95 transition-all">Шаблоны</button>
-                    <button onclick="openWarehouseModal()" class="text-[11px] font-semibold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 active:scale-95 transition-all">+ Ресурс</button>
-                </div>
-            </div>
-            <div id="warehouseListContainer" class="space-y-2"></div>
-        </section>
-    </div>
-
     <div id="menuModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -187,7 +190,7 @@
                         <i class="fa-solid fa-cake-candles text-amber-400 text-base"></i><div><p class="font-bold text-white">Кондитер / Повар</p></div>
                     </button>
                     <button onclick="selectUserProfileRole('beauty')" id="menuRole-beauty" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
-                        <i class="fa-solid fa-sparkles text-pink-400 text-base"></i><div><p class="font-bold text-white">Бьюти-мастер</p></div>
+                        <i class="fa-solid fa-sparkles text-pink-400 text-base"></i><div><p class="font-bold text-white">Бьюти-мастер (Маникюр / Брови)</p></div>
                     </button>
                     <button onclick="selectUserProfileRole('service')" id="menuRole-service" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
                         <i class="fa-solid fa-screwdriver-wrench text-blue-400 text-base"></i><div><p class="font-bold text-white">Муж на час / Ремонт</p></div>
@@ -197,12 +200,6 @@
                     </button>
                     <button onclick="selectUserProfileRole('auto')" id="menuRole-auto" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
                         <i class="fa-solid fa-car text-orange-400 text-base"></i><div><p class="font-bold text-white">Автомеханик / Сервис</p></div>
-                    </button>
-                </div>
-                <div class="border-t border-slate-800 pt-3 space-y-2">
-                    <button onclick="exportToExcel(); closeMenuModal();" class="w-full bg-slate-800 text-white font-medium p-3 rounded-xl flex items-center justify-between border border-slate-700/50">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-400 text-sm"></i> Облачный бэкап Excel</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
                     </button>
                 </div>
             </div>
@@ -256,15 +253,13 @@
                 <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-scroll text-amber-400"></i> Шаблоны калькуляции</h3>
                 <button onclick="closeManageTemplatesModal()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
             </div>
-            
             <div class="bg-slate-800/30 p-3 rounded-2xl border border-slate-800 space-y-2 text-xs">
                 <p class="font-bold text-slate-300">Создать новый шаблон</p>
                 <div class="flex gap-2">
-                    <input type="text" id="newTemplateName" placeholder="Название (например, Бисквит)" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none">
+                    <input type="text" id="newTemplateName" placeholder="Название (например, Классический бисквит)" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none">
                     <button onclick="addNewTemplate()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded-xl transition-all">Создать</button>
                 </div>
             </div>
-
             <div id="templatesCloudList" class="space-y-2 text-xs max-h-48 overflow-y-auto no-scrollbar"></div>
         </div>
     </div>
@@ -279,7 +274,7 @@
                 </div>
                 <div class="space-y-1">
                     <label class="font-semibold text-slate-400">Комментарий / Статья *</label>
-                    <input type="text" id="expenseComment" placeholder="Закупка расходников, Аренда" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+                    <input type="text" id="expenseComment" placeholder="Закупка расходников" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
                 </div>
             </div>
             <div class="flex gap-3">
@@ -295,7 +290,7 @@
             <div class="space-y-3 text-xs">
                 <div class="space-y-1">
                     <label class="font-semibold text-slate-400">Наименование материала/сырья *</label>
-                    <input type="text" id="whName" placeholder="Мука, База для ногтей, Кабель" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+                    <input type="text" id="whName" placeholder="Мука, лак, кабель" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="space-y-1">
@@ -304,7 +299,7 @@
                     </div>
                     <div class="space-y-1">
                         <label class="font-semibold text-slate-400">Ед. измерения *</label>
-                        <input type="text" id="whUnit" placeholder="г, шт, мл, м" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+                        <input type="text" id="whUnit" placeholder="г, шт, мл" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
                     </div>
                 </div>
                 <div class="space-y-1">
@@ -317,7 +312,9 @@
                 <button onclick="saveWarehouseItem()" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-900 font-bold py-2.5 rounded-xl text-xs">Сохранить</button>
             </div>
         </div>
-    </div><script>
+    </div>
+
+    <script>
         const tg = window.Telegram?.WebApp;
         if (tg) {
             tg.ready();
@@ -325,54 +322,78 @@
         }
 
         const currentTelegramId = tg?.initDataUnsafe?.user?.id || 999999;
+        const currentUserName = tg?.initDataUnsafe?.user?.first_name || tg?.initDataUnsafe?.user?.username || "Мастер";
         
         let currentDate = new Date();
         let selectedDateStr = formatDate(currentDate);
         let currentTab = 'calendar';
 
-        // Глобальное состояние приложения с поддержкой 5 профессий
         let state = {
-            user: { role: null }, // Изначально null для проверки первого входа
+            user: { 
+                role: localStorage.getItem(`masterapp_role_${currentTelegramId}`) || null,
+                name: currentUserName
+            },
             orders: [],
-            warehouse: [],
+            warehouse: [
+                { id: "1", name: "Расходные материалы", qty: 500, unit: "шт", price: 15 }
+            ],
             expenses: [],
-            templates: [] // Шаблоны теперь загружаются динамически из Supabase
+            templates: []
         };
 
         const BACKEND_URL = 'http://localhost:3000';
         const initData = tg?.initData || "";
 
-        // Сетевой хелпер с авторизацией
         async function apiRequest(endpoint, options = {}) {
             options.headers = {
                 ...options.headers,
                 'Content-Type': 'application/json',
                 'X-Telegram-InitData': initData
             };
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            options.signal = controller.signal;
+
             try {
                 const response = await fetch(`${BACKEND_URL}${endpoint}`, options);
+                clearTimeout(timeoutId);
                 return response;
             } catch (err) {
-                console.error("Ошибка связи с сервером:", err);
+                clearTimeout(timeoutId);
+                console.warn(`Сервер недоступен на ${endpoint}:`, err.message);
                 return null;
             }
         }
 
-        // КОМПЛЕКСНАЯ ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ
-        async function loadUserData() {
-            // Сначала пробуем получить заказы и неявно проверить существование пользователя
-            const response = await apiRequest('/api/orders');
-            
-            // Запрашиваем шаблоны из облака
-            const templatesResponse = await apiRequest('/api/templates');
-            if (templatesResponse && templatesResponse.ok) {
-                state.templates = await templatesResponse.json();
+        function startApp() {
+            // Мгновенно выводим реальное имя в шапку!
+            const headerTitle = document.querySelector('header h1');
+            if (headerTitle) {
+                headerTitle.innerHTML = `${state.user.name} <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 ml-1">PRO</span>`;
             }
 
-            if (response && response.ok) {
-                const ordersFromServer = await response.json();
-                
-                // Форматируем заказы под фронтенд
+            // Мгновенная проверка роли без задержек сети
+            if (!state.user.role) {
+                document.getElementById('onboardingScreen').classList.remove('hidden');
+                document.getElementById('userRoleBadge').innerText = "Ожидание выбора роли...";
+            } else {
+                document.getElementById('onboardingScreen').classList.add('hidden');
+                updateInterfaceByRole();
+                renderCalendar();
+                renderOrders();
+                renderAnalytics();
+                renderWarehouse();
+            }
+
+            // Загружаем данные из облака в фоне, не вешая интерфейс
+            loadCloudData();
+        }
+
+        async function loadCloudData() {
+            const ordRes = await apiRequest('/api/orders');
+            if (ordRes && ordRes.ok) {
+                const ordersFromServer = await ordRes.json();
                 state.orders = ordersFromServer.map(o => ({
                     id: o.id.toString(),
                     date: o.deadline ? o.deadline.split('T')[0] : selectedDateStr,
@@ -382,50 +403,18 @@
                     prepayment: parseFloat(o.custom_fields?.prepayment || 0),
                     customFieldVal: o.custom_fields?.custom_field_value || ""
                 }));
-
-                // Имитируем определение роли на основе сохраненных данных бэкенда (или берем кэш)
-                if(!state.user.role) {
-                    const localRole = localStorage.getItem(`masterapp_role_${currentTelegramId}`);
-                    if(localRole) {
-                        state.user.role = localRole;
-                    } else {
-                        // Если роли нет вообще нигде — включаем онбординг
-                        document.getElementById('onboardingScreen').classList.remove('hidden');
-                        return;
-                    }
-                }
-            } else {
-                // Если бэкенд недоступен, проверяем локальный кэш роли, чтобы приложение запустилось автономно
-                const localRole = localStorage.getItem(`masterapp_role_${currentTelegramId}`);
-                if(localRole) {
-                    state.user.role = localRole;
-                } else {
-                    document.getElementById('onboardingScreen').classList.remove('hidden');
-                    return;
-                }
+                renderCalendar();
+                renderOrders();
+                renderAnalytics();
             }
 
-            // Наполняем склад дефолтными материалами, если он пуст
-            if (!state.warehouse.length) {
-                state.warehouse = [
-                    { id: "1", name: "Расходники базовые", qty: 100, unit: "шт", price: 10 }
-                ];
+            const tRes = await apiRequest('/api/templates');
+            if (tRes && tRes.ok) {
+                state.templates = await tRes.json();
+                populateTemplatesSelect();
             }
-
-            document.getElementById('onboardingScreen').classList.add('hidden');
-            initApp();
         }
 
-        function initApp() {
-            updateInterfaceByRole();
-            renderCalendar();
-            renderOrders();
-            renderAnalytics();
-            renderWarehouse();
-            populateTemplatesSelect();
-        }
-
-        // ДИНАМИЧЕСКАЯ НАСТРОЙКА ИНТЕРФЕЙСА ПОД 5 ПРОФЕССИЙ
         const rolesConfig = {
             baker: { title: "Кондитерская мастерская", product: "Наименование изделия *", custom: null },
             beauty: { title: "Бьюти-салон / Мастер", product: "Вид услуги (Маникюр/Брови) *", custom: "Время сессии (например, 14:00)" },
@@ -438,56 +427,48 @@
             const role = state.user.role;
             const config = rolesConfig[role] || rolesConfig.baker;
             
-            // Обновляем шапку
             document.getElementById('userRoleBadge').innerText = config.title;
-            
-            // Настраиваем подписи в форме добавления заказа
             document.getElementById('lblOrderProduct').innerText = config.product;
             
             const customBox = document.getElementById('orderCustomFieldBox');
             if (config.custom) {
                 customBox.classList.remove('hidden');
                 document.getElementById('lblOrderCustomField').innerText = config.custom;
-                document.getElementById('orderCustomField').placeholder = "Введите данные";
             } else {
                 customBox.classList.add('hidden');
             }
 
-            // Подсвечиваем активную роль в меню настроек
             ['baker', 'beauty', 'service', 'tailor', 'auto'].forEach(r => {
                 const btn = document.getElementById(`menuRole-${r}`);
                 if(btn) {
-                    if(r === role) {
-                        btn.className = "p-3 rounded-xl border border-amber-500 bg-amber-500/10 text-left flex items-center gap-3 w-full";
-                    } else {
-                        btn.className = "p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3 w-full";
-                    }
+                    btn.className = (r === role) 
+                        ? "p-3 rounded-xl border border-amber-500 bg-amber-500/10 text-left flex items-center gap-3 w-full"
+                        : "p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3 w-full";
                 }
             });
         }
 
-        // Функция выбора роли на экране онбординга или в меню
         async function selectUserProfileRole(role) {
             state.user.role = role;
             localStorage.setItem(`masterapp_role_${currentTelegramId}`, role);
             
             document.getElementById('onboardingScreen').classList.add('hidden');
             updateInterfaceByRole();
-            populateTemplatesSelect();
             closeMenuModal();
 
-            // Отправляем выбранную роль на сервер в бэкенд
-            await apiRequest('/api/user/profile', {
+            renderCalendar();
+            renderOrders();
+            populateTemplatesSelect();
+
+            apiRequest('/api/user/profile', {
                 method: 'POST',
                 body: JSON.stringify({ role: role })
             });
-
-            initApp();
         }
 
-        // УПРАВЛЕНИЕ ШАБЛОНАМИ (ОБЛАЧНЫЕ CRUD-ОПЕРАЦИИ)
         function populateTemplatesSelect() {
             const select = document.getElementById('orderTemplateSelect');
+            if (!select) return;
             select.innerHTML = '<option value="">Без автосписания</option>';
             state.templates.forEach(t => {
                 select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
@@ -496,6 +477,7 @@
 
         async function renderCloudTemplatesList() {
             const container = document.getElementById('templatesCloudList');
+            if (!container) return;
             container.innerHTML = '';
 
             if(!state.templates.length) {
@@ -521,105 +503,90 @@
             const name = nameInput.value.trim();
             if(!name) return;
 
+            const fakeId = Date.now();
+            state.templates.push({ id: fakeId, name: name });
+            renderCloudTemplatesList();
+            populateTemplatesSelect();
+            nameInput.value = '';
+
             const response = await apiRequest('/api/templates', {
                 method: 'POST',
                 body: JSON.stringify({ name: name, recipe_data: [] })
             });
 
             if(response && response.ok) {
-                nameInput.value = '';
-                // Перезагружаем шаблоны
                 const tRes = await apiRequest('/api/templates');
-                if(tRes && tRes.ok) state.templates = await tRes.json();
-                
-                renderCloudTemplatesList();
-                populateTemplatesSelect();
+                if(tRes && tRes.ok) {
+                    state.templates = await tRes.json();
+                    renderCloudTemplatesList();
+                    populateTemplatesSelect();
+                }
             }
         }
 
         async function deleteTemplateFromServer(id) {
             if(!confirm("Удалить этот шаблон?")) return;
-            const response = await apiRequest(`/api/templates/${id}`, { method: 'DELETE' });
-            if(response && response.ok) {
-                state.templates = state.templates.filter(t => t.id !== id);
-                renderCloudTemplatesList();
-                populateTemplatesSelect();
-            }
+            state.templates = state.templates.filter(t => t.id !== id);
+            renderCloudTemplatesList();
+            populateTemplatesSelect();
+
+            await apiRequest(`/api/templates/${id}`, { method: 'DELETE' });
         }
 
-        // СБОРКА И ОТПРАВКА АДАПТИВНОГО ЗАКАЗА НА СЕРВЕР
         async function saveOrder() {
             const client = document.getElementById('orderClient').value.trim();
             const product = document.getElementById('orderProduct').value.trim();
             const price = parseFloat(document.getElementById('orderPrice').value) || 0;
             const prepayment = parseFloat(document.getElementById('orderPrepayment').value) || 0;
-            const customFieldVal = document.getElementById('orderCustomField').value.trim();
+            const customFieldEl = document.getElementById('orderCustomField');
+            const customFieldVal = customFieldEl ? customFieldEl.value.trim() : "";
             const templateKey = document.getElementById('orderTemplateSelect').value;
 
             if (!client || !product || price <= 0) { alert("Заполните обязательные поля"); return; }
 
-            const orderData = {
-                client_name: client,
-                price: price,
-                expenses: 0,
-                status: 'new',
-                deadline: `${selectedDateStr}T12:00:00Z`,
-                custom_fields: {
-                    product_name: product,
-                    prepayment: prepayment,
-                    recipe_template: templateKey,
-                    custom_field_value: customFieldVal // Кастомная строка (Время, Адрес, Мерки, Авто)
-                }
+            const localNewOrder = {
+                id: Date.now().toString(),
+                date: selectedDateStr,
+                client, product, price, prepayment, customFieldVal
             };
+            state.orders.unshift(localNewOrder);
+            renderCalendar();
+            renderOrders();
+            renderAnalytics();
+            closeOrderModal();
 
-            const response = await apiRequest('/api/orders', {
+            document.getElementById('orderClient').value = '';
+            document.getElementById('orderProduct').value = '';
+            document.getElementById('orderPrice').value = '';
+            document.getElementById('orderPrepayment').value = '';
+            if(customFieldEl) customFieldEl.value = '';
+
+            await apiRequest('/api/orders', {
                 method: 'POST',
-                body: JSON.stringify(orderData)
+                body: JSON.stringify({
+                    client_name: client,
+                    price: price,
+                    expenses: 0,
+                    status: 'new',
+                    deadline: `${selectedDateStr}T12:00:00Z`,
+                    custom_fields: {
+                        product_name: product,
+                        prepayment: prepayment,
+                        recipe_template: templateKey,
+                        custom_field_value: customFieldVal
+                    }
+                })
             });
-
-            if (response && response.ok) {
-                await loadUserData();
-                closeOrderModal();
-                // Сброс полей ввода
-                document.getElementById('orderClient').value = '';
-                document.getElementById('orderProduct').value = '';
-                document.getElementById('orderPrice').value = '';
-                document.getElementById('orderPrepayment').value = '';
-                document.getElementById('orderCustomField').value = '';
-            } else {
-                alert("Ошибка сохранения заказа на бэкенде");
-            }
         }
 
-        // EXCEL ЭКСПОРТ
-        async function exportToExcel() {
-            try {
-                const response = await apiRequest('/api/backup/export');
-                if (!response || !response.ok) throw new Error("Сервер не вернул файл");
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `MasterApp_Backup_${selectedDateStr}.xlsx`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-            } catch (err) {
-                alert("Ошибка скачивания бэкапа Excel: " + err.message);
-            }
-        }
-
-        // Отрисовка Календаря дат
         function renderCalendar() {
             const grid = document.getElementById('calendarDatesGrid');
             const monthLabel = document.getElementById('calendarMonthYear');
+            if(!grid || !monthLabel) return;
             grid.innerHTML = '';
             
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            
             const monthsRu = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
             monthLabel.innerText = `${monthsRu[month]} ${year}`;
             
@@ -632,7 +599,6 @@
             for(let d=1; d<=totalDays; d++) {
                 const dayBtn = document.createElement('button');
                 dayBtn.innerText = d;
-                
                 const currentLoopDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 dayBtn.className = "h-9 rounded-xl flex items-center justify-center font-bold text-xs relative transition-all active:scale-95 ";
                 
@@ -657,14 +623,14 @@
             }
         }
 
-        // Отрисовка Списка заказов дня
         function renderOrders() {
             const container = document.getElementById('ordersListContainer');
             const countBadge = document.getElementById('ordersCountBadge');
+            if(!container) return;
             container.innerHTML = '';
             
             const dayOrders = state.orders.filter(o => o.date === selectedDateStr);
-            countBadge.innerText = dayOrders.length;
+            if(countBadge) countBadge.innerText = dayOrders.length;
             
             if (!dayOrders.length) {
                 container.innerHTML = `
@@ -697,12 +663,15 @@
         function renderAnalytics() {
             const totalRev = state.orders.reduce((sum, o) => sum + o.price, 0);
             const totalPre = state.orders.reduce((sum, o) => sum + o.prepayment, 0);
-            document.getElementById('financeTotalRevenue').innerText = `${totalRev.toLocaleString()} ₽`;
-            document.getElementById('financeTotalPrepayments').innerText = `${totalPre.toLocaleString()} ₽`;
+            const revEl = document.getElementById('financeTotalRevenue');
+            const preEl = document.getElementById('financeTotalPrepayments');
+            if(revEl) revEl.innerText = `${totalRev.toLocaleString()} ₽`;
+            if(preEl) preEl.innerText = `${totalPre.toLocaleString()} ₽`;
         }
 
         function renderWarehouse() {
             const container = document.getElementById('warehouseListContainer');
+            if(!container) return;
             container.innerHTML = '';
             state.warehouse.forEach(w => {
                 const card = document.createElement('div');
@@ -712,27 +681,21 @@
             });
         }
 
-        // Переключение Вкладок (Табов)
         function switchTab(tab) {
             currentTab = tab;
             ['calendar', 'analytics', 'warehouse'].forEach(t => {
                 const btn = document.getElementById(`tabBtn-${t}`);
+                const viewEl = document.getElementById(`tabView-${t}`);
+                if(!btn || !viewEl) return;
+                
                 if(t === tab) {
                     btn.className = "flex flex-col items-center gap-1 text-amber-500 transition-all active:scale-95";
                     btn.querySelector('div').className = "w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-500/5";
-                    if(t === 'calendar') document.getElementById('appContainer').style.removeAttribute('style');
-                    else {
-                        const viewEl = document.getElementById(`view-${t}`);
-                        if(viewEl) viewEl.classList.remove('hidden');
-                    }
+                    viewEl.classList.remove('hidden');
                 } else {
                     btn.className = "flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition-all active:scale-95";
                     btn.querySelector('div').className = "w-10 h-10 rounded-xl bg-transparent flex items-center justify-center border border-transparent";
-                    if(t === 'calendar' && tab !== 'calendar') document.getElementById('appContainer').style.display = 'none';
-                    else {
-                        const viewEl = document.getElementById(`view-${t}`);
-                        if(viewEl) viewEl.classList.add('hidden');
-                    }
+                    viewEl.classList.add('hidden');
                 }
             });
             if(tab === 'analytics') renderAnalytics();
@@ -747,7 +710,6 @@
         function closeExpenseModal() { document.getElementById('expenseModal').classList.add('hidden'); }
         function openWarehouseModal() { document.getElementById('warehouseModal').classList.remove('hidden'); }
         function closeWarehouseModal() { document.getElementById('warehouseModal').classList.add('hidden'); }
-        
         function openManageTemplatesModal() { 
             document.getElementById('manageTemplatesModal').classList.remove('hidden'); 
             renderCloudTemplatesList();
@@ -780,6 +742,24 @@
             document.getElementById('whPrice').value = '';
         }
 
+        async function exportToExcel() {
+            try {
+                const response = await apiRequest('/api/backup/export');
+                if (!response || !response.ok) throw new Error("Сервер не вернул файл");
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `MasterApp_Backup_${selectedDateStr}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                alert("Ошибка бэкапа: " + err.message);
+            }
+        }
+
         function changeMonth(dir) {
             currentDate.setMonth(currentDate.getMonth() + dir);
             renderCalendar();
@@ -792,10 +772,7 @@
             return `${y}-${m}-${d}`;
         }
 
-        // СТАРТ
-        window.addEventListener('DOMContentLoaded', () => {
-            loadUserData();
-        });
+        window.addEventListener('DOMContentLoaded', startApp);
     </script>
 </body>
 </html>
