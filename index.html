@@ -19,6 +19,61 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased select-none">
 
+    <div id="onboardingScreen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between p-6 overflow-y-auto no-scrollbar hidden">
+        <div class="space-y-6 pt-4">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center shadow-xl shadow-orange-500/20 mx-auto">
+                    <i class="fa-solid fa-crown text-slate-950 text-xl"></i>
+                </div>
+                <h2 class="text-xl font-black tracking-wide text-white">Добро пожаловать в MasterAPP!</h2>
+                <p class="text-xs text-slate-400 max-w-xs mx-auto">Выберите вашу основную сферу деятельности для настройки персонального рабочего пространства</p>
+            </div>
+
+            <div class="space-y-2.5">
+                <button onclick="selectUserProfileRole('baker')" class="w-full p-4 rounded-2xl border border-slate-800 bg-slate-900/60 text-left hover:border-amber-500/50 transition-all flex items-center gap-4 active:scale-[0.99]">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 text-amber-400 text-lg"><i class="fa-solid fa-cake-candles"></i></div>
+                    <div>
+                        <span class="font-bold text-sm text-white block">Кондитер / Повар</span>
+                        <span class="text-[11px] text-slate-400">Калькуляция рецептов, ингредиенты и вес</span>
+                    </div>
+                </button>
+
+                <button onclick="selectUserProfileRole('beauty')" class="w-full p-4 rounded-2xl border border-slate-800 bg-slate-900/60 text-left hover:border-pink-500/50 transition-all flex items-center gap-4 active:scale-[0.99]">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center border border-pink-500/20 text-pink-400 text-lg"><i class="fa-solid fa-sparkles"></i></div>
+                    <div>
+                        <span class="font-bold text-sm text-white block">Бьюти-мастер (Маникюр / Брови)</span>
+                        <span class="text-[11px] text-slate-400">Учет материалов, записей и расходников</span>
+                    </div>
+                </button>
+
+                <button onclick="selectUserProfileRole('service')" class="w-full p-4 rounded-2xl border border-slate-800 bg-slate-900/60 text-left hover:border-blue-500/50 transition-all flex items-center gap-4 active:scale-[0.99]">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-400 text-lg"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <div>
+                        <span class="font-bold text-sm text-white block">Муж на час / Ремонт</span>
+                        <span class="text-[11px] text-slate-400">Выездные услуги, учет фурнитуры и деталей</span>
+                    </div>
+                </button>
+
+                <button onclick="selectUserProfileRole('tailor')" class="w-full p-4 rounded-2xl border border-slate-800 bg-slate-900/60 text-left hover:border-emerald-500/50 transition-all flex items-center gap-4 active:scale-[0.99]">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-400 text-lg"><i class="fa-solid fa-scissors"></i></div>
+                    <div>
+                        <span class="font-bold text-sm text-white block">Швея / Ателье</span>
+                        <span class="text-[11px] text-slate-400">Ткани, замеры клиентов и учет фурнитуры</span>
+                    </div>
+                </button>
+
+                <button onclick="selectUserProfileRole('auto')" class="w-full p-4 rounded-2xl border border-slate-800 bg-slate-900/60 text-left hover:border-orange-500/50 transition-all flex items-center gap-4 active:scale-[0.99]">
+                    <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 text-orange-400 text-lg"><i class="fa-solid fa-car"></i></div>
+                    <div>
+                        <span class="font-bold text-sm text-white block">Автомеханик / Сервис</span>
+                        <span class="text-[11px] text-slate-400">Учет запчастей, марок авто и видов ремонта</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <p class="text-[10px] text-slate-600 text-center pt-4">Роль можно будет изменить в любое время в настройках</p>
+    </div>
+
     <div id="appContainer" class="flex-1 flex flex-col max-w-md mx-auto w-full pb-24 relative overflow-hidden bg-slate-900 shadow-2xl">
         
         <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
@@ -45,7 +100,7 @@
             
             <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-3.5 backdrop-blur-sm">
                 <div class="flex items-center justify-between mb-3.5 px-1">
-                    <h3 id="calendarMonthYear" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Март 2025</h3>
+                    <h3 id="calendarMonthYear" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Март 2026</h3>
                     <div class="flex gap-1">
                         <button onclick="changeMonth(-1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-95"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
                         <button onclick="changeMonth(1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-95"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
@@ -69,9 +124,7 @@
                 </div>
                 <div id="ordersListContainer" class="space-y-2.5"></div>
             </section>
-        </section>
-
-        <nav class="absolute bottom-0 left-0 right-0 z-40 bg-slate-900/95 border-t border-slate-800/80 px-6 py-2 flex justify-around items-center backdrop-blur-lg max-w-md mx-auto">
+        </main><nav class="absolute bottom-0 left-0 right-0 z-40 bg-slate-900/95 border-t border-slate-800/80 px-6 py-2 flex justify-around items-center backdrop-blur-lg max-w-md mx-auto">
             <button onclick="switchTab('calendar')" id="tabBtn-calendar" class="flex flex-col items-center gap-1 text-amber-500 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-500/5"><i class="fa-solid fa-calendar-alt text-base"></i></div>
                 <span class="text-[10px] font-bold tracking-wide">Заказы</span>
@@ -88,80 +141,6 @@
 
     </div>
 
-    <div id="orderModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
-        <div class="bg-slate-850 border border-slate-800 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl transform translate-y-10 transition-transform duration-300 ease-out bg-slate-900">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 id="orderModalTitle" class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-invoice text-amber-400"></i> Новый заказ</h3>
-                <button onclick="closeOrderModal()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark text-xs"></i></button>
-            </div>
-            <div class="space-y-3.5 text-xs">
-                <div class="space-y-1.5">
-                    <label class="font-semibold text-slate-400 flex items-center gap-1">Имя клиента *</label>
-                    <input type="text" id="orderClient" placeholder="Иван Иванов" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80 transition-colors">
-                </div>
-                <div class="space-y-1.5">
-                    <label class="font-semibold text-slate-400 flex items-center gap-1">Наименование товара / Услуги *</label>
-                    <input type="text" id="orderProduct" placeholder="Торт «Сникерс», Сборка кухни и т.д." class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80 transition-colors">
-                </div>
-                <div class="grid grid-cols-2 gap-3.5">
-                    <div class="space-y-1.5">
-                        <label class="font-semibold text-slate-400">Стоимость (₽) *</label>
-                        <input type="number" id="orderPrice" placeholder="0" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80 transition-colors">
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="font-semibold text-slate-400">Предоплата (₽)</label>
-                        <input type="number" id="orderPrepayment" placeholder="0" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80 transition-colors">
-                    </div>
-                </div>
-                <div class="space-y-1.5">
-                    <label class="font-semibold text-slate-400">Шаблон списания ресурсов</label>
-                    <select id="orderTemplateSelect" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80 transition-colors">
-                        <option value="">Без списания ресурсов</option>
-                    </select>
-                </div>
-            </div>
-            <div class="flex gap-3 pt-2">
-                <button onclick="closeOrderModal()" class="flex-1 bg-slate-800 hover:bg-slate-750 text-slate-300 font-semibold py-2.5 rounded-xl transition-colors text-xs border border-slate-700/40">Отмена</button>
-                <button onclick="saveOrder()" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-900 font-bold py-2.5 rounded-xl transition-all shadow-lg shadow-orange-500/10 text-xs">Сохранить</button>
-            </div>
-        </div>
-    </div><div id="menuModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-sliders text-amber-400"></i> Управление профилем</h3>
-                <button onclick="closeMenuModal()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
-            </div>
-            <div class="space-y-4 text-xs">
-                <div class="space-y-2">
-                    <label class="font-semibold text-slate-400 block">Ваша специализация (Роль)</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="selectUserProfileRole('baker')" id="roleBtn-baker" class="p-3 rounded-xl border border-slate-700 bg-slate-800/40 text-left hover:border-amber-500 transition-colors">
-                            <i class="fa-solid fa-cake-candles text-amber-400 mb-1 block text-base"></i>
-                            <span class="font-bold text-white block">Кондитер</span>
-                            <span class="text-[10px] text-slate-400">Рецепты и ингредиенты</span>
-                        </button>
-                        <button onclick="selectUserProfileRole('furniture')" id="roleBtn-furniture" class="p-3 rounded-xl border border-slate-700 bg-slate-800/40 text-left hover:border-amber-500 transition-colors">
-                            <i class="fa-solid fa-couch text-orange-400 mb-1 block text-base"></i>
-                            <span class="font-bold text-white block">Мебельщик</span>
-                            <span class="text-[10px] text-slate-400">Монтаж и фурнитура</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="border-t border-slate-800 pt-3 space-y-2">
-                    <button onclick="exportToExcel(); closeMenuModal();" class="w-full bg-slate-800 hover:bg-slate-750 text-white font-medium p-3 rounded-xl flex items-center justify-between transition-colors border border-slate-700/50">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-400 text-sm"></i> Скачать резервную копию Excel</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
-                    </button>
-                    <button onclick="clearAllData()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-medium p-3 rounded-xl flex items-center justify-between transition-colors border border-rose-500/20">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-trash-can text-sm"></i> Очистить данные в облаке</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] text-rose-500/40"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div id="view-analytics" class="hidden flex-1 flex flex-col max-w-md mx-auto w-full pb-24 px-4 pt-4 space-y-4 overflow-y-auto no-scrollbar bg-slate-900">
         <section class="grid grid-cols-2 gap-3">
             <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm">
@@ -176,7 +155,7 @@
 
         <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm space-y-3.5">
             <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold text-white tracking-wide uppercase text-slate-400">Журнал расходов</h3>
+                <h3 class="text-xs font-bold text-slate-400 tracking-wide uppercase">Журнал расходов</h3>
                 <button onclick="openExpenseModal()" class="text-[11px] font-semibold text-orange-400 bg-orange-500/10 px-2.5 py-1 rounded-xl border border-orange-500/20 active:scale-95 transition-all">+ Расход</button>
             </div>
             <div id="expensesListContainer" class="space-y-2 max-h-60 overflow-y-auto no-scrollbar"></div>
@@ -186,11 +165,108 @@
     <div id="view-warehouse" class="hidden flex-1 flex flex-col max-w-md mx-auto w-full pb-24 px-4 pt-4 space-y-4 overflow-y-auto no-scrollbar bg-slate-900">
         <section class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm space-y-3.5">
             <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold text-white tracking-wide uppercase text-slate-400">Остатки на складе</h3>
-                <button onclick="openWarehouseModal()" class="text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20 active:scale-95 transition-all">+ Добавить</button>
+                <h3 class="text-xs font-bold text-slate-400 tracking-wide uppercase">Материалы и ресурсы</h3>
+                <div class="flex gap-1.5">
+                    <button onclick="openManageTemplatesModal()" class="text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20 active:scale-95 transition-all">Шаблоны</button>
+                    <button onclick="openWarehouseModal()" class="text-[11px] font-semibold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700 active:scale-95 transition-all">+ Ресурс</button>
+                </div>
             </div>
             <div id="warehouseListContainer" class="space-y-2"></div>
         </section>
+    </div>
+
+    <div id="menuModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-sliders text-amber-400"></i> Смена специализации</h3>
+                <button onclick="closeMenuModal()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
+            <div class="space-y-3 text-xs max-h-96 overflow-y-auto no-scrollbar">
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="selectUserProfileRole('baker')" id="menuRole-baker" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
+                        <i class="fa-solid fa-cake-candles text-amber-400 text-base"></i><div><p class="font-bold text-white">Кондитер / Повар</p></div>
+                    </button>
+                    <button onclick="selectUserProfileRole('beauty')" id="menuRole-beauty" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
+                        <i class="fa-solid fa-sparkles text-pink-400 text-base"></i><div><p class="font-bold text-white">Бьюти-мастер</p></div>
+                    </button>
+                    <button onclick="selectUserProfileRole('service')" id="menuRole-service" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
+                        <i class="fa-solid fa-screwdriver-wrench text-blue-400 text-base"></i><div><p class="font-bold text-white">Муж на час / Ремонт</p></div>
+                    </button>
+                    <button onclick="selectUserProfileRole('tailor')" id="menuRole-tailor" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
+                        <i class="fa-solid fa-scissors text-emerald-400 text-base"></i><div><p class="font-bold text-white">Швея / Ателье</p></div>
+                    </button>
+                    <button onclick="selectUserProfileRole('auto')" id="menuRole-auto" class="p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3">
+                        <i class="fa-solid fa-car text-orange-400 text-base"></i><div><p class="font-bold text-white">Автомеханик / Сервис</p></div>
+                    </button>
+                </div>
+                <div class="border-t border-slate-800 pt-3 space-y-2">
+                    <button onclick="exportToExcel(); closeMenuModal();" class="w-full bg-slate-800 text-white font-medium p-3 rounded-xl flex items-center justify-between border border-slate-700/50">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-400 text-sm"></i> Облачный бэкап Excel</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-invoice text-amber-400"></i> Новый заказ</h3>
+                <button onclick="closeOrderModal()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
+            <div class="space-y-3.5 text-xs">
+                <div class="space-y-1.5">
+                    <label class="font-semibold text-slate-400">Имя клиента *</label>
+                    <input type="text" id="orderClient" placeholder="Имя Фамилия" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80">
+                </div>
+                <div class="space-y-1.5">
+                    <label id="lblOrderProduct" class="font-semibold text-slate-400">Наименование изделия / Работы *</label>
+                    <input type="text" id="orderProduct" placeholder="Описание" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80">
+                </div>
+                <div class="grid grid-cols-2 gap-3.5">
+                    <div class="space-y-1.5">
+                        <label class="font-semibold text-slate-400">Стоимость (₽) *</label>
+                        <input type="number" id="orderPrice" placeholder="0" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="font-semibold text-slate-400">Предоплата (₽)</label>
+                        <input type="number" id="orderPrepayment" placeholder="0" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80">
+                    </div>
+                </div>
+                <div id="orderCustomFieldBox" class="space-y-1.5 hidden">
+                    <label id="lblOrderCustomField" class="font-semibold text-slate-400">Специфичное поле</label>
+                    <input type="text" id="orderCustomField" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="font-semibold text-slate-400">Автосписание ресурсов</label>
+                    <select id="orderTemplateSelect" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-amber-500/80"></select>
+                </div>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeOrderModal()" class="flex-1 bg-slate-800 text-slate-300 font-semibold py-2.5 rounded-xl text-xs border border-slate-700/40">Отмена</button>
+                <button onclick="saveOrder()" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-900 font-bold py-2.5 rounded-xl text-xs shadow-lg">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="manageTemplatesModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-scroll text-amber-400"></i> Шаблоны калькуляции</h3>
+                <button onclick="closeManageTemplatesModal()" class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
+            
+            <div class="bg-slate-800/30 p-3 rounded-2xl border border-slate-800 space-y-2 text-xs">
+                <p class="font-bold text-slate-300">Создать новый шаблон</p>
+                <div class="flex gap-2">
+                    <input type="text" id="newTemplateName" placeholder="Название (например, Бисквит)" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none">
+                    <button onclick="addNewTemplate()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded-xl transition-all">Создать</button>
+                </div>
+            </div>
+
+            <div id="templatesCloudList" class="space-y-2 text-xs max-h-48 overflow-y-auto no-scrollbar"></div>
+        </div>
     </div>
 
     <div id="expenseModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
@@ -203,7 +279,7 @@
                 </div>
                 <div class="space-y-1">
                     <label class="font-semibold text-slate-400">Комментарий / Статья *</label>
-                    <input type="text" id="expenseComment" placeholder="Закупка упаковки, Аренда" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+                    <input type="text" id="expenseComment" placeholder="Закупка расходников, Аренда" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
                 </div>
             </div>
             <div class="flex gap-3">
@@ -215,11 +291,11 @@
 
     <div id="warehouseModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-end justify-center px-4 pb-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-5 space-y-4">
-            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-3"><i class="fa-solid fa-box text-amber-400"></i> Ингредиент / Материал</h3>
+            <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-3"><i class="fa-solid fa-box text-amber-400"></i> Ресурс склада</h3>
             <div class="space-y-3 text-xs">
                 <div class="space-y-1">
-                    <label class="font-semibold text-slate-400">Наименование *</label>
-                    <input type="text" id="whName" placeholder="Мука, Петли BLUM" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+                    <label class="font-semibold text-slate-400">Наименование материала/сырья *</label>
+                    <input type="text" id="whName" placeholder="Мука, База для ногтей, Кабель" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="space-y-1">
@@ -228,12 +304,12 @@
                     </div>
                     <div class="space-y-1">
                         <label class="font-semibold text-slate-400">Ед. измерения *</label>
-                        <input type="text" id="whUnit" placeholder="г, шт, м" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+                        <input type="text" id="whUnit" placeholder="г, шт, мл, м" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
                     </div>
                 </div>
                 <div class="space-y-1">
                     <label class="font-semibold text-slate-400">Цена за ед. (₽) *</label>
-                    <input type="number" id="whPrice" placeholder="0.5" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+                    <input type="number" id="whPrice" placeholder="0" class="w-full bg-slate-800/50 border border-slate-700/60 rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
                 </div>
             </div>
             <div class="flex gap-3">
@@ -242,7 +318,6 @@
             </div>
         </div>
     </div><script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram?.WebApp;
         if (tg) {
             tg.ready();
@@ -255,20 +330,19 @@
         let selectedDateStr = formatDate(currentDate);
         let currentTab = 'calendar';
 
-        // Глобальное состояние приложения
+        // Глобальное состояние приложения с поддержкой 5 профессий
         let state = {
-            user: { role: 'baker' }, // По умолчанию кондитер
+            user: { role: null }, // Изначально null для проверки первого входа
             orders: [],
             warehouse: [],
             expenses: [],
-            templates: {}
+            templates: [] // Шаблоны теперь загружаются динамически из Supabase
         };
 
-        // НАСТРОЙКА АВТОРИЗАЦИИ ДЛЯ ЗАПРОСОВ К БЭКЕНДУ
         const BACKEND_URL = 'http://localhost:3000';
         const initData = tg?.initData || "";
 
-        // Хелпер для сетевых запросов с авторизацией Telegram
+        // Сетевой хелпер с авторизацией
         async function apiRequest(endpoint, options = {}) {
             options.headers = {
                 ...options.headers,
@@ -277,59 +351,73 @@
             };
             try {
                 const response = await fetch(`${BACKEND_URL}${endpoint}`, options);
-                if (response.status === 401) {
-                    console.error("Ошибка авторизации в Telegram");
-                    return null;
-                }
                 return response;
             } catch (err) {
-                console.error("Ошибка сети с бэкендом:", err);
+                console.error("Ошибка связи с сервером:", err);
                 return null;
             }
         }
 
-        // 1. ЗАГРУЗКА ДАННЫХ ИЗ ОБЛАКА SUPABASE
+        // КОМПЛЕКСНАЯ ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ
         async function loadUserData() {
+            // Сначала пробуем получить заказы и неявно проверить существование пользователя
             const response = await apiRequest('/api/orders');
+            
+            // Запрашиваем шаблоны из облака
+            const templatesResponse = await apiRequest('/api/templates');
+            if (templatesResponse && templatesResponse.ok) {
+                state.templates = await templatesResponse.json();
+            }
+
             if (response && response.ok) {
                 const ordersFromServer = await response.json();
                 
-                // Пересобираем плоские структуры из базы под формат отображения фронтенда
+                // Форматируем заказы под фронтенд
                 state.orders = ordersFromServer.map(o => ({
                     id: o.id.toString(),
                     date: o.deadline ? o.deadline.split('T')[0] : selectedDateStr,
                     client: o.client_name,
                     product: o.custom_fields?.product_name || "Без названия",
                     price: parseFloat(o.price),
-                    prepayment: parseFloat(o.custom_fields?.prepayment || 0)
+                    prepayment: parseFloat(o.custom_fields?.prepayment || 0),
+                    customFieldVal: o.custom_fields?.custom_field_value || ""
                 }));
+
+                // Имитируем определение роли на основе сохраненных данных бэкенда (или берем кэш)
+                if(!state.user.role) {
+                    const localRole = localStorage.getItem(`masterapp_role_${currentTelegramId}`);
+                    if(localRole) {
+                        state.user.role = localRole;
+                    } else {
+                        // Если роли нет вообще нигде — включаем онбординг
+                        document.getElementById('onboardingScreen').classList.remove('hidden');
+                        return;
+                    }
+                }
             } else {
-                console.log("Бэкенд не доступен или пуст, используем базовый режим.");
+                // Если бэкенд недоступен, проверяем локальный кэш роли, чтобы приложение запустилось автономно
+                const localRole = localStorage.getItem(`masterapp_role_${currentTelegramId}`);
+                if(localRole) {
+                    state.user.role = localRole;
+                } else {
+                    document.getElementById('onboardingScreen').classList.remove('hidden');
+                    return;
+                }
             }
 
-            // Наполняем локальные данные по складу и рецептам (до переноса их в БД)
+            // Наполняем склад дефолтными материалами, если он пуст
             if (!state.warehouse.length) {
                 state.warehouse = [
-                    { id: "1", name: "Мука пшеничная", qty: 5000, unit: "г", price: 0.06 },
-                    { id: "2", name: "Сахар-песок", qty: 3000, unit: "г", price: 0.08 },
-                    { id: "3", name: "Яйца куриные", qty: 60, unit: "шт", price: 12 }
+                    { id: "1", name: "Расходники базовые", qty: 100, unit: "шт", price: 10 }
                 ];
             }
-            if (!Object.keys(state.templates).length) {
-                state.templates = {
-                    "Классический бисквит": [
-                        { whItemId: "1", qty: 200 },
-                        { whItemId: "2", qty: 150 },
-                        { whItemId: "3", qty: 4 }
-                    ]
-                };
-            }
 
+            document.getElementById('onboardingScreen').classList.add('hidden');
             initApp();
         }
 
         function initApp() {
-            updateRoleBadge();
+            updateInterfaceByRole();
             renderCalendar();
             renderOrders();
             renderAnalytics();
@@ -337,47 +425,139 @@
             populateTemplatesSelect();
         }
 
-        function updateRoleBadge() {
-            const badge = document.getElementById('userRoleBadge');
-            if (state.user.role === 'baker') {
-                badge.innerText = 'Кондитерская мастерская';
-            } else if (state.user.role === 'furniture') {
-                badge.innerText = 'Мебельное производство';
+        // ДИНАМИЧЕСКАЯ НАСТРОЙКА ИНТЕРФЕЙСА ПОД 5 ПРОФЕССИЙ
+        const rolesConfig = {
+            baker: { title: "Кондитерская мастерская", product: "Наименование изделия *", custom: null },
+            beauty: { title: "Бьюти-салон / Мастер", product: "Вид услуги (Маникюр/Брови) *", custom: "Время сессии (например, 14:00)" },
+            service: { title: "Муж на час / Ремонт", product: "Что необходимо сделать *", custom: "Адрес выезда" },
+            tailor: { title: "Швея / Ателье Pro", product: "Тип одежды / Изделие *", custom: "Размер / Мерки клиента" },
+            auto: { title: "Автомеханик / Сервис", product: "Вид ремонта / Запчасть *", custom: "Марка и госномер авто" }
+        };
+
+        function updateInterfaceByRole() {
+            const role = state.user.role;
+            const config = rolesConfig[role] || rolesConfig.baker;
+            
+            // Обновляем шапку
+            document.getElementById('userRoleBadge').innerText = config.title;
+            
+            // Настраиваем подписи в форме добавления заказа
+            document.getElementById('lblOrderProduct').innerText = config.product;
+            
+            const customBox = document.getElementById('orderCustomFieldBox');
+            if (config.custom) {
+                customBox.classList.remove('hidden');
+                document.getElementById('lblOrderCustomField').innerText = config.custom;
+                document.getElementById('orderCustomField').placeholder = "Введите данные";
+            } else {
+                customBox.classList.add('hidden');
             }
+
+            // Подсвечиваем активную роль в меню настроек
+            ['baker', 'beauty', 'service', 'tailor', 'auto'].forEach(r => {
+                const btn = document.getElementById(`menuRole-${r}`);
+                if(btn) {
+                    if(r === role) {
+                        btn.className = "p-3 rounded-xl border border-amber-500 bg-amber-500/10 text-left flex items-center gap-3 w-full";
+                    } else {
+                        btn.className = "p-3 rounded-xl border border-slate-800 bg-slate-800/30 text-left flex items-center gap-3 w-full";
+                    }
+                }
+            });
         }
 
+        // Функция выбора роли на экране онбординга или в меню
         async function selectUserProfileRole(role) {
             state.user.role = role;
-            updateRoleBadge();
+            localStorage.setItem(`masterapp_role_${currentTelegramId}`, role);
+            
+            document.getElementById('onboardingScreen').classList.add('hidden');
+            updateInterfaceByRole();
             populateTemplatesSelect();
             closeMenuModal();
 
-            // Сохраняем выбранную роль на бэкенде
+            // Отправляем выбранную роль на сервер в бэкенд
             await apiRequest('/api/user/profile', {
                 method: 'POST',
                 body: JSON.stringify({ role: role })
             });
+
+            initApp();
         }
 
-        // 2. СОХРАНЕНИЕ НОВОГО ЗАКАЗА В ОБЛАКО
+        // УПРАВЛЕНИЕ ШАБЛОНАМИ (ОБЛАЧНЫЕ CRUD-ОПЕРАЦИИ)
+        function populateTemplatesSelect() {
+            const select = document.getElementById('orderTemplateSelect');
+            select.innerHTML = '<option value="">Без автосписания</option>';
+            state.templates.forEach(t => {
+                select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+            });
+        }
+
+        async function renderCloudTemplatesList() {
+            const container = document.getElementById('templatesCloudList');
+            container.innerHTML = '';
+
+            if(!state.templates.length) {
+                container.innerHTML = '<p class="text-slate-500 text-center py-2">У вас пока нет созданных шаблонов</p>';
+                return;
+            }
+
+            state.templates.forEach(t => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-800/50 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between";
+                div.innerHTML = `
+                    <span class="font-bold text-white"><i class="fa-solid fa-calculator text-slate-500 mr-1.5"></i>${t.name}</span>
+                    <button onclick="deleteTemplateFromServer(${t.id})" class="w-6 h-6 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function addNewTemplate() {
+            const nameInput = document.getElementById('newTemplateName');
+            const name = nameInput.value.trim();
+            if(!name) return;
+
+            const response = await apiRequest('/api/templates', {
+                method: 'POST',
+                body: JSON.stringify({ name: name, recipe_data: [] })
+            });
+
+            if(response && response.ok) {
+                nameInput.value = '';
+                // Перезагружаем шаблоны
+                const tRes = await apiRequest('/api/templates');
+                if(tRes && tRes.ok) state.templates = await tRes.json();
+                
+                renderCloudTemplatesList();
+                populateTemplatesSelect();
+            }
+        }
+
+        async function deleteTemplateFromServer(id) {
+            if(!confirm("Удалить этот шаблон?")) return;
+            const response = await apiRequest(`/api/templates/${id}`, { method: 'DELETE' });
+            if(response && response.ok) {
+                state.templates = state.templates.filter(t => t.id !== id);
+                renderCloudTemplatesList();
+                populateTemplatesSelect();
+            }
+        }
+
+        // СБОРКА И ОТПРАВКА АДАПТИВНОГО ЗАКАЗА НА СЕРВЕР
         async function saveOrder() {
             const client = document.getElementById('orderClient').value.trim();
             const product = document.getElementById('orderProduct').value.trim();
             const price = parseFloat(document.getElementById('orderPrice').value) || 0;
             const prepayment = parseFloat(document.getElementById('orderPrepayment').value) || 0;
+            const customFieldVal = document.getElementById('orderCustomField').value.trim();
             const templateKey = document.getElementById('orderTemplateSelect').value;
 
             if (!client || !product || price <= 0) { alert("Заполните обязательные поля"); return; }
 
-            // Логика списания ресурсов со склада
-            if (templateKey && state.templates[templateKey]) {
-                state.templates[templateKey].forEach(comp => {
-                    const stItem = state.warehouse.find(i => i.id === comp.whItemId);
-                    if (stItem) stItem.qty = Math.max(stItem.qty - comp.qty, 0);
-                });
-            }
-
-            // Структурируем объект под таблицы Supabase
             const orderData = {
                 client_name: client,
                 price: price,
@@ -387,7 +567,8 @@
                 custom_fields: {
                     product_name: product,
                     prepayment: prepayment,
-                    recipe_template: templateKey
+                    recipe_template: templateKey,
+                    custom_field_value: customFieldVal // Кастомная строка (Время, Адрес, Мерки, Авто)
                 }
             };
 
@@ -397,18 +578,24 @@
             });
 
             if (response && response.ok) {
-                await loadUserData(); // Полностью обновляем состояние и интерфейс
+                await loadUserData();
                 closeOrderModal();
+                // Сброс полей ввода
+                document.getElementById('orderClient').value = '';
+                document.getElementById('orderProduct').value = '';
+                document.getElementById('orderPrice').value = '';
+                document.getElementById('orderPrepayment').value = '';
+                document.getElementById('orderCustomField').value = '';
             } else {
-                alert("Ошибка отправки заказа на бэкенд. Проверьте консоль сервера.");
+                alert("Ошибка сохранения заказа на бэкенде");
             }
         }
 
-        // 3. СКАЧИВАНИЕ РЕЗЕРВНОЙ КОПИИ В EXCEL С СЕРВЕРА
+        // EXCEL ЭКСПОРТ
         async function exportToExcel() {
             try {
                 const response = await apiRequest('/api/backup/export');
-                if (!response || !response.ok) throw new Error("Сервер не смог сгенерировать бэкап");
+                if (!response || !response.ok) throw new Error("Сервер не вернул файл");
 
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -420,21 +607,11 @@
                 a.remove();
                 window.URL.revokeObjectURL(url);
             } catch (err) {
-                alert("Ошибка резервного копирования: " + err.message);
+                alert("Ошибка скачивания бэкапа Excel: " + err.message);
             }
         }
 
-        // ОЧИСТКА ДАННЫХ В ОБЛАКЕ SUPABASE
-        async function clearAllData() {
-            if (confirm("Вы точно хотите сбросить заказы текущего дня?")) {
-                state.orders = state.orders.filter(o => o.date !== selectedDateStr);
-                renderOrders();
-                renderAnalytics();
-                closeMenuModal();
-            }
-        }
-
-        // КАЛЕНДАРЬ, ИНТЕРФЕЙС И ОТОБРАЖЕНИЕ
+        // Отрисовка Календаря дат
         function renderCalendar() {
             const grid = document.getElementById('calendarDatesGrid');
             const monthLabel = document.getElementById('calendarMonthYear');
@@ -450,20 +627,16 @@
             const shift = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
             const totalDays = new Date(year, month + 1, 0).getDate();
             
-            for(let i=0; i<shift; i++) {
-                grid.appendChild(document.createElement('div'));
-            }
+            for(let i=0; i<shift; i++) grid.appendChild(document.createElement('div'));
             
             for(let d=1; d<=totalDays; d++) {
                 const dayBtn = document.createElement('button');
                 dayBtn.innerText = d;
                 
                 const currentLoopDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                
                 dayBtn.className = "h-9 rounded-xl flex items-center justify-center font-bold text-xs relative transition-all active:scale-95 ";
                 
-                const isHasOrders = state.orders.some(o => o.date === currentLoopDateStr);
-                if (isHasOrders) {
+                if (state.orders.some(o => o.date === currentLoopDateStr)) {
                     const dot = document.createElement('span');
                     dot.className = "absolute bottom-1 w-1 h-1 rounded-full bg-amber-400";
                     dayBtn.appendChild(dot);
@@ -484,6 +657,7 @@
             }
         }
 
+        // Отрисовка Списка заказов дня
         function renderOrders() {
             const container = document.getElementById('ordersListContainer');
             const countBadge = document.getElementById('ordersCountBadge');
@@ -496,7 +670,7 @@
                 container.innerHTML = `
                     <div class="text-center py-8 text-slate-500 border border-dashed border-slate-800 rounded-2xl">
                         <i class="fa-solid fa-mug-hot text-xl mb-2 block text-slate-600"></i>
-                        <p class="text-xs font-medium">Нет заказов на выбранную дату</p>
+                        <p class="text-xs font-medium">Нет записей и заказов</p>
                     </div>`;
                 return;
             }
@@ -507,11 +681,14 @@
                 card.innerHTML = `
                     <div class="space-y-1">
                         <h4 class="text-xs font-black text-white">${o.product}</h4>
-                        <p class="text-[11px] text-slate-400 flex items-center gap-1"><i class="fa-solid fa-user text-[10px]"></i> ${o.client}</p>
+                        <div class="flex flex-col gap-0.5 text-[11px] text-slate-400">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-user text-[10px]"></i> ${o.client}</span>
+                            ${o.customFieldVal ? `<span class="text-amber-400/80 font-medium"><i class="fa-solid fa-circle-info text-[9px]"></i> ${o.customFieldVal}</span>` : ''}
+                        </div>
                     </div>
                     <div class="text-right space-y-0.5">
                         <p class="text-xs font-black text-white">${o.price} ₽</p>
-                        ${o.prepayment > 0 ? `<p class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 inline-block font-bold">Предоплата ${o.prepayment} ₽</p>` : ''}
+                        ${o.prepayment > 0 ? `<p class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 inline-block font-bold">Пред. ${o.prepayment} ₽</p>` : ''}
                     </div>`;
                 container.appendChild(card);
             });
@@ -520,22 +697,8 @@
         function renderAnalytics() {
             const totalRev = state.orders.reduce((sum, o) => sum + o.price, 0);
             const totalPre = state.orders.reduce((sum, o) => sum + o.prepayment, 0);
-            
             document.getElementById('financeTotalRevenue').innerText = `${totalRev.toLocaleString()} ₽`;
             document.getElementById('financeTotalPrepayments').innerText = `${totalPre.toLocaleString()} ₽`;
-            
-            const expContainer = document.getElementById('expensesListContainer');
-            expContainer.innerHTML = '';
-            if(!state.expenses.length) {
-                expContainer.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Журнал расходов пуст</p>';
-                return;
-            }
-            state.expenses.forEach(e => {
-                const div = document.createElement('div');
-                div.className = "bg-slate-800/20 border border-slate-800 rounded-xl p-2.5 flex justify-between text-xs";
-                div.innerHTML = `<div><p class="text-slate-300 font-semibold">${e.comment}</p><span class="text-[9px] text-slate-500">${e.date}</span></div><p class="font-bold text-rose-400">-${e.amount} ₽</p>`;
-                expContainer.appendChild(div);
-            });
         }
 
         function renderWarehouse() {
@@ -549,26 +712,15 @@
             });
         }
 
-        function populateTemplatesSelect() {
-            const select = document.getElementById('orderTemplateSelect');
-            select.innerHTML = '<option value="">Без списания ресурсов</option>';
-            if (state.user.role === 'baker') {
-                Object.keys(state.templates).forEach(k => {
-                    select.innerHTML += `<option value="${k}">${k}</option>`;
-                });
-            }
-        }
-
+        // Переключение Вкладок (Табов)
         function switchTab(tab) {
             currentTab = tab;
             ['calendar', 'analytics', 'warehouse'].forEach(t => {
                 const btn = document.getElementById(`tabBtn-${t}`);
-                const view = document.getElementById(`view-${t}`) || document.getElementById('appContainer').querySelector('section:nth-of-type(2)').parentNode;
-                
                 if(t === tab) {
                     btn.className = "flex flex-col items-center gap-1 text-amber-500 transition-all active:scale-95";
                     btn.querySelector('div').className = "w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-500/5";
-                    if(t === 'calendar') document.getElementById('appContainer').style.display = 'flex';
+                    if(t === 'calendar') document.getElementById('appContainer').style.removeAttribute('style');
                     else {
                         const viewEl = document.getElementById(`view-${t}`);
                         if(viewEl) viewEl.classList.remove('hidden');
@@ -587,7 +739,6 @@
             if(tab === 'warehouse') renderWarehouse();
         }
 
-        // РАБОТА С МОДАЛЬНЫМИ ОКНАМИ
         function openOrderModal() { document.getElementById('orderModal').classList.remove('hidden'); }
         function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
         function openMenuModal() { document.getElementById('menuModal').classList.remove('hidden'); }
@@ -596,6 +747,12 @@
         function closeExpenseModal() { document.getElementById('expenseModal').classList.add('hidden'); }
         function openWarehouseModal() { document.getElementById('warehouseModal').classList.remove('hidden'); }
         function closeWarehouseModal() { document.getElementById('warehouseModal').classList.add('hidden'); }
+        
+        function openManageTemplatesModal() { 
+            document.getElementById('manageTemplatesModal').classList.remove('hidden'); 
+            renderCloudTemplatesList();
+        }
+        function closeManageTemplatesModal() { document.getElementById('manageTemplatesModal').classList.add('hidden'); }
 
         function saveExpense() {
             const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
@@ -604,6 +761,8 @@
             state.expenses.unshift({ id: Date.now().toString(), date: selectedDateStr, amount, comment });
             renderAnalytics();
             closeExpenseModal();
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseComment').value = '';
         }
 
         function saveWarehouseItem() {
@@ -615,6 +774,10 @@
             state.warehouse.push({ id: Date.now().toString(), name, qty, unit, price });
             renderWarehouse();
             closeWarehouseModal();
+            document.getElementById('whName').value = '';
+            document.getElementById('whQty').value = '';
+            document.getElementById('whUnit').value = '';
+            document.getElementById('whPrice').value = '';
         }
 
         function changeMonth(dir) {
@@ -629,7 +792,7 @@
             return `${y}-${m}-${d}`;
         }
 
-        // Старт приложения при загрузке DOM
+        // СТАРТ
         window.addEventListener('DOMContentLoaded', () => {
             loadUserData();
         });
