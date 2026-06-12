@@ -1055,7 +1055,7 @@
         function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
 
         // ЭКСПОРТ ДАННЫХ В EXCEL С УЧЕТОМ РОЛИ
-        function exportToExcel() {
+                function exportToExcel() {
             if (typeof XLSX === 'undefined') { alert("Библиотека экспорта не найдена!"); return; }
             const wb = XLSX.utils.book_new();
 
@@ -1069,8 +1069,20 @@
                 const eData = state.expenses.map(e => ({ "Дата": e.date, "Сумма": e.amount, "Комментарий": e.comment }));
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(eData), "Прямые расходы");
             }
-            XLSX.writeFile(wb, `MasterApp_${state.sphere}_export.xlsx`);
+            
+            // Универсальный мобильный метод скачивания
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `MasterApp_${state.sphere}_export.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
+
 
         // НАСТОЯЩИЙ БЭКАП БАЗЫ ДАННЫХ (Скачивает файл .json)
         function backupDataJSON() {
