@@ -193,17 +193,12 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-800 space-y-3">
-                        <div class="text-sm font-semibold text-white"><i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>Экспорт данных</div>
-                        <button onclick="exportToExcel()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all shadow-md"><i class="fa-solid fa-download mr-1.5"></i> Скачать отчет Excel (для просмотра)</button>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-800 space-y-3">
-                        <div class="text-sm font-semibold text-white"><i class="fa-solid fa-database text-indigo-400 mr-2"></i>Резервное копирование базы (JSON)</div>
+                        <div class="text-sm font-semibold text-white"><i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>Резервное копирование (Excel)</div>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="backupDataJSON()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all"><i class="fa-solid fa-floppy-disk mr-1.5"></i> Создать копию</button>
-                            <label class="bg-indigo-950 hover:bg-indigo-900 border border-indigo-800/60 text-indigo-300 py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all cursor-pointer text-center">
+                            <button onclick="exportToExcel()" class="bg-emerald-700 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all shadow-md"><i class="fa-solid fa-download mr-1.5"></i> Создать копию</button>
+                            <label class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-emerald-400 py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all cursor-pointer text-center">
                                 <i class="fa-solid fa-upload mr-1.5"></i> Восстановить
-                                <input type="file" accept=".json" onchange="restoreDataJSON(event)" class="hidden">
+                                <input type="file" accept=".xlsx, .xls" onchange="restoreFromExcel(event)" class="hidden">
                             </label>
                         </div>
                     </div>
@@ -214,6 +209,7 @@
                             <div class="text-xs text-slate-500">Полная очистка текущего хранилища</div>
                         </div>
                         <button onclick="clearAllData()" class="bg-rose-600/10 hover:bg-rose-600 border border-rose-500/20 hover:border-rose-500 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition-all">Сбросить</button>
+                    </div>
                 </div>
             </section>
         </main>
@@ -1054,11 +1050,12 @@
         }
         function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
 
-        // ЭКСПОРТ ДАННЫХ В EXCEL С УЧЕТОМ РОЛИ
-                function exportToExcel() {
+        // УНИВЕРСАЛЬНЫЙ ЭКСПОРТ (И отчёт, и резервная копия в одном Excel)
+        function exportToExcel() {
             if (typeof XLSX === 'undefined') { alert("Библиотека экспорта не найдена!"); return; }
             const wb = XLSX.utils.book_new();
 
+            // 1. Создаем красивые листы для пользователя
             const oData = state.orders.map(o => ({ "Дата": o.date, "Время": o.time || "-", "Клиент": o.client, "Телефон": o.phone || "-", "Описание": o.product, "Сумма (₽)": o.price, "Предоплата": o.prepayment }));
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(oData), "Журнал записей");
 
@@ -1069,62 +1066,77 @@
                 const eData = state.expenses.map(e => ({ "Дата": e.date, "Сумма": e.amount, "Комментарий": e.comment }));
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(eData), "Прямые расходы");
             }
-            
-            // Универсальный мобильный метод скачивания
+
+            // 2. СЕКРЕТНЫЙ ШАГ: Сохраняем полную копию базы (state) на скрытый технический лист
+            const backupRaw = [{ 
+                app: "MasterApp", 
+                sphere: state.sphere, 
+                full_state: JSON.stringify(state) 
+            }];
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(backupRaw), "SYS_BACKUP");
+
+            // Генерируем файл
             const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
             const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            const fileName = `MasterApp_${state.sphere}_backup.xlsx`;
+
+            // Стандартное скачивание (для ПК и мобильных браузеров вне Telegram)
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `MasterApp_${state.sphere}_export.xlsx`;
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-
-        // НАСТОЯЩИЙ БЭКАП БАЗЫ ДАННЫХ (Скачивает файл .json)
-        function backupDataJSON() {
-            const key = `masterapp_db_${state.sphere}_user_${currentTelegramId}`;
-            const data = localStorage.getItem(key);
-            if (!data) { alert("Нет данных для резервного копирования!"); return; }
-            
-            const blob = new Blob([data], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `MasterApp_Backup_${state.sphere}_${formatDate(new Date())}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // ВОССТАНОВЛЕНИЕ ИЗ ФАЙЛА БЭКАПА
-        function restoreDataJSON(event) {
+        // ВОССТАНОВЛЕНИЕ БАЗЫ ДАННЫХ ИЗ ФАЙЛА EXCEL
+        function restoreFromExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const json = JSON.parse(e.target.result);
-                    if (!json.orders && !json.warehouse && !json.expenses) {
-                        alert("Ошибка: Неверный формат файла резервной копии!");
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Проверяем наличие нашего технического листа
+                    if (!workbook.SheetNames.includes("SYS_BACKUP")) {
+                        alert("Ошибка: Этот файл Excel не является резервной копией MasterApp или поврежден!");
                         return;
                     }
-                    if (confirm("Вы уверены? Импорт полностью перезапишет текущую базу данных выбранной сферы!")) {
-                        const key = `masterapp_db_${state.sphere}_user_${currentTelegramId}`;
-                        localStorage.setItem(key, JSON.stringify(json));
-                        alert("База данных успешно восстановлена!");
+
+                    // Читаем данные со скрытого листа
+                    const worksheet = workbook.Sheets["SYS_BACKUP"];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (!jsonData || jsonData.length === 0 || !jsonData[0].full_state) {
+                        alert("Ошибка: Не удалось прочитать системные данные из файла.");
+                        return;
+                    }
+
+                    const restoredState = JSON.parse(jsonData[0].full_state);
+
+                    // Проверяем, совпадает ли сфера бизнеса
+                    if (restoredState.sphere !== state.sphere) {
+                        if (!confirm(`Внимание! Этот бэкап от сферы "${restoredState.sphere}", а у вас открыта "${state.sphere}". Всё равно загрузить?`)) {
+                            return;
+                        }
+                    }
+
+                    if (confirm("Вы уверены? Импорт из Excel полностью перезапишет текущую базу данных на телефоне!")) {
+                        const key = `masterapp_db_${restoredState.sphere}_user_${currentTelegramId}`;
+                        localStorage.setItem(key, JSON.stringify(restoredState));
+                        alert("База данных успешно восстановлена из Excel файла!");
                         location.reload();
                     }
                 } catch (err) {
-                    alert("Ошибка при чтении файла: " + err.message);
+                    alert("Ошибка при разборе Excel файла: " + err.message);
                 }
             };
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         }
 
         function clearAllData() {
