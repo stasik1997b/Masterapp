@@ -193,8 +193,19 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-800 space-y-3">
-                        <div class="text-sm font-semibold text-white"><i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>Резервное копирование</div>
-                        <button onclick="exportToExcel()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all shadow-md"><i class="fa-solid fa-download mr-1.5"></i> Скачать резервную копию Excel</button>
+                        <div class="text-sm font-semibold text-white"><i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>Экспорт данных</div>
+                        <button onclick="exportToExcel()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all shadow-md"><i class="fa-solid fa-download mr-1.5"></i> Скачать отчет Excel (для просмотра)</button>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800 space-y-3">
+                        <div class="text-sm font-semibold text-white"><i class="fa-solid fa-database text-indigo-400 mr-2"></i>Резервное копирование базы (JSON)</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="backupDataJSON()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all"><i class="fa-solid fa-floppy-disk mr-1.5"></i> Создать копию</button>
+                            <label class="bg-indigo-950 hover:bg-indigo-900 border border-indigo-800/60 text-indigo-300 py-2.5 rounded-xl text-xs flex items-center justify-center font-bold transition-all cursor-pointer text-center">
+                                <i class="fa-solid fa-upload mr-1.5"></i> Восстановить
+                                <input type="file" accept=".json" onchange="restoreDataJSON(event)" class="hidden">
+                            </label>
+                        </div>
                     </div>
 
                     <div class="pt-4 border-t border-slate-800 flex justify-between items-center">
@@ -203,7 +214,6 @@
                             <div class="text-xs text-slate-500">Полная очистка текущего хранилища</div>
                         </div>
                         <button onclick="clearAllData()" class="bg-rose-600/10 hover:bg-rose-600 border border-rose-500/20 hover:border-rose-500 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition-all">Сбросить</button>
-                    </div>
                 </div>
             </section>
         </main>
