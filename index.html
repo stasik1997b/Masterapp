@@ -1062,6 +1062,49 @@
             XLSX.writeFile(wb, `MasterApp_${state.sphere}_export.xlsx`);
         }
 
+        // НАСТОЯЩИЙ БЭКАП БАЗЫ ДАННЫХ (Скачивает файл .json)
+        function backupDataJSON() {
+            const key = `masterapp_db_${state.sphere}_user_${currentTelegramId}`;
+            const data = localStorage.getItem(key);
+            if (!data) { alert("Нет данных для резервного копирования!"); return; }
+            
+            const blob = new Blob([data], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `MasterApp_Backup_${state.sphere}_${formatDate(new Date())}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ВОССТАНОВЛЕНИЕ ИЗ ФАЙЛА БЭКАПА
+        function restoreDataJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if (!json.orders && !json.warehouse && !json.expenses) {
+                        alert("Ошибка: Неверный формат файла резервной копии!");
+                        return;
+                    }
+                    if (confirm("Вы уверены? Импорт полностью перезапишет текущую базу данных выбранной сферы!")) {
+                        const key = `masterapp_db_${state.sphere}_user_${currentTelegramId}`;
+                        localStorage.setItem(key, JSON.stringify(json));
+                        alert("База данных успешно восстановлена!");
+                        location.reload();
+                    }
+                } catch (err) {
+                    alert("Ошибка при чтении файла: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function clearAllData() {
             if (confirm("Внимание! Это полностью удалит текущую активную базу данных выбранной сферы!")) {
                 localStorage.removeItem(`masterapp_db_${state.sphere}_user_${currentTelegramId}`);
