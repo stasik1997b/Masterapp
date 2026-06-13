@@ -1,0 +1,70 @@
+name: Morning Telegram Notification
+
+on:
+  schedule:
+    # Запуск каждый день в 04:00 по UTC (это ровно 07:00 по Минску/Москве)
+    - cron: '0 4 * * *'
+  workflow_dispatch: # Кнопка для ручного теста прямо на сайте GitHub
+
+jobs:
+  send_notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Process Backup and Send Telegram Message
+        env:
+          TELEGRAM_BOT_TOKEN: "8886303402:AAFkLKNCtVEC-Jnf8skmszWD45IgebwXVLY"
+          # ТАК КАК ВАШ ID ИЗ ТЕЛЕГРАМА МНЕ НЕИЗВЕСТЕН, Я ПОДСТАВИЛ ID КАНАЛА/ЧАТА,
+          # НО СЮДА НУЖНО ВСТАВИТЬ ВАШ ЛИЧНЫЙ ЦИФРОВОЙ TELEGRAM ID
+          TELEGRAM_CHAT_ID: "508684716" 
+        run: |
+          python - <<EOF
+          import os
+          import json
+          from datetime import datetime
+          import requests
+
+          BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+          CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
+          
+          today_sys = datetime.now().strftime('%Y-%m-%d')
+          today_user = datetime.now().strftime('%d.%m.%Y')
+
+          try:
+              with open('backup_data.json', 'r', encoding='utf-8') as f:
+                  payload = json.load(f)
+              
+              user_name = payload.get('user_name', 'Виктор')
+              full_state = payload.get('full_state', {})
+              orders = full_state.get('orders', [])
+              
+              todays_orders = [o for o in orders if o.get('date') == today_sys]
+              
+              if todays_orders:
+                  todays_orders.sort(key=lambda x: x.get('time', ''))
+                  times_list = ", ".join([o.get('time', 'Время?') for o in todays_orders])
+                  count = len(todays_orders)
+                  
+                  message = f"☀️ Доброе утро, {user_name}! Сегодня {today_user} у вас {count} клиента. {times_list}."
+              else:
+                  message = f"☀️ Доброе утро, {user_name}! Сегодня {today_user} заказов в базе нет."
+
+              url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
+              requests.post(url, json={"chat_id": CHAT_ID, "text": message})
+              print("Сообщение отправлено!")
+
+          except FileNotFoundError:
+              url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
+              requests.post(url, json={"chat_id": CHAT_ID, "text": f"Доброе утро! Сегодня {today_user}. База данных еще ни разу не синхронизировалась с GitHub."})
+          EOF
+          
