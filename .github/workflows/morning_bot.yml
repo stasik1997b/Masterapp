@@ -14,37 +14,32 @@ jobs:
 
       - name: Send Message to Telegram
         env:
-          # Ваши скрытые переменные из настроек GitHub
           TELEGRAM_BOT_KEY: ${{ secrets.TELEGRAM_BOT_KEY }}
           TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
         run: |
-          # Проверяем, что секреты подтянулись из настроек
           if [ -z "$TELEGRAM_BOT_KEY" ] || [ -z "$TELEGRAM_BOT_ID" ]; then
-            echo "🛑 Ошибка: Секреты TELEGRAM_BOT_KEY или TELEGRAM_BOT_ID не найдены!"
+            echo "🛑 Ошибка: Секреты не найдены!"
             exit 1
           fi
 
           TODAY_USER=$(date +'%d.%m.%Y')
           TODAY_SYS=$(date +'%Y-%m-%d')
 
-          # ХИТРОСТЬ: Собираем URL по буквам в памяти, чтобы GitHub Actions его не испортил звездочками
           API_URL=$(echo "h-t-t-p-s-:-/-/-a-p-i-.-t-e-l-e-g-r-a-m-.-o-r-g-/-b-o-t" | tr -d '-')
           FINAL_URL="${API_URL}${TELEGRAM_BOT_KEY}/sendMessage"
 
-          # 1. Если файла базы данных еще нет в репозитории (Заглушка)
           if [ ! -f "backup_data.json" ]; then
             MSG="☀️ Доброе утро! Сегодня $TODAY_USER. База данных еще ни разу не загружалась в репозиторий GitHub."
             
-            # Отправка строго через JSON-тело
-            curl -s -X POST "$FINAL_URL" \
+            # Убрали флаг -s для подробного вывода логов от самого Телеграма
+            curl -X POST "$FINAL_URL" \
               -H "Content-Type: application/json" \
               -d "{\"chat_id\": \"${TELEGRAM_BOT_ID}\", \"text\": \"${MSG}\"}"
             
-            echo "Файл не найден. Заглушка отправлена."
+            echo -e "\nПроцесс завершен."
             exit 0
           fi
 
-          # 2. Если файл бэкапа уже загружен с телефона
           USER_NAME=$(jq -r '.user_name // "Виктор"' backup_data.json)
           TIMES_LIST=$(jq -r --arg today "$TODAY_SYS" '.full_state.orders[] | select(.date == $today) | .time' backup_data.json | sort | tr '\n' ',' | sed 's/,$//' | sed 's/,/, /g')
           COUNT=$(jq -r --arg today "$TODAY_SYS" '[.full_state.orders[] | select(.date == $today)] | length' backup_data.json)
@@ -55,9 +50,9 @@ jobs:
             MSG="☀️ Доброе утро, ${USER_NAME}! Сегодня ${TODAY_USER} клиентов нет."
           fi
 
-          # Отправляем основное уведомление
-          curl -s -X POST "$FINAL_URL" \
+          curl -X POST "$FINAL_URL" \
             -H "Content-Type: application/json" \
             -d "{\"chat_id\": \"${TELEGRAM_BOT_ID}\", \"text\": \"${MSG}\"}"
           
-          echo "Основное уведомление отправлено."
+          echo -e "\nПроцесс завершен."
+          
