@@ -23,7 +23,6 @@ jobs:
 
       - name: Process Data and Send Message
         env:
-          # GitHub автоматически перевёл ваши секреты в КАПС
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_KEY }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
         run: |
@@ -34,12 +33,18 @@ jobs:
           BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
           CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
           
-          # Форматируем даты
           today_sys = datetime.now().strftime('%Y-%m-%d')
           today_user = datetime.now().strftime('%d.%m.%Y')
 
+          # 1. Проверяем, существует ли файл бэкапа в репозитории на самом деле
+          if not os.path.exists('backup_data.json'):
+              msg = f"☀️ Доброе утро! Сегодня {today_user}. База данных еще ни разу не загружалась в репозиторий GitHub."
+              requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": msg})
+              print("Файл бэкапа не найден. Аварийное уведомление отправлено.")
+              sys.exit(0)
+
+          # 2. Если файл есть, пытаемся его прочитать и обработать
           try:
-              # Читаем файл бэкапа из репозитория
               with open('backup_data.json', 'r', encoding='utf-8') as f:
                   payload = json.load(f)
               
@@ -47,7 +52,6 @@ jobs:
               full_state = payload.get('full_state', {})
               orders = full_state.get('orders', [])
               
-              # Фильтруем записи на сегодня
               todays_orders = [o for o in orders if o.get('date') == today_sys]
               
               if todays_orders:
@@ -57,18 +61,14 @@ jobs:
               else:
                   msg = f"☀️ Доброе утро, {user_name}! Сегодня {today_user} клиентов нет."
 
-              # Отправляем сообщение в чат бота
               requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": msg})
-              print("Уведомление отправлено!")
-              
-          except FileNotFoundError:
-              # Если файла бэкапа в репозитории пока нет
-              msg = f"☀️ Доброе утро! Сегодня {today_user}. База данных еще ни разу не загружалась в репозиторий GitHub."
-              requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": msg})
-              print("Файл не найден, аварийное сообщение отправлено.")
-              sys.exit(0) # Указываем GitHub, что всё прошло успешно
+              print("Уведомление успешно отправлено!")
               
           except Exception as e:
-              print("Произошла ошибка:", str(e))
+              # Если внутри JSON оказалась каша, отправим ошибку в чат
+              error_msg = f"🛑 Ошибка при чтении бэкапа: {str(e)}"
+              requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": error_msg})
+              print(error_msg)
+              sys.exit(1)
           EOF
           
