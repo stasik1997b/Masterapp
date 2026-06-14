@@ -1050,130 +1050,74 @@
         }
         function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
 
-        // 1. УНИВЕРСАЛЬНЫЙ ЭКСПОРТ: СОЗДАЕТ EXCEL И ОТПРАВЛЯЕТ В ЧАТ БОТА
+                // ОТПРАВКА БАЗЫ И ГЕНЕРАЦИЯ EXCEL НА ВАШЕМ СЕРВЕРЕ HUGGING FACE
         function exportToExcel() {
-            if (typeof XLSX === 'undefined') { alert("Библиотека экспорта не найдена!"); return; }
-            
-            // ТОКЕН ВАШЕГО БОТА (Обязательно вставьте сюда токен из BotFather)
-            const BOT_TOKEN = "8886303402:AAFkLKNCtVEC-Jnf8skmszWD45IgebwXVLY"; 
-            
-            // Пытаемся определить Telegram ID пользователя
-            let chatId = typeof currentTelegramId !== 'undefined' ? currentTelegramId : null;
-            if (!chatId && window.Telegram && window.Telegram.WebApp) {
+            // Ваша прямая ссылка на сервер Hugging Face
+            const SERVER_URL = "https://hf.space";
+
+            // Автоматически определяем Telegram ID текущего мастера
+            let chatId = null;
+            if (window.Telegram && window.Telegram.WebApp) {
                 chatId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
             }
+            if (!chatId && typeof currentTelegramId !== 'undefined') { chatId = currentTelegramId; }
             
             if (!chatId) {
-                alert("Ошибка: Не удалось определить ваш Telegram ID. Откройте приложение внутри Telegram.");
+                alert("Ошибка: Откройте приложение внутри Telegram, чтобы бот знал, куда слать файл!");
                 return;
             }
 
-            const wb = XLSX.utils.book_new();
+            // Вытаскиваем имя мастера из Telegram
+            const user_name = window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name || "Мастер";
 
-            // Создаем красивые листы для просмотра человеком
-            const oData = state.orders.map(o => ({ "Дата": o.date, "Время": o.time || "-", "Клиент": o.client, "Телефон": o.phone || "-", "Описание": o.product, "Сумма (₽)": o.price, "Предоплата": o.prepayment }));
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(oData), "Журнал записей");
-
-            if (state.sphere !== 'handyman') {
-                const wData = state.warehouse.map(w => ({ "Наименование": w.name, "Остаток": w.qty, "Ед.изм": w.unit, "Цена за ед": w.price }));
-                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wData), "Складской учет");
-                
-                const eData = state.expenses.map(e => ({ "Дата": e.date, "Сумма": e.amount, "Комментарий": e.comment }));
-                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(eData), "Прямые расходы");
-            }
-
-            // СЕКРЕТНЫЙ ШАГ: Записываем ВСЮ базу данных (state) в скрытый лист для последующего импорта
-            const backupRaw = [{ app: "MasterApp", sphere: state.sphere, full_state: JSON.stringify(state) }];
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(backupRaw), "SYS_BACKUP");
-
-            // Превращаем таблицу в бинарный массив данных
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-            
-            // Формируем скрытую отправку напрямую на сервера Telegram Bot API
-            const formData = new FormData();
-            formData.append("chat_id", chatId);
-            formData.append("document", blob, `MasterApp_${state.sphere}_backup.xlsx`);
-            formData.append("caption", `📋 Резервная копия базы Excel для сферы "${state.sphere}" создана успешно! Вы можете сохранить этот файл, а при необходимости загрузить его обратно через кнопку «Восстановить».`);
-
-            // Анимация загрузки на кнопке интерфейса
             const btn = document.querySelector("button[onclick='exportToExcel()']");
-            let originalText = btn ? btn.innerHTML : "Создать копию";
-            if (btn) {
-                btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin mr-1.5'></i> Отправка боту...";
-                btn.disabled = true;
-            }
+            if (btn) { btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin mr-1.5'></i> Отправка..."; btn.disabled = true; }
 
-            // Отправляем файл методу sendDocument в обход всех блокировок Webview
-            fetch(`https://telegram.org{BOT_TOKEN}/sendDocument`, {
+            // Мгновенно выплескиваем все данные на сервер
+            fetch(SERVER_URL, {
                 method: "POST",
-                body: formData
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    user_name: user_name,
+                    sphere: state.sphere,
+                    full_state: state
+                })
             })
             .then(response => response.json())
             .then(res => {
-                if (res.ok) {
-                    alert("Успешно! Бот отправил файл Excel вам в личные сообщения.");
+                if (res.status === "success") {
+                    alert("Успешно! Ваш сервер принял данные. Бот прямо сейчас отправляет файл Excel вам в чат.");
                 } else {
-                    alert("Ошибка Telegram API: " + res.description);
+                    alert("Ошибка сервера: " + res.message);
                 }
             })
             .catch(err => {
-                alert("Ошибка сети при отправке: " + err.message);
+                alert("Ошибка соединения с сервером: " + err.message);
             })
             .finally(() => {
-                if (btn) {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
+                if (btn) { btn.innerHTML = "<i class='fa-solid fa-paper-plane mr-1.5'></i> Создать копию"; btn.disabled = false; }
             });
         }
 
-        // 2. ВОССТАНОВЛЕНИЕ БАЗЫ ДАННЫХ ИЗ ФАЙЛА EXCEL (Который прислал бот)
-        function restoreFromExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-
-                    // Ищем наш технический проверочный лист бэкапа
-                    if (!workbook.SheetNames.includes("SYS_BACKUP")) {
-                        alert("Ошибка: Этот файл Excel не содержит системных данных MasterApp или поврежден!");
-                        return;
-                    }
-
-                    const worksheet = workbook.Sheets["SYS_BACKUP"];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                    
-                    if (!jsonData || jsonData.length === 0 || !jsonData[0].full_state) {
-                        alert("Ошибка: Не удалось прочитать данные восстановления из файла Excel.");
-                        return;
-                    }
-
-                    const restoredState = JSON.parse(jsonData[0].full_state);
-
-                    // Проверяем, совпадает ли направление бизнеса, на всякий случай
-                    if (restoredState.sphere !== state.sphere) {
-                        if (!confirm(`Внимание! Этот файл от сферы "${restoredState.sphere}", а у вас сейчас выбрана "${state.sphere}". Всё равно восстановить данные?`)) {
-                            return;
-                        }
-                    }
-
-                    if (confirm("Вы уверены? Импорт из этого файла Excel полностью сотрет текущие данные на телефоне и запишет данные из бэкапа!")) {
-                        const key = `masterapp_db_${restoredState.sphere}_user_${currentTelegramId}`;
-                        localStorage.setItem(key, JSON.stringify(restoredState));
-                        alert("База данных успешно восстановлена!");
-                        location.reload();
-                    }
-                } catch (err) {
-                    alert("Ошибка при разборе Excel файла: " + err.message);
+        // ВОССТАНОВЛЕНИЕ БАЗЫ ДАННЫХ ИЗ ТЕКСТА EXCEL-БЭКАПА
+        function restoreFromExcel() {
+            const rawInput = prompt("Вставьте скопированный текстовый блок JSON бэкапа из скрытого листа Excel:");
+            if (!rawInput) return;
+            try {
+                const restored = JSON.parse(rawInput.trim());
+                const targetState = restored.full_state || restored;
+                if (!targetState.sphere || !targetState.orders) { alert("Неверный формат бэкапа!"); return; }
+                
+                if (confirm(`Восстановить базу для сферы "${targetState.sphere}"? Это сотрет текущие данные.`)) {
+                    const key = `masterapp_db_${targetState.sphere}_user_${currentTelegramId}`;
+                    localStorage.setItem(key, JSON.stringify(targetState));
+                    alert("Данные успешно восстановлены!");
+                    location.reload();
                 }
-            };
-            reader.readAsArrayBuffer(file);
+            } catch (err) { alert("Ошибка разбора текста: " + err.message); }
         }
+
 
         function clearAllData() {
             if (confirm("Внимание! Это полностью удалит текущую активную базу данных выбранной сферы!")) {
