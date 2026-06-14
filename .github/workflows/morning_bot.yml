@@ -21,15 +21,14 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-            - name: Process Data and Send Message
+      - name: Process Data and Send Message
         env:
-          # Теперь имена строго совпадают с тем, как их сохранил GitHub
+          # GitHub автоматически перевёл ваши секреты в КАПС
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_KEY }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
-
         run: |
           python - <<EOF
-          import os, json, requests
+          import os, json, requests, sys
           from datetime import datetime
 
           BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
@@ -61,10 +60,15 @@ jobs:
               # Отправляем сообщение в чат бота
               requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": msg})
               print("Уведомление отправлено!")
+              
           except FileNotFoundError:
               # Если файла бэкапа в репозитории пока нет
               msg = f"☀️ Доброе утро! Сегодня {today_user}. База данных еще ни разу не загружалась в репозиторий GitHub."
               requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": msg})
+              print("Файл не найден, аварийное сообщение отправлено.")
+              sys.exit(0) # Указываем GitHub, что всё прошло успешно
+              
           except Exception as e:
               print("Произошла ошибка:", str(e))
           EOF
+          
