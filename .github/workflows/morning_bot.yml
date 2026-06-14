@@ -4,7 +4,7 @@ on:
   schedule:
     # Запуск каждый день в 04:00 по UTC (это ровно 07:00 по Минску/Москве)
     - cron: '0 4 * * *'
-  workflow_dispatch: # Кнопка для ручного теста прямо на сайте GitHub
+  workflow_dispatch: # Кнопка для ручного теста в интерфейсе GitHub
 
 jobs:
   send_notification:
@@ -21,26 +21,25 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Process Backup and Send Telegram Message
+      - name: Process Data and Send Message
         env:
-          TELEGRAM_BOT_TOKEN: "8886303402:AAFkLKNCtVEC-Jnf8skmszWD45IgebwXVLY"
-          # ТАК КАК ВАШ ID ИЗ ТЕЛЕГРАМА МНЕ НЕИЗВЕСТЕН, Я ПОДСТАВИЛ ID КАНАЛА/ЧАТА,
-          # НО СЮДА НУЖНО ВСТАВИТЬ ВАШ ЛИЧНЫЙ ЦИФРОВОЙ TELEGRAM ID
-          TELEGRAM_CHAT_ID: "508684716" 
+          # GitHub сам заберет ключи из вашего сейфа по вашим именам!
+          TELEGRAM_BOT_TOKEN: ${{ secrets.Telegram_bot_key }}
+          TELEGRAM_CHAT_ID: ${{ secrets.Telegram_bot_id }}
         run: |
           python - <<EOF
-          import os
-          import json
+          import os, json, requests
           from datetime import datetime
-          import requests
 
           BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
           CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
           
+          # Форматируем даты
           today_sys = datetime.now().strftime('%Y-%m-%d')
           today_user = datetime.now().strftime('%d.%m.%Y')
 
           try:
+              # Читаем файл бэкапа из репозитория
               with open('backup_data.json', 'r', encoding='utf-8') as f:
                   payload = json.load(f)
               
@@ -48,23 +47,23 @@ jobs:
               full_state = payload.get('full_state', {})
               orders = full_state.get('orders', [])
               
+              # Фильтруем записи на сегодня
               todays_orders = [o for o in orders if o.get('date') == today_sys]
               
               if todays_orders:
                   todays_orders.sort(key=lambda x: x.get('time', ''))
-                  times_list = ", ".join([o.get('time', 'Время?') for o in todays_orders])
-                  count = len(todays_orders)
-                  
-                  message = f"☀️ Доброе утро, {user_name}! Сегодня {today_user} у вас {count} клиента. {times_list}."
+                  times_list = ", ".join([o.get('time', 'Время не указано') for o in todays_orders])
+                  msg = f"☀️ Доброе утро, {user_name}! Сегодня {today_user} у вас {len(todays_orders)} клиента. {times_list}."
               else:
-                  message = f"☀️ Доброе утро, {user_name}! Сегодня {today_user} заказов в базе нет."
+                  msg = f"☀️ Доброе утро, {user_name}! Сегодня {today_user} клиентов нет."
 
-              url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
-              requests.post(url, json={"chat_id": CHAT_ID, "text": message})
-              print("Сообщение отправлено!")
-
+              # Отправляем сообщение в чат бота
+              requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": msg})
+              print("Уведомление отправлено!")
           except FileNotFoundError:
-              url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
-              requests.post(url, json={"chat_id": CHAT_ID, "text": f"Доброе утро! Сегодня {today_user}. База данных еще ни разу не синхронизировалась с GitHub."})
+              # Если файла бэкапа в репозитории пока нет
+              msg = f"☀️ Доброе утро! Сегодня {today_user}. База данных еще ни разу не загружалась в репозиторий GitHub."
+              requests.post(f"https://telegram.org{BOT_TOKEN}/sendMessage", json={"chat_id": CHAT_ID, "text": msg})
+          except Exception as e:
+              print("Произошла ошибка:", str(e))
           EOF
-          
