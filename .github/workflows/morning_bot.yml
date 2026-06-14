@@ -21,11 +21,12 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Process Data and Send Message
+            - name: Process Data and Send Message
         env:
-          # GitHub сам заберет ключи из вашего сейфа по вашим именам!
-          TELEGRAM_BOT_TOKEN: ${{ secrets.Telegram_bot_key }}
-          TELEGRAM_CHAT_ID: ${{ secrets.Telegram_bot_id }}
+          # Теперь имена строго совпадают с тем, как их сохранил GitHub
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_KEY }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
+
         run: |
           python - <<EOF
           import os, json, requests
