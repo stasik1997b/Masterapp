@@ -1066,7 +1066,7 @@
     }
 
     // 2. Делаем запрос к вашему новому бэкенду на Hugging Face
-    fetch('https://hf.space', { 
+    fetch('https://uncord-masterapp-backend.hf.space/sync', { 
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json' 
@@ -1093,7 +1093,7 @@
         formData.append('caption', `📊 МастерАпп: Резервная копия (${dataPayload.sphere})`);
 
         // 4. Отправляем файл напрямую в Telegram API с устройства пользователя
-        return fetch(`https://telegram.org{botToken}/sendDocument`, {
+        return fetch(`https://api.telegram.org/bot{botToken}/sendDocument`, {
             method: 'POST',
             body: formData
         });
