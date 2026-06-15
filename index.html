@@ -1052,90 +1052,68 @@
 
                 // ОТПРАВКА БАЗЫ И ГЕНЕРАЦИЯ EXCEL НА ВАШЕМ СЕРВЕРЕ HUGGING FACE
         function exportToExcel() {
-            // Ваша прямая ссылка на сервер Hugging Face
-            const SERVER_URL = "https://uncord-masterapp-backend.hf.space/sync";
+    // 1. Формируем пакет данных из локального состояния приложения
+    const dataPayload = {
+        chat_id: currentTelegramId, // Берётся автоматически из Telegram WebApp
+        user_name: document.getElementById('profileName').textContent || "Мастер",
+        sphere: state.sphere || "Общая",
+        orders: state.orders || []
+    };
 
-            // Автоматически определяем Telegram ID текущего мастера
-            let chatId = null;
-            if (window.Telegram && window.Telegram.WebApp) {
-                chatId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
-            }
-            if (!chatId && typeof currentTelegramId !== 'undefined') { chatId = currentTelegramId; }
-            
-            if (!chatId) {
-                alert("Ошибка: Откройте приложение внутри Telegram, чтобы бот знал, куда слать файл!");
-                return;
-            }
+    // Показываем пользователю, что процесс пошел
+    if (window.Telegram?.WebApp?.showPopup) {
+        window.Telegram.WebApp.showPopup({ message: "Синхронизация запущена..." });
+    }
 
-            // Вытаскиваем имя мастера из Telegram
-            const user_name = window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name || "Мастер";
-
-            const btn = document.querySelector("button[onclick='exportToExcel()']");
-            if (btn) { btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin mr-1.5'></i> Отправка..."; btn.disabled = true; }
-
-            // Мгновенно выплескиваем все данные на сервер
-            fetch(SERVER_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    user_name: user_name,
-                    sphere: state.sphere,
-                    full_state: state
-                })
-            })
-            .then(response => response.json())
-            .then(res => {
-                if (res.status === "success") {
-                    alert("Успешно! Ваш сервер принял данные. Бот прямо сейчас отправляет файл Excel вам в чат.");
-                } else {
-                    alert("Ошибка сервера: " + res.message);
-                }
-            })
-            .catch(err => {
-                alert("Ошибка соединения с сервером: " + err.message);
-            })
-            .finally(() => {
-                if (btn) { btn.innerHTML = "<i class='fa-solid fa-paper-plane mr-1.5'></i> Создать копию"; btn.disabled = false; }
-            });
-        }
-
-        // ВОССТАНОВЛЕНИЕ БАЗЫ ДАННЫХ ИЗ ТЕКСТА EXCEL-БЭКАПА
-        function restoreFromExcel() {
-            const rawInput = prompt("Вставьте скопированный текстовый блок JSON бэкапа из скрытого листа Excel:");
-            if (!rawInput) return;
-            try {
-                const restored = JSON.parse(rawInput.trim());
-                const targetState = restored.full_state || restored;
-                if (!targetState.sphere || !targetState.orders) { alert("Неверный формат бэкапа!"); return; }
-                
-                if (confirm(`Восстановить базу для сферы "${targetState.sphere}"? Это сотрет текущие данные.`)) {
-                    const key = `masterapp_db_${targetState.sphere}_user_${currentTelegramId}`;
-                    localStorage.setItem(key, JSON.stringify(targetState));
-                    alert("Данные успешно восстановлены!");
-                    location.reload();
-                }
-            } catch (err) { alert("Ошибка разбора текста: " + err.message); }
-        }
-
-
-        function clearAllData() {
-            if (confirm("Внимание! Это полностью удалит текущую активную базу данных выбранной сферы!")) {
-                localStorage.removeItem(`masterapp_db_${state.sphere}_user_${currentTelegramId}`);
-                location.reload();
-            }
-        }
-
-        function formatDate(date) {
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const d = String(date.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        }
-
-        function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth() + dir); renderCalendar(); }
+    // 2. Делаем запрос к вашему новому бэкенду на Hugging Face
+    fetch('https://hf.space', { 
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify(dataPayload)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Бэкенд Hugging Face вернул ошибку');
         
-        buildCalculatorRows();
+        // Извлекаем токен бота, который бэкенд безопасно передал в заголовках
+        const botToken = response.headers.get('X-Bot-Token');
+        if (!botToken) throw new Error('Не удалось получить токен бота с сервера');
+        
+        // Превращаем ответ в бинарный файл (Blob) и передаем токен дальше
+        return response.blob().then(excelBlob => ({ excelBlob, botToken }));
+    })
+    .then(({ excelBlob, botToken }) => {
+        // 3. Формируем FormData для прямой отправки файла в Telegram
+        const formData = new FormData();
+        formData.append('chat_id', dataPayload.chat_id);
+        
+        const fileName = `MasterApp_${dataPayload.sphere}_backup.xlsx`;
+        formData.append('document', excelBlob, fileName);
+        formData.append('caption', `📊 МастерАпп: Резервная копия (${dataPayload.sphere})`);
+
+        // 4. Отправляем файл напрямую в Telegram API с устройства пользователя
+        return fetch(`https://telegram.org{botToken}/sendDocument`, {
+            method: 'POST',
+            body: formData
+        });
+    })
+    .then(tgResponse => {
+        if (!tgResponse.ok) throw new Error('Telegram не принял файл бэкапа');
+        return tgResponse.json();
+    })
+    .then(tgData => {
+        if (tgData.ok) {
+            alert("🚀 Успешно! Резервная копия отправлена в вашего чат-бота Telegram.");
+        } else {
+            alert("Ошибка: Бот получил файл, но не смог доставить его в чат.");
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка синхронизации:', error);
+        alert(`Произошла ошибка: ${error.message}`);
+    });
+                     }
     </script>
 </body>
 </html>
