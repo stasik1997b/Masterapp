@@ -1075,8 +1075,6 @@ function exportToExcel() {
         return response.blob().then(excelBlob => ({ excelBlob, botToken }));
     })
      .then(({ excelBlob, botToken }) => {
-        // Выводим токен на экран, чтобы своими глазами увидеть, пустой он или нет
-        alert("Полученный токен: '" + botToken + "'");
 
         const formData = new FormData();
         formData.append('chat_id', dataPayload.chat_id);
