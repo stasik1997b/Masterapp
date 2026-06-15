@@ -1051,7 +1051,7 @@
         function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
 
                 // ОТПРАВКА БАЗЫ И ГЕНЕРАЦИЯ EXCEL НА ВАШЕМ СЕРВЕРЕ HUGGING FACE
-        function exportToExcel() {
+function exportToExcel() {
     // 1. Формируем пакет данных из локального состояния приложения
     const dataPayload = {
         chat_id: currentTelegramId, // Берётся автоматически из Telegram WebApp
@@ -1076,8 +1076,8 @@
     .then(response => {
         if (!response.ok) throw new Error('Бэкенд Hugging Face вернул ошибку');
         
-        // Извлекаем токен бота, который бэкенд безопасно передал в заголовках
-        const botToken = response.headers.get('X-Bot-Token');
+        // ПРОВЕРКА ИСПРАВЛЕНА: Проверяем заголовок как в верхнем, так и в нижнем регистре
+        const botToken = response.headers.get('X-Bot-Token') || response.headers.get('x-bot-token');
         if (!botToken) throw new Error('Не удалось получить токен бота с сервера');
         
         // Превращаем ответ в бинарный файл (Blob) и передаем токен дальше
@@ -1113,7 +1113,8 @@
         console.error('Ошибка синхронизации:', error);
         alert(`Произошла ошибка: ${error.message}`);
     });
-                     }
+}
+
     </script>
 </body>
 </html>
