@@ -1083,7 +1083,7 @@ function exportToExcel() {
         formData.append('document', excelBlob, 'MasterApp_backup.xlsx');
         formData.append('caption', `📊 Резервная копия MasterApp`);
 
-        return fetch(`https://api.telegram.org/bot{botToken}/sendDocument`, {
+        return fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
             method: 'POST',
             body: formData
         });
