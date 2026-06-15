@@ -1074,14 +1074,15 @@ function exportToExcel() {
         if (!botToken) throw new Error('Бэкенд не передал токен бота (X-Bot-Token)');
         return response.blob().then(excelBlob => ({ excelBlob, botToken }));
     })
-    .then(({ excelBlob, botToken }) => {
+     .then(({ excelBlob, botToken }) => {
+        // Выводим токен на экран, чтобы своими глазами увидеть, пустой он или нет
+        alert("Полученный токен: '" + botToken + "'");
+
         const formData = new FormData();
         formData.append('chat_id', dataPayload.chat_id);
-        
         formData.append('document', excelBlob, 'MasterApp_backup.xlsx');
         formData.append('caption', `📊 Резервная копия MasterApp`);
 
-        // ИСПРАВЛЕНО: Жестко прописан правильный URL к Telegram API
         return fetch(`https://api.telegram.org/bot{botToken}/sendDocument`, {
             method: 'POST',
             body: formData
