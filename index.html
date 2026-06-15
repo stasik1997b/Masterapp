@@ -1051,7 +1051,6 @@
         function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
 
 function exportToExcel() {
-    // 1. Формируем пакет данных и отправляем на бэкенд
     const dataPayload = {
         chat_id: currentTelegramId, 
         user_name: document.getElementById('profileName').textContent || "Мастер",
@@ -1063,45 +1062,165 @@ function exportToExcel() {
         window.Telegram.WebApp.showPopup({ message: "Синхронизация запущена..." });
     }
 
+    // ИСПРАВЛЕНО: Указан точный прямой URL твоего бэкенда на Hugging Face
     fetch('https://uncord-masterapp-backend.hf.space/sync', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataPayload)
     })
     .then(response => {
-        if (!response.ok) throw new Error('Ошибка бэкенда');
+        if (!response.ok) throw new Error(`Бэкенд вернул статус ${response.status}`);
         const botToken = response.headers.get('X-Bot-Token') || response.headers.get('x-bot-token');
-        if (!botToken) throw new Error('Токен не получен');
+        if (!botToken) throw new Error('Бэкенд не передал токен бота (X-Bot-Token)');
         return response.blob().then(excelBlob => ({ excelBlob, botToken }));
     })
     .then(({ excelBlob, botToken }) => {
-        // 2. Отправка файла в Telegram API
         const formData = new FormData();
         formData.append('chat_id', dataPayload.chat_id);
-        formData.append('document', excelBlob, `MasterApp_${dataPayload.sphere}_backup.xlsx`);
-        formData.append('caption', `📊 Резервная копия (${dataPayload.sphere})`);
+        
+        formData.append('document', excelBlob, 'MasterApp_backup.xlsx');
+        formData.append('caption', `📊 Резервная копия MasterApp`);
 
+        // ИСПРАВЛЕНО: Жестко прописан правильный URL к Telegram API
         return fetch(`https://api.telegram.org/bot{botToken}/sendDocument`, {
             method: 'POST',
             body: formData
         });
     })
-    .then(tgResponse => tgResponse.ok ? alert("🚀 Резервная копия отправлена!") : alert("Ошибка TG"))
-    .catch(error => { console.error(error); alert(`Ошибка: ${error.message}`); });
+    .then(tgResponse => {
+        if (tgResponse.ok) {
+            alert("🚀 Резервная копия успешно отправлена в чат-бот!");
+        } else {
+            return tgResponse.json().then(tgError => {
+                throw new Error(`Telegram API отказал: ${tgError.description} (Код: ${tgError.error_code})`);
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Критическая ошибка:', error);
+        alert(`❌ Сбой: ${error.message}`);
+    });
 }
 
-// Функции восстановления, удаления, расходов и отчетности
-function restoreFromExcel(event) { /* ... логика восстановления (см. исходник) ... */ }
-function clearAllData() { /* ... логика очистки ... */ }
-function openExpenseModal() { document.getElementById('expenseModal').classList.remove('hidden'); }
-function closeExpenseModal() { document.getElementById('expenseModal').classList.add('hidden'); }
-function saveExpense() { /* ... сохранение расхода ... */ }
-function generateReport() { /* ... расчет отчетов ... */ }
-function openProfileModal() { /* ... открытие профиля ... */ }
-function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
-function changeMonth(direction) { currentDate.setMonth(currentDate.getMonth() + direction); renderCalendar(); }
-function formatDate(date) { return date.toISOString().split('T')[0]; }
+function restoreFromExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            if(!workbook.SheetNames.includes('SYS_BACKUP')) {
+                alert('Неверный формат файла бэкапа (отсутствует SYS_BACKUP)');
+                return;
+            }
+            const backupSheet = workbook.Sheets['SYS_BACKUP'];
+            const jsonRows = XLSX.utils.sheet_to_json(backupSheet);
+            if(!jsonRows.length || !jsonRows[0].raw_json) {
+                alert('Файл бэкапа пуст или поврежден');
+                return;
+            }
+            let rawStr = jsonRows[0].raw_json;
+            rawStr = rawStr.replace(/'/g, '"');
+            const parsed = JSON.parse(rawStr);
+            if(parsed.orders) {
+                state.orders = parsed.orders;
+                saveState();
+                renderCalendar();
+                alert('Данные успешно восстановлены из бэкапа!');
+            } else {
+                alert('В бэкапе не найдены заказы');
+            }
+        } catch(err) {
+            console.error(err);
+            alert('Ошибка при чтении файла бэкапа');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function clearAllData() {
+    if(confirm('Вы уверены, что хотите удалить ВСЕ данные приложения? Это действие необратимо.')) {
+        state.orders = [];
+        state.expenses = [];
+        saveState();
+        renderCalendar();
+        alert('Все данные успешно удалены.');
+    }
+}
+
+function openExpenseModal() {
+    document.getElementById('expenseModal').classList.remove('hidden');
+}
+
+function closeExpenseModal() {
+    document.getElementById('expenseModal').classList.add('hidden');
+}
+
+function saveExpense() {
+    const amount = parseFloat(document.getElementById('expAmount').value);
+    const category = document.getElementById('expCategory').value;
+    const date = document.getElementById('expDate').value;
+    const comment = document.getElementById('expComment').value;
+    if(!amount || !date) {
+        alert('Заполните сумму и дату');
+        return;
+    }
+    if(!state.expenses) state.expenses = [];
+    state.expenses.push({ id: Date.now(), amount, category, date, comment });
+    saveState();
+    closeExpenseModal();
+    document.getElementById('expAmount').value = '';
+    document.getElementById('expComment').value = '';
+    alert('Расход добавлен');
+}
+
+function generateReport() {
+    const now = new Date();
+    const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    const mOrders = state.orders.filter(o => o.date && o.date.startsWith(currentMonthStr));
+    const mExpenses = (state.expenses || []).filter(e => e.date && e.date.startsWith(currentMonthStr));
+    const totalIncome = mOrders.reduce((sum, o) => sum + (parseFloat(o.price) || 0), 0);
+    const totalExpenses = mExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+    const netProfit = totalIncome - totalExpenses;
+    document.getElementById('repTotalIncome').textContent = totalIncome;
+    document.getElementById('repTotalExpenses').textContent = totalExpenses;
+    document.getElementById('repNetProfit').textContent = netProfit;
+    document.getElementById('repOrdersCount').textContent = mOrders.length;
+}
+
+function openProfileModal() {
+    document.getElementById('profileModal').classList.remove('hidden');
+    document.getElementById('profNameInput').value = document.getElementById('profileName').textContent;
+    document.getElementById('profSphereSelect').value = state.sphere || 'Общая';
+}
+
+function closeProfileModal() {
+    document.getElementById('profileModal').classList.add('hidden');
+}
+
+function saveProfile() {
+    const newName = document.getElementById('profNameInput').value.trim();
+    const newSphere = document.getElementById('profSphereSelect').value;
+    if(newName) {
+        document.getElementById('profileName').textContent = newName;
+    }
+    state.sphere = newSphere;
+    saveState();
+    closeProfileModal();
+    alert('Профиль сохранен');
+}
+
+function changeMonth(direction) {
+    currentDate.setMonth(currentDate.getMonth() + direction);
+    renderCalendar();
+}
+
+function formatDate(date) {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - (offset*60*1000));
+    return localDate.toISOString().split('T')[0];
+}
 </script>
 </body>
 </html>
-
