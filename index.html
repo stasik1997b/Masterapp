@@ -242,16 +242,10 @@
                         <input type="time" id="orderTime" value="12:00" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-sm focus:outline-none text-center font-bold text-indigo-400">
                     </div>
                 </div>
-                               <div>
+                <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Телефон клиента</label>
                     <input type="tel" id="orderPhone" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-sm focus:outline-none" placeholder="+7 (999) 123-4567">
-                </div>   
-                <!-- ПОЛЕ АДРЕСА (Скрыто по умолчанию) -->
-                <div id="addressFieldContainer" class="hidden">
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Адрес выполнения работы *</label>
-                    <input type="text" id="orderAddress" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-sm focus:outline-none" placeholder="Город, улица, дом, квартира">
                 </div>
-                <div>
                     <label id="orderProductLabel" class="block text-xs font-semibold text-slate-500 mb-1">Изделие / Услуга *</label>
                     <input type="text" id="orderProduct" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white text-sm focus:outline-none" placeholder="Название услуги или изделия">
                 </div>
@@ -957,26 +951,16 @@
         }
 
         function openOrderModal() {
-    document.getElementById('orderId').value = '';
-    document.getElementById('orderClient').value = '';
-    document.getElementById('orderTime').value = '12:00';
-    document.getElementById('orderPhone').value = '';
-    document.getElementById('orderProduct').value = '';
-    document.getElementById('orderPrice').value = '';
-    document.getElementById('orderPrepayment').value = '';
-    document.getElementById('orderTemplateSelect').value = '';
-    document.getElementById('orderModal').classList.remove('hidden');
-
-    // Простое и надежное управление адресом
-    const addr = document.getElementById('addressFieldContainer');
-    if (addr) {
-        if (currentSphere === 'handyman') {
-            addr.classList.remove('hidden');
-        } else {
-            addr.classList.add('hidden');
+            document.getElementById('orderId').value = '';
+            document.getElementById('orderClient').value = '';
+            document.getElementById('orderTime').value = '12:00';
+            document.getElementById('orderPhone').value = '';
+            document.getElementById('orderProduct').value = '';
+            document.getElementById('orderPrice').value = '';
+            document.getElementById('orderPrepayment').value = '';
+            document.getElementById('orderTemplateSelect').value = '';
+            document.getElementById('orderModal').classList.remove('hidden');
         }
-    }
-}
 
 function saveOrder() {
     const client = document.getElementById('orderClient').value.trim();
