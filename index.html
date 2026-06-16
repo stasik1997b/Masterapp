@@ -962,17 +962,27 @@
         }
 
         function openOrderModal() {
-            document.getElementById('orderId').value = '';
-            document.getElementById('orderClient').value = '';
-            document.getElementById('orderTime').value = '12:00';
-            document.getElementById('orderPhone').value = '';
-            document.getElementById('orderProduct').value = '';
-            document.getElementById('orderPrice').value = '';
-            document.getElementById('orderPrepayment').value = '';
-            document.getElementById('orderTemplateSelect').value = '';
-            document.getElementById('orderModal').classList.remove('hidden');
+    document.getElementById('orderId').value = '';
+    document.getElementById('orderClient').value = '';
+    document.getElementById('orderTime').value = '12:00';
+    document.getElementById('orderPhone').value = '';
+    document.getElementById('orderProduct').value = '';
+    document.getElementById('orderPrice').value = '';
+    document.getElementById('orderPrepayment').value = '';
+    document.getElementById('orderTemplateSelect').value = '';
+    document.getElementById('orderModal').classList.remove('hidden');
+
+    // УМНОЕ ПОЛЕ АДРЕСА: Показываем только если сфера "Муж на час"
+    const addrContainer = document.getElementById('addressFieldContainer');
+    if (addrContainer) {
+        if (currentSphere === 'handyman') {
+            addrContainer.classList.remove('hidden');
+        } else {
+            addrContainer.classList.add('hidden');
         }
-        function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
+    }
+}
+
 
 function saveOrder() {
     const client = document.getElementById('orderClient').value.trim();
