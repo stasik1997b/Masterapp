@@ -985,7 +985,28 @@ function saveOrder() {
     // Запускаем фоновую отправку данных на сервер
     autoSyncWithServer();
 }
+function autoSyncWithServer() {
+    const dataPayload = {
+        chat_id: currentTelegramId, 
+        user_name: document.getElementById('profileName').textContent || "Мастер",
+        sphere: state.sphere || "Общая",
+        orders: state.orders || []
+    };
 
+    // Ссылка исправлена, дублирование убрано
+    fetch('https://uncord-masterapp-backend.hf.space/sync', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataPayload)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Данные успешно синхронизированы с сервером для уведомлений");
+        }
+    })
+    .catch(error => console.error('Ошибка фоновой синхронизации:', error));
+}
+        
         function deleteOrder(id) {
             if (confirm("Удалить выбранную запись?")) {
                 state.orders = state.orders.filter(o => o.id !== id);
