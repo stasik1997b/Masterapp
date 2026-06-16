@@ -954,34 +954,37 @@
         }
         function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
 
-        function saveOrder() {
-            const client = document.getElementById('orderClient').value.trim();
-            const time = document.getElementById('orderTime').value;
-            const phone = document.getElementById('orderPhone').value.trim();
-            const product = document.getElementById('orderProduct').value.trim();
-            const price = parseFloat(document.getElementById('orderPrice').value) || 0;
-            const prepayment = parseFloat(document.getElementById('orderPrepayment').value) || 0;
-            const templateKey = document.getElementById('orderTemplateSelect').value;
+function saveOrder() {
+    const client = document.getElementById('orderClient').value.trim();
+    const time = document.getElementById('orderTime').value;
+    const phone = document.getElementById('orderPhone').value.trim();
+    const product = document.getElementById('orderProduct').value.trim();
+    const price = parseFloat(document.getElementById('orderPrice').value) || 0;
+    const prepayment = parseFloat(document.getElementById('orderPrepayment').value) || 0;
+    const templateKey = document.getElementById('orderTemplateSelect').value;
 
-            if (!client || !time || !product || price <= 0) { alert("Заполните обязательные поля со звездочкой!"); return; }
+    if (!client || !time || !product || price <= 0) { alert("Заполните обязательные поля со звездочкой!"); return; }
 
-            // Логика автосписания ингредиентов со склада кулинара
-            if (state.sphere === 'culinary' && templateKey && state.templates[templateKey]) {
-                state.templates[templateKey].forEach(comp => {
-                    if (!comp.isCustom) {
-                        const stItem = state.warehouse.find(i => i.id === comp.whItemId);
-                        if (stItem) stItem.qty = parseFloat((stItem.qty - comp.qty).toFixed(2));
-                    }
-                });
+    // Логика автосписания ингредиентов со склада кулинара (ИСПРАВЛЕНО: функция больше не разорвана)
+    if (state.sphere === 'culinary' && templateKey && state.templates[templateKey]) {
+        state.templates[templateKey].forEach(comp => {
+            if (!comp.isCustom) {
+                const stItem = state.warehouse.find(i => i.id === comp.whItemId);
+                if (stItem) stItem.qty = parseFloat((stItem.qty - comp.qty).toFixed(2));
             }
+        });
+    }
 
-            state.orders.push({ id: Date.now().toString(), date: selectedDateStr, time, client, phone, product, price, prepayment });
-            saveUserData();
-            closeOrderModal();
-            renderOrders();
-            renderCalendar();
-            renderWarehouse();
-        }
+    state.orders.push({ id: Date.now().toString(), date: selectedDateStr, time, client, phone, product, price, prepayment });
+    saveUserData();
+    closeOrderModal();
+    renderOrders();
+    renderCalendar();
+    renderWarehouse();
+
+    // Запускаем фоновую отправку данных на сервер
+    autoSyncWithServer();
+}
 
         function deleteOrder(id) {
             if (confirm("Удалить выбранную запись?")) {
