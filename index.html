@@ -967,17 +967,16 @@
     document.getElementById('orderTemplateSelect').value = '';
     document.getElementById('orderModal').classList.remove('hidden');
 
-    // УМНОЕ ПОЛЕ АДРЕСА: Показываем только если сфера "Муж на час"
-    const addrContainer = document.getElementById('addressFieldContainer');
-    if (addrContainer) {
+    // Простое и надежное управление адресом
+    const addr = document.getElementById('addressFieldContainer');
+    if (addr) {
         if (currentSphere === 'handyman') {
-            addrContainer.classList.remove('hidden');
+            addr.classList.remove('hidden');
         } else {
-            addrContainer.classList.add('hidden');
+            addr.classList.add('hidden');
         }
     }
 }
-
 
 function saveOrder() {
     const client = document.getElementById('orderClient').value.trim();
