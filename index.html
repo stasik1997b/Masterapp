@@ -896,7 +896,7 @@
                             </div>
                             <div class="text-[11px] text-slate-400 font-medium">${order.product}</div>
                             ${addressHtml}
-                            ${order.phone ? `<div class="text-[10px] text-slate-500 mt-1"><i class="fa-solid fa-phone text-[9px]"></i> ${order.phone}</div>` : ''}
+                            ${order.phone ? `<div class="text-[10px] text-slate-500 mt-1"><i class="fa-solid fa-phone text-[9px]"></i> <a href="tel:${order.phone}" class="text-indigo-400 hover:underline">${order.phone}</a></div>` : ''}
                         </div>
                         <div class="text-right space-y-1">
                             <div class="text-xs font-black ${isCompleted ? 'text-slate-500' : 'text-emerald-400'}">${order.price} ₽</div>
