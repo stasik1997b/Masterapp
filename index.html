@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MasterApp PRO</title>
+    <title>MasterApp</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -39,7 +39,7 @@
                     <div class="w-10 h-10 bg-fuchsia-500/10 rounded-xl flex items-center justify-center text-fuchsia-400"><i class="fa-solid fa-sparkles text-lg"></i></div>
                     <div>
                         <div class="text-xs font-bold text-white">Бьюти-мастер</div>
-                        <div class="text-[10px] text-slate-500 mt-0.5">Техкарты процедур, склад расходников, записи</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">Инвентарь полок, склад расходников, записи</div>
                     </div>
                 </button>
                 <button onclick="selectInitialSphere('handyman')" class="w-full p-4 bg-slate-900 border border-slate-800 hover:border-orange-500 rounded-2xl flex items-center space-x-4 text-left transition-all active:scale-98">
@@ -96,7 +96,7 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div class="col-span-2">
                         <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Наименование позиции *</label>
-                        <input type="text" id="whName" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none" placeholder="Шоколад, Клей, Расходники...">
+                        <input type="text" id="whName" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none" placeholder="Шоколад, Мука, Сливки...">
                     </div>
                     <div>
                         <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Ед. измерения</label>
@@ -114,7 +114,7 @@
                         <input type="number" step="any" id="whQty" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-center text-white focus:outline-none" placeholder="Например: 1000">
                     </div>
                     <div class="col-span-2">
-                        <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Стоимость всей закупки (₽) *</label>
+                        <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Стоимость всей закупки (р.) *</label>
                         <input type="number" step="any" id="whPrice" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-center text-white focus:outline-none" placeholder="Общая цена за этот объём">
                     </div>
                 </div>
@@ -125,40 +125,77 @@
         </div>
 
         <div id="content-calc" class="space-y-3 content-tab hidden">
-            <div id="templatesWrapper" class="bg-slate-900 border border-slate-800 p-3 rounded-2xl space-y-2 shadow-md">
-                <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Сохраненные шаблоны</div>
-                <div id="templatesList" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto no-scrollbar"></div>
+            <div id="culinaryCalcBlock" class="space-y-3 hidden">
+                <div id="templatesWrapper" class="bg-slate-900 border border-slate-800 p-3 rounded-2xl space-y-2 shadow-md">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Сохраненные шаблоны</div>
+                    <div id="templatesList" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto no-scrollbar"></div>
+                </div>
+
+                <div id="calcItemsContainer" class="space-y-2"></div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="addCalcItemRow()" class="py-2.5 bg-slate-900 border border-slate-800 hover:border-indigo-500/30 font-bold text-xs text-indigo-400 rounded-xl transition-all flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-plus text-[10px]"></i> <span>Компонент</span>
+                    </button>
+                    <button onclick="clearCalculator()" class="py-2.5 bg-slate-900 border border-slate-800 hover:border-rose-500/30 font-bold text-xs text-rose-400 rounded-xl transition-all flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-broom text-[10px]"></i> <span>Очистить</span>
+                    </button>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 shadow-md">
+                    <div class="flex justify-between items-center border-b border-slate-800/60 pb-2">
+                        <span class="text-xs text-slate-400">Себестоимость:</span>
+                        <span id="totalCalcCost" class="text-sm font-black text-white">0 р.</span>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Желаемая наценка (%)</label>
+                        <input type="number" id="calcMargin" oninput="calculateRecipe()" value="100" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-center text-white focus:outline-none">
+                    </div>
+                    <div class="flex justify-between items-center bg-indigo-600/10 border border-indigo-500/20 p-2.5 rounded-xl">
+                        <span class="text-xs text-indigo-400 font-medium">Рекомендуемая цена:</span>
+                        <span id="recommendedPrice" class="text-base font-black text-indigo-300">0 р.</span>
+                    </div>
+                    
+                    <div id="templateActionsBlock" class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="saveCurrentAsTemplate()" class="py-2 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white font-bold text-[11px] rounded-xl transition-all">Новый шаблон</button>
+                        <button onclick="updateCurrentTemplate()" id="updateTemplateBtn" class="py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] rounded-xl hidden transition-all">Обновить текущий</button>
+                    </div>
+                </div>
             </div>
 
-            <div id="calcItemsContainer" class="space-y-2"></div>
+            <div id="beautyInventoryBlock" class="space-y-3 hidden">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 shadow-md">
+                    <div class="text-xs font-bold text-white mb-1"><i class="fa-solid fa-circle-plus text-fuchsia-400 mr-1"></i> Добавить материал / расходник</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Название (например: Перчатки, База Strong)</label>
+                            <input type="text" id="invName" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none" placeholder="Наименование материала">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Ед. измерения</label>
+                            <select id="invUnit" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white focus:outline-none">
+                                <option value="шт.">шт.</option>
+                                <option value="уп.">уп.</option>
+                                <option value="мл">мл</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Кол-во / Объём закупки</label>
+                            <input type="number" id="invQty" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-center text-white focus:outline-none" placeholder="100 или 15">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Стоимость закупки (р.)</label>
+                            <input type="number" id="invPrice" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-center text-white focus:outline-none" placeholder="Цена за всю упаковку/флакон">
+                        </div>
+                    </div>
+                    <button onclick="addBeautyInventoryItem()" class="w-full py-2 bg-slate-950 border border-slate-800 hover:border-fuchsia-500/30 text-fuchsia-400 font-bold text-xs rounded-xl transition-all">Поставить на полку</button>
+                </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="addCalcItemRow()" class="py-2.5 bg-slate-900 border border-slate-800 hover:border-indigo-500/30 font-bold text-xs text-indigo-400 rounded-xl transition-all flex items-center justify-center space-x-1">
-                    <i class="fa-solid fa-plus text-[10px]"></i> <span>Компонент</span>
-                </button>
-                <button onclick="clearCalculator()" class="py-2.5 bg-slate-900 border border-slate-800 hover:border-rose-500/30 font-bold text-xs text-rose-400 rounded-xl transition-all flex items-center justify-center space-x-1">
-                    <i class="fa-solid fa-broom text-[10px]"></i> <span>Очистить</span>
-                </button>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3 shadow-md">
-                <div class="flex justify-between items-center border-b border-slate-800/60 pb-2">
-                    <span class="text-xs text-slate-400">Себестоимость:</span>
-                    <span id="totalCalcCost" class="text-sm font-black text-white">0 ₽</span>
+                <div class="flex justify-between items-center px-1">
+                    <h3 class="font-black text-xs text-slate-400 uppercase tracking-wider">Материалы на полках</h3>
+                    <span id="beautyTotalStockCost" class="text-[10px] text-slate-500 font-bold">В товаре: 0 р.</span>
                 </div>
-                <div>
-                    <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Желаемая наценка (%)</label>
-                    <input type="number" id="calcMargin" oninput="calculateRecipe()" value="100" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-center text-white focus:outline-none">
-                </div>
-                <div class="flex justify-between items-center bg-indigo-600/10 border border-indigo-500/20 p-2.5 rounded-xl">
-                    <span class="text-xs text-indigo-400 font-medium">Рекомендуемая цена:</span>
-                    <span id="recommendedPrice" class="text-base font-black text-indigo-300">0 ₽</span>
-                </div>
-                
-                <div id="templateActionsBlock" class="grid grid-cols-2 gap-2 pt-1">
-                    <button onclick="saveCurrentAsTemplate()" class="py-2 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white font-bold text-[11px] rounded-xl transition-all">Новый шаблон</button>
-                    <button onclick="updateCurrentTemplate()" id="updateTemplateBtn" class="py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] rounded-xl hidden transition-all">Обновить текущий</button>
-                </div>
+                <div id="beautyInventoryList" class="space-y-2"></div>
             </div>
         </div>
 
@@ -182,15 +219,15 @@
                 <div id="reportFinanceGrid" class="grid grid-cols-3 gap-2 text-center">
                     <div class="bg-slate-950 border border-slate-800 p-2 rounded-xl">
                         <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Выручка</div>
-                        <div id="repRevenue" class="text-xs font-black text-emerald-400 mt-0.5">0 ₽</div>
+                        <div id="repRevenue" class="text-xs font-black text-emerald-400 mt-0.5">0 р.</div>
                     </div>
                     <div id="reportExpenseBlock" class="bg-slate-950 border border-slate-800 p-2 rounded-xl">
                         <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Расходы</div>
-                        <div id="repExpenses" class="text-xs font-black text-rose-400 mt-0.5">0 ₽</div>
+                        <div id="repExpenses" class="text-xs font-black text-rose-400 mt-0.5">0 р.</div>
                     </div>
                     <div id="reportProfitBlock" class="bg-slate-950 border border-slate-800 p-2 rounded-xl">
                         <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Прибыль</div>
-                        <div id="repProfit" class="text-xs font-black text-indigo-400 mt-0.5">0 ₽</div>
+                        <div id="repProfit" class="text-xs font-black text-indigo-400 mt-0.5">0 р.</div>
                     </div>
                 </div>
             </div>
@@ -291,11 +328,11 @@
 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Стоимость (₽) *</label>
+                        <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Стоимость (р.) *</label>
                         <input type="number" id="orderPrice" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-sm text-white text-center focus:outline-none" placeholder="0">
                     </div>
                     <div id="orderPrepaymentBlock">
-                        <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Prepayment (₽)</label>
+                        <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Prepayment (р.)</label>
                         <input type="number" id="orderPrepayment" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-sm text-white text-center focus:outline-none" placeholder="0">
                     </div>
                 </div>
@@ -320,7 +357,7 @@
             </div>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Сумма расхода (₽) *</label>
+                    <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-1">Сумма расхода (р.) *</label>
                     <input type="number" id="expAmount" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-sm text-white text-center focus:outline-none" placeholder="0">
                 </div>
                 <div>
@@ -432,7 +469,7 @@
             const tabsConfig = [
                 { id: 'orders', label: 'Записи', icon: 'fa-calendar-days', show: true },
                 { id: 'warehouse', label: 'Склад', icon: 'fa-boxes-stacked', show: (state.sphere === 'culinary') },
-                { id: 'calc', label: (state.sphere === 'beauty' ? 'Техкарты' : 'Рецепты'), icon: 'fa-calculator', show: (state.sphere !== 'handyman') },
+                { id: 'calc', label: (state.sphere === 'beauty' ? 'Склад' : 'Рецепты'), icon: (state.sphere === 'beauty' ? 'fa-boxes-stacked' : 'fa-calculator'), show: (state.sphere !== 'handyman') },
                 { id: 'reports', label: 'Отчеты', icon: 'fa-chart-pie', show: true }
             ];
 
@@ -460,27 +497,28 @@
             const addressField = document.getElementById('addressFieldContainer');
             const orderProductLabel = document.getElementById('orderProductLabel');
             const directExpenseBtn = document.getElementById('directExpenseBtn');
-            const templatesWrapper = document.getElementById('templatesWrapper');
-            const templateActionsBlock = document.getElementById('templateActionsBlock');
+            
+            const culinaryBlock = document.getElementById('culinaryCalcBlock');
+            const beautyBlock = document.getElementById('beautyInventoryBlock');
 
             addressField.classList.add('hidden');
-            if(templatesWrapper) templatesWrapper.classList.remove('hidden');
-            if(templateActionsBlock) templateActionsBlock.classList.remove('hidden');
+            if(culinaryBlock) culinaryBlock.classList.add('hidden');
+            if(beautyBlock) beautyBlock.classList.add('hidden');
 
             if (state.sphere === 'culinary') {
                 prepayBlock.classList.remove('hidden');
                 templateBlock.classList.remove('hidden');
+                if(culinaryBlock) culinaryBlock.classList.remove('hidden');
                 badge.innerHTML = `<i class="fa-solid fa-cake-candles text-[9px] text-amber-400"></i> <span>Кондитер / Кулинар</span>`;
                 orderProductLabel.textContent = "Наименование изделия *";
                 if(directExpenseBtn) directExpenseBtn.classList.remove('hidden');
             } else if (state.sphere === 'beauty') {
                 prepayBlock.classList.remove('hidden');
-                templateBlock.classList.remove('hidden');
+                templateBlock.classList.add('hidden'); // У бьюти нет автосписания по шаблонам кондитера
+                if(beautyBlock) beautyBlock.classList.remove('hidden');
                 badge.innerHTML = `<i class="fa-solid fa-sparkles text-[9px] text-fuchsia-400"></i> <span>Бьюти-мастер</span>`;
                 orderProductLabel.textContent = "Наименование услуги *";
                 if(directExpenseBtn) directExpenseBtn.classList.remove('hidden');
-                if(templatesWrapper) templatesWrapper.classList.add('hidden'); // У бьюти нет готовых шаблонов
-                if(templateActionsBlock) templateActionsBlock.classList.add('hidden');
             } else if (state.sphere === 'handyman') {
                 prepayBlock.classList.add('hidden');
                 templateBlock.classList.add('hidden');
@@ -507,13 +545,14 @@
             renderCalendar();
             renderOrders();
             renderWarehouse();
+            renderBeautyInventory();
             updateTemplateUiElements();
         }
 
         function generateDemoDataForSphere(sphereType) {
             if (sphereType === 'culinary') {
                 state.warehouse = [
-                    { id: "wh_1", name: "Бельгийский шоколад", qty: 5000, unit: "г", price: 1.2 }, // Храним чистую цену за 1г
+                    { id: "wh_1", name: "Бельгийский шоколад", qty: 5000, unit: "г", price: 1.2 }, 
                     { id: "wh_2", name: "Сливки 33%", qty: 10000, unit: "мл", price: 0.35 }
                 ];
                 state.templates["Бенто-торт Классик"] = [
@@ -522,7 +561,7 @@
                 ];
             } else if (sphereType === 'beauty') {
                 state.warehouse = [
-                    { id: "wh_3", name: "Клей Neo Экстра", qty: 5, unit: "шт", price: 900 }
+                    { id: "wh_3", name: "Клей Neo Экстра", qty: 5, unit: "шт.", price: 900, initialQty: 5, initialPrice: 4500 }
                 ];
             }
         }
@@ -546,11 +585,13 @@
             if(tabName === 'reports') generateReport();
         }
 
-        // МЕНЕДЖЕР СКЛАДА: Цена деления за упаковку
+        // МЕНЕДЖЕР СКЛАДА КУЛИНАРА
         function renderWarehouse() {
             const list = document.getElementById('warehouseList');
             if(!list) return;
             list.innerHTML = '';
+
+            if (state.sphere !== 'culinary') return;
 
             if (state.warehouse.length === 0) {
                 list.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">Склад пуст</div>`;
@@ -561,7 +602,6 @@
                 const row = document.createElement('div');
                 row.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl flex justify-between items-center shadow-sm";
                 
-                // Рендерим человеческий ценник (например, за условные 1000 единиц или за штуку)
                 const multiplier = (item.unit === 'г' || item.unit === 'мл') ? 1000 : 1;
                 const displayPrice = Math.round(item.price * multiplier);
                 const displayUnitLabel = multiplier === 1000 ? `1000 ${item.unit}` : `1 ${item.unit}`;
@@ -569,7 +609,7 @@
                 row.innerHTML = `
                     <div>
                         <div class="font-bold text-white text-xs">📦 ${item.name}</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5">Остаток: <span class="text-indigo-400 font-bold">${item.qty} ${item.unit}</span> · Цена закупки: ~${displayPrice} ₽ за ${displayUnitLabel}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">Остаток: <span class="text-indigo-400 font-bold">${item.qty} ${item.unit}</span> · Цена закупки: ~${displayPrice} р. за ${displayUnitLabel}</div>
                     </div>
                     <button onclick="deleteWarehouseItem('${item.id}')" class="text-slate-600 hover:text-rose-400 p-1.5 transition-all"><i class="fa-solid fa-trash-can text-xs"></i></button>
                 `;
@@ -585,7 +625,6 @@
 
             if(!name || totalQty <= 0 || totalPrice <= 0) { alert("Заполните все поля остатков!"); return; }
 
-            // Пересчитываем базовую стоимость 1 единицы (1г, 1мл или 1шт)
             const unitPrice = totalPrice / totalQty;
 
             state.warehouse.push({ id: "wh_" + Date.now(), name, unit, qty: totalQty, price: unitPrice });
@@ -601,10 +640,9 @@
             state.warehouse = state.warehouse.filter(i => i.id !== id);
             saveUserData();
             renderWarehouse();
-            // applySphereSettings удален отсюда, вкладка больше не сбрасывается!
         }
 
-        // ШАБЛОНЫ КОНДИТЕРА: Удаление кнопкой крестика
+        // ШАБЛОНЫ КУЛИНАРА
         function updateTemplateUiElements() {
             const container = document.getElementById('templatesList');
             if(!container) return;
@@ -652,7 +690,7 @@
             let selectOptions = `<option value="">-- Вручную (Любой расход) --</option>`;
             state.warehouse.forEach(i => {
                 const mult = (i.unit === 'г' || i.unit === 'мл') ? 1000 : 1;
-                selectOptions += `<option value="${i.id}" ${i.id === whItemId ? 'selected' : ''}>${i.name} (~${Math.round(i.price * mult)}₽/${mult}${i.unit})</option>`;
+                selectOptions += `<option value="${i.id}" ${i.id === whItemId ? 'selected' : ''}>${i.name} (~${Math.round(i.price * mult)}р./${mult}${i.unit})</option>`;
             });
 
             row.innerHTML = `
@@ -670,7 +708,6 @@
             `;
             container.appendChild(row);
             
-            // Если параметры не переданы — принудительно открываем как кастомный ручной ввод по умолчанию
             const forceCustom = (whItemId === "" && qty === "") ? true : isCustom;
             toggleCalcRowMode(rowId, forceCustom, customName, customPrice, qty);
             calculateRecipe();
@@ -692,7 +729,7 @@
                         <input type="text" placeholder="Название компонента" value="${cName}" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white focus:outline-none input-custom-name" oninput="calculateRecipe()">
                     </div>
                     <div class="col-span-5">
-                        <input type="number" placeholder="Цена (₽)" value="${cPrice}" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-center text-white focus:outline-none input-custom-price" oninput="calculateRecipe()">
+                        <input type="number" placeholder="Цена (р.)" value="${cPrice}" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-center text-white focus:outline-none input-custom-price" oninput="calculateRecipe()">
                     </div>
                 `;
             } else {
@@ -728,9 +765,9 @@
                 }
             });
 
-            document.getElementById('totalCalcCost').textContent = `${Math.round(totalCost).toLocaleString()} ₽`;
+            document.getElementById('totalCalcCost').textContent = `${Math.round(totalCost).toLocaleString()} р.`;
             const margin = parseFloat(document.getElementById('calcMargin').value) || 0;
-            document.getElementById('recommendedPrice').textContent = `${Math.round(totalCost * (1 + margin / 100)).toLocaleString()} ₽`;
+            document.getElementById('recommendedPrice').textContent = `${Math.round(totalCost * (1 + margin / 100)).toLocaleString()} р.`;
         }
 
         function loadSelectedTemplate(name) {
@@ -852,6 +889,7 @@
             }
         }
 
+        // ЗАПИСИ
         function renderOrders() {
             const list = document.getElementById('ordersList');
             if(!list) return;
@@ -899,8 +937,8 @@
                             ${order.phone ? `<div class="text-[10px] text-slate-500 mt-1"><i class="fa-solid fa-phone text-[9px]"></i> <a href="tel:${order.phone}" class="text-indigo-400 hover:underline">${order.phone}</a></div>` : ''}
                         </div>
                         <div class="text-right space-y-1">
-                            <div class="text-xs font-black ${isCompleted ? 'text-slate-500' : 'text-emerald-400'}">${order.price} ₽</div>
-                            ${order.prepayment ? `<div class="text-[9px] text-slate-500">Предоплата: ${order.prepayment} ₽</div>` : ''}
+                            <div class="text-xs font-black ${isCompleted ? 'text-slate-500' : 'text-emerald-400'}">${order.price} р.</div>
+                            ${order.prepayment ? `<div class="text-[9px] text-slate-500">Предоплата: ${order.prepayment} р.</div>` : ''}
                             ${isCompleted ? `<span class="inline-block text-[9px] font-bold text-emerald-500/80 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md uppercase tracking-wider">Выполнено</span>` : ''}
                         </div>
                     </div>
@@ -914,7 +952,6 @@
             });
         }
 
-        // ПОДТВЕРЖДЕНИЕ ВЫПОЛНЕНИЯ ЗАКАЗА
         function confirmAndCompleteOrder(id) {
             if (confirm("Вы действительно хотите перевести заказ в статус 'Выполнено' и списать материалы?")) {
                 completeOrder(id);
@@ -940,6 +977,7 @@
             renderCalendar();
             renderOrders();
             renderWarehouse();
+            renderBeautyInventory();
             autoSyncWithServer();
         }
 
@@ -1080,7 +1118,7 @@
                 });
             }
             
-            document.getElementById('repRevenue').textContent = `${revenue.toLocaleString()} ₽`;
+            document.getElementById('repRevenue').textContent = `${revenue.toLocaleString()} р.`;
 
             if (state.sphere === 'handyman') {
                 document.getElementById('reportExpenseBlock').classList.add('hidden');
@@ -1090,8 +1128,8 @@
                 document.getElementById('reportExpenseBlock').classList.remove('hidden');
                 document.getElementById('reportProfitBlock').classList.remove('hidden');
                 document.getElementById('reportFinanceGrid').className = "grid grid-cols-3 gap-2 text-center";
-                document.getElementById('repExpenses').textContent = `${expenses.toLocaleString()} ₽`;
-                document.getElementById('repProfit').textContent = `${(revenue - expenses).toLocaleString()} ₽`;
+                document.getElementById('repExpenses').textContent = `${expenses.toLocaleString()} р.`;
+                document.getElementById('repProfit').textContent = `${(revenue - expenses).toLocaleString()} р.`;
             }
 
             document.getElementById('reportResultCard').classList.remove('hidden');
@@ -1146,7 +1184,7 @@
             }
         }
 
-        // ИСПРАВНЫЙ МЕХАНИЗМ СИНХРОНИЗАЦИИ И ЭКСПОРТА БЭКАПОВ
+        // МЕХАНИЗМ СИНХРОНИЗАЦИИ И ЭКСПОРТА БЭКАПОВ
         function autoSyncWithServer() {
             const dataPayload = {
                 chat_id: currentTelegramId, 
@@ -1220,6 +1258,101 @@
             };
             reader.readAsArrayBuffer(file);
             event.target.value = '';
+        }
+
+        // ФУНКЦИИ ЖИВОГО ИНВЕНТАРЯ БЬЮТИ
+        function renderBeautyInventory() {
+            const list = document.getElementById('beautyInventoryList');
+            const totalStockLabel = document.getElementById('beautyTotalStockCost');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (state.sphere !== 'beauty') return;
+
+            if (state.warehouse.length === 0) {
+                list.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">Полки пусты. Добавьте первый материал выше.</div>`;
+                if(totalStockLabel) totalStockLabel.textContent = "В товаре: 0 р.";
+                return;
+            }
+
+            let totalStockSum = 0;
+
+            state.warehouse.forEach(item => {
+                const currentTotalPrice = Math.round(item.qty * item.price);
+                totalStockSum += currentTotalPrice;
+
+                const isLow = item.qty <= 3;
+                
+                const card = document.createElement('div');
+                card.className = `bg-slate-900 border ${isLow ? 'border-amber-600/40 bg-amber-950/5' : 'border-slate-800'} p-3 rounded-2xl flex justify-between items-center shadow-sm`;
+
+                card.innerHTML = `
+                    <div class="space-y-0.5 max-w-[55%]">
+                        <div class="font-bold text-white text-xs truncate">💅 ${item.name}</div>
+                        <div class="text-[10px] text-slate-400">Оценка остатка: ~${currentTotalPrice} р.</div>
+                        <div class="text-[9px] text-slate-500">Закупка: за ${Math.round(item.initialPrice || (item.price * item.initialQty || 0))} р. (~${Math.round(item.price)} р./${item.unit})</div>
+                        ${isLow ? `<span class="inline-block text-[8px] bg-amber-500/10 text-amber-400 px-1 rounded border border-amber-500/20 font-bold uppercase tracking-wider mt-1">Докупить!</span>` : ''}
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-1 h-9">
+                            <button onclick="changeBeautyQty('${item.id}', -1)" class="w-7 h-full flex items-center justify-center text-xs text-slate-400 hover:text-white font-black active:scale-75 transition-all">-</button>
+                            <span class="px-2 text-xs font-black text-indigo-400 min-w-[45px] text-center">${item.qty} <span class="text-[9px] text-slate-500 font-normal">${item.unit}</span></span>
+                            <button onclick="changeBeautyQty('${item.id}', 1)" class="w-7 h-full flex items-center justify-center text-xs text-slate-400 hover:text-white font-black active:scale-75 transition-all">+</button>
+                        </div>
+                        <button onclick="deleteBeautyInventoryItem('${item.id}')" class="text-slate-600 hover:text-rose-400 p-1 transition-colors"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+
+            if(totalStockLabel) totalStockLabel.textContent = `В товаре: ${totalStockSum.toLocaleString()} р.`;
+        }
+
+        function addBeautyInventoryItem() {
+            const name = document.getElementById('invName').value.trim();
+            const unit = document.getElementById('invUnit').value;
+            const qty = parseFloat(document.getElementById('invQty').value) || 0;
+            const price = parseFloat(document.getElementById('invPrice').value) || 0;
+
+            if (!name || qty <= 0 || price <= 0) {
+                alert("Заполните название, объём и цену закупки!");
+                return;
+            }
+
+            const baseUnitPrice = price / qty;
+
+            state.warehouse.push({
+                id: "bt_" + Date.now(),
+                name: name,
+                unit: unit,
+                qty: qty,
+                initialQty: qty,
+                price: baseUnitPrice,
+                initialPrice: price
+            });
+
+            saveUserData();
+            renderBeautyInventory();
+
+            document.getElementById('invName').value = '';
+            document.getElementById('invQty').value = '';
+            document.getElementById('invPrice').value = '';
+        }
+
+        function changeBeautyQty(id, change) {
+            const item = state.warehouse.find(i => i.id === id);
+            if (!item) return;
+            item.qty = Math.max(0, Number((item.qty + change).toFixed(2)));
+            saveUserData();
+            renderBeautyInventory();
+        }
+
+        function deleteBeautyInventoryItem(id) {
+            if (confirm("Удалить позицию из инвентаря полок?")) {
+                state.warehouse = state.warehouse.filter(i => i.id !== id);
+                saveUserData();
+                renderBeautyInventory();
+            }
         }
 
         function changeMonth(direction) {
