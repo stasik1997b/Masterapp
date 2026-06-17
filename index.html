@@ -519,43 +519,44 @@
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('main-app-content').classList.remove('hidden');
 
-            // 1. Инициализируем состояние локальной сферой, которая выбрана в телефоне
+            // 1. Инициализируем чистый каркас состояния
             state = { sphere: savedSphere, warehouse: [], templates: {}, orders: [], expenses: [] };
 
-            // 2. ПРОБУЕМ ПРИВЯЗАТЬСЯ К ХАГГИНГ ФЕЙСУ
+            // 2. Сначала ВСЕГДА берем локальный кэш из телефона (чтобы вернуть правильные заказы)
+            const key = getStorageKey(savedSphere);
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    state.warehouse = parsed.warehouse || [];
+                    state.templates = parsed.templates || {};
+                    state.orders = parsed.orders || [];
+                    state.expenses = parsed.expenses || [];
+                } catch (e) {
+                    console.error("Ошибка десериализации локальной БД", e);
+                }
+            } else {
+                generateDemoDataForSphere(savedSphere);
+            }
+
+            // 3. А теперь пробуем обновить заказы с сервера, если они там есть конкретно для этой сферы
             try {
                 const response = await fetch(`${BACKEND_URL}/get_data/${currentTelegramId}`);
                 const resData = await response.json();
                 
-                if (resData.status === "success" && resData.data) {
-                    // Ура, на сервере есть данные! Подгружаем только заказы
-                    state.orders = resData.data.orders || [];
-                    
-                    // ЖЕСТКИЙ ПРИОРИТЕТ: Всегда держим сферу из телефона, чтобы бэкенд её не ломал
-                    state.sphere = savedSphere;
-                    
-                    // Подтягиваем склад, шаблоны и расходы строго по нашей локальной сфере
-                    const key = getStorageKey(savedSphere);
-                    const raw = localStorage.getItem(key);
-                    if (raw) {
-                        const parsed = JSON.parse(raw);
-                        state.warehouse = parsed.warehouse || [];
-                        state.templates = parsed.templates || {};
-                        state.expenses = parsed.expenses || [];
+                if (resData.status === "success" && resData.data && resData.data.spheres_data) {
+                    const sphereData = resData.data.spheres_data[savedSphere];
+                    if (sphereData && sphereData.orders) {
+                        // Обновляем заказы только если сервер прислал массив именно для нашей сферы
+                        state.orders = sphereData.orders;
+                        console.log(`[API] Заказы для сферы "${savedSphere}" успешно синхронизированы с сервером`);
                     }
-                    console.log("[API] Данные успешно подтянуты с Hugging Face (сфера защищена)");
-                } else {
-                    // На сервере пусто (первый вход) -> берём всё из localStorage
-                    console.log("[API] Мастер не найден на сервере, загружаем локальный кэш");
-                    loadFallbackLocalData(savedSphere);
                 }
             } catch (error) {
-                // Если сервак лежит -> берём всё из телефона
-                console.error("[API] Ошибка сети, фоллбэк на localStorage", error);
-                loadFallbackLocalData(savedSphere);
+                console.error("[API] Ошибка сети при обновлении, остаемся на локальных данных", error);
             }
             
-            // 3. ОТРИСОВКА ИНТЕРФЕЙСА
+            // 4. ОТРИСОВКА ИНТЕРФЕЙСА
             const storedName = localStorage.getItem(`masterapp_name_${currentTelegramId}`) || "Мастер";
             document.getElementById('profileName').textContent = storedName;
             
@@ -566,13 +567,9 @@
             
             document.getElementById('modalUsername').textContent = tgUsername;
             
-            // Применяем настройки именно нашей сферы
             applySphereSettings(false);
-            
             if (typeof renderCalendar === 'function') renderCalendar();
         }
-
-        // Вспомогательная функция (оставляем без изменений)
         function loadFallbackLocalData(savedSphere) {
             const key = getStorageKey(savedSphere);
             const raw = localStorage.getItem(key);
@@ -612,21 +609,20 @@
         async function saveUserData() {
             if (!state.sphere) return;
             
-            // 1. МГНОВЕННОЕ ЛОКАЛЬНОЕ СОХРАНЕНИЕ (чтобы приложение не тупило)
+            // 1. Локальное сохранение в телефоне
             localStorage.setItem(getStorageKey(state.sphere), JSON.stringify(state));
             localStorage.setItem(`masterapp_global_sphere_${currentTelegramId}`, state.sphere);
             localStorage.setItem(`masterapp_name_${currentTelegramId}`, document.getElementById('profileName').textContent);
 
-            // 2. СИНХРОНИЗАЦИЯ С БЭКЕНДОМ ДЛЯ ТГ-УВЕДОМЛЕНИЙ И БЭКАПА
+            // 2. СИНХРОНИЗАЦИЯ С БЭКЕНДОМ (отправляем текущую сферу)
             const payload = {
                 chat_id: currentTelegramId,
                 user_name: document.getElementById('profileName').textContent,
-                sphere: state.sphere,
-                orders: state.orders // Твой Python-скрипт ждет именно этот массив для календаря и уведомлений
+                sphere: state.sphere, // Передаем, например, "Кондитер" или "Муж на час"
+                orders: state.orders
             };
 
             try {
-                // Шлем данные на FastAPI в фоновом режиме
                 await fetch(`${BACKEND_URL}/sync`, {
                     method: 'POST',
                     headers: {
@@ -634,9 +630,8 @@
                     },
                     body: JSON.stringify(payload)
                 });
-                console.log("[API] Данные успешно синхронизированы с сервером Hugging Face");
+                console.log(`[API] Данные сферы "${state.sphere}" отправлены на сервер`);
             } catch (error) {
-                // Если нет сети — не страшно, локально данные уже сохранены, запишем ошибку в консоль
                 console.error("[API] Ошибка отправки бэкапа на бэкенд", error);
             }
         }
