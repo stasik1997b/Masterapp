@@ -423,10 +423,13 @@
         </div>
     </div>
    <script>
-        let tgUserId = "local_user";
+       let tgUserId = "local_user";
         let tgUsername = "@unknown_master";
         let currentTelegramId = "123456";
-        let hasTgPhoto = false; // Флаг, чтобы знать, загрузилась ли фотка
+        let hasTgPhoto = false;
+
+        // СВЯЗКА С ТВОИМ БЭКЕНДОМ НА HUGGING FACE
+        const BACKEND_URL = "https://uncord-masterapp-backend.hf.space";
 
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
@@ -504,7 +507,7 @@
             renderCalendar(); 
         }
 
-        function loadUserData() {
+        async function loadUserData() {
             const savedSphere = localStorage.getItem(`masterapp_global_sphere_${currentTelegramId}`);
             
             if (!savedSphere) {
@@ -516,30 +519,44 @@
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('main-app-content').classList.remove('hidden');
 
-            const key = getStorageKey(savedSphere);
-            const raw = localStorage.getItem(key);
-            
+            // 1. Создаем пустой каркас состояния на случай, если данных вообще нигде нет
             state = { sphere: savedSphere, warehouse: [], templates: {}, orders: [], expenses: [] };
 
-            if (raw) {
-                try {
-                    const parsed = JSON.parse(raw);
-                    state.warehouse = parsed.warehouse || [];
-                    state.templates = parsed.templates || {};
-                    state.orders = parsed.orders || [];
-                    state.expenses = parsed.expenses || [];
-                } catch (e) {
-                    console.error("Ошибка десериализации базы данных", e);
+            // 2. ПРОБУЕМ ПРИВЯЗАТЬСЯ К ХАГГИНГ ФЕЙСУ
+            try {
+                // Ждём ответ от FastAPI
+                const response = await fetch(`${BACKEND_URL}/get_data/${currentTelegramId}`);
+                const resData = await response.json();
+                
+                if (resData.status === "success" && resData.data) {
+                    // Ура, на сервере есть данные! Подгружаем их
+                    state.orders = resData.data.orders || [];
+                    state.sphere = resData.data.sphere || savedSphere;
+                    // Так как бэкенд пока сохраняет только orders, остальные блоки (склад) страхуем локально
+                    const key = getStorageKey(savedSphere);
+                    const raw = localStorage.getItem(key);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        state.warehouse = parsed.warehouse || [];
+                        state.templates = parsed.templates || {};
+                        state.expenses = parsed.expenses || [];
+                    }
+                    console.log("[API] Данные успешно подтянуты с Hugging Face");
+                } else {
+                    // На сервере пользователя нет (первый вход) -> берём всё из localStorage
+                    console.log("[API] Мастер не найден на сервере, загружаем локальный кэш");
+                    loadFallbackLocalData(savedSphere);
                 }
-            } else {
-                generateDemoDataForSphere(savedSphere);
-                localStorage.setItem(key, JSON.stringify(state));
+            } catch (error) {
+                // Если сервак лежит или нет интернета -> не паникуем, берём всё из телефона
+                console.error("[API] Ошибка сети, фоллбэк на localStorage", error);
+                loadFallbackLocalData(savedSphere);
             }
             
+            // 3. ОТРИСОВКА ИНТЕРФЕЙСА (Имя, Аватарка)
             const storedName = localStorage.getItem(`masterapp_name_${currentTelegramId}`) || "Мастер";
             document.getElementById('profileName').textContent = storedName;
             
-            // ИСПРАВЛЕНО: Букву подставляем только если у пользователя нет реальной фотки из ТГ
             if (!hasTgPhoto) {
                 const avatarEl = document.getElementById('profileAvatar');
                 if (avatarEl) avatarEl.textContent = storedName.charAt(0).toUpperCase();
@@ -548,15 +565,61 @@
             document.getElementById('modalUsername').textContent = tgUsername;
             
             applySphereSettings(false);
+            
+            // На всякий случай пинаем календарь, чтобы обновились кружочки записей
+            if (typeof renderCalendar === 'function') renderCalendar();
         }
 
-        function saveUserData() {
+        // Вспомогательная функция, чтобы не дублировать код загрузки из localStorage
+        function loadFallbackLocalData(savedSphere) {
+            const key = getStorageKey(savedSphere);
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    state.warehouse = parsed.warehouse || [];
+                    state.templates = parsed.templates || {};
+                    state.orders = parsed.orders || [];
+                    state.expenses = parsed.expenses || [];
+                } catch (e) {
+                    console.error("Ошибка десериализации локальной БД", e);
+                }
+            } else {
+                generateDemoDataForSphere(savedSphere);
+                localStorage.setItem(key, JSON.stringify(state));
+            }
+        }
+        async function saveUserData() {
             if (!state.sphere) return;
+            
+            // 1. МГНОВЕННОЕ ЛОКАЛЬНОЕ СОХРАНЕНИЕ (чтобы приложение не тупило)
             localStorage.setItem(getStorageKey(state.sphere), JSON.stringify(state));
             localStorage.setItem(`masterapp_global_sphere_${currentTelegramId}`, state.sphere);
             localStorage.setItem(`masterapp_name_${currentTelegramId}`, document.getElementById('profileName').textContent);
-        }
 
+            // 2. СИНХРОНИЗАЦИЯ С БЭКЕНДОМ ДЛЯ ТГ-УВЕДОМЛЕНИЙ И БЭКАПА
+            const payload = {
+                chat_id: currentTelegramId,
+                user_name: document.getElementById('profileName').textContent,
+                sphere: state.sphere,
+                orders: state.orders // Твой Python-скрипт ждет именно этот массив для календаря и уведомлений
+            };
+
+            try {
+                // Шлем данные на FastAPI в фоновом режиме
+                await fetch(`${BACKEND_URL}/sync`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                console.log("[API] Данные успешно синхронизированы с сервером Hugging Face");
+            } catch (error) {
+                // Если нет сети — не страшно, локально данные уже сохранены, запишем ошибку в консоль
+                console.error("[API] Ошибка отправки бэкапа на бэкенд", error);
+            }
+        }
         function selectInitialSphere(sphereType) {
             localStorage.setItem(`masterapp_global_sphere_${currentTelegramId}`, sphereType);
             loadUserData();
