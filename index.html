@@ -50,6 +50,18 @@
             background-color: #f1f5f9 !important;
             color: #4f46e5 !important;
             border-color: #e2e8f0 !important;
+        }/* Лечим селекты в темной теме */
+        html.dark select {
+            background-color: #0f172a !important; /* bg-slate-900 */
+            color: #ffffff !important;
+            border-color: #334155 !important; /* border-slate-700 */
+        }
+
+        /* Лечим селекты в светлой теме */
+        html:not(.dark) select {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #e2e8f0 !important;
         }
     </style>
 </head>
