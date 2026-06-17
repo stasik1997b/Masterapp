@@ -519,20 +519,22 @@
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('main-app-content').classList.remove('hidden');
 
-            // 1. Создаем пустой каркас состояния на случай, если данных вообще нигде нет
+            // 1. Инициализируем состояние локальной сферой, которая выбрана в телефоне
             state = { sphere: savedSphere, warehouse: [], templates: {}, orders: [], expenses: [] };
 
             // 2. ПРОБУЕМ ПРИВЯЗАТЬСЯ К ХАГГИНГ ФЕЙСУ
             try {
-                // Ждём ответ от FastAPI
                 const response = await fetch(`${BACKEND_URL}/get_data/${currentTelegramId}`);
                 const resData = await response.json();
                 
                 if (resData.status === "success" && resData.data) {
-                    // Ура, на сервере есть данные! Подгружаем их
+                    // Ура, на сервере есть данные! Подгружаем только заказы
                     state.orders = resData.data.orders || [];
-                    state.sphere = resData.data.sphere || savedSphere;
-                    // Так как бэкенд пока сохраняет только orders, остальные блоки (склад) страхуем локально
+                    
+                    // ЖЕСТКИЙ ПРИОРИТЕТ: Всегда держим сферу из телефона, чтобы бэкенд её не ломал
+                    state.sphere = savedSphere;
+                    
+                    // Подтягиваем склад, шаблоны и расходы строго по нашей локальной сфере
                     const key = getStorageKey(savedSphere);
                     const raw = localStorage.getItem(key);
                     if (raw) {
@@ -541,19 +543,19 @@
                         state.templates = parsed.templates || {};
                         state.expenses = parsed.expenses || [];
                     }
-                    console.log("[API] Данные успешно подтянуты с Hugging Face");
+                    console.log("[API] Данные успешно подтянуты с Hugging Face (сфера защищена)");
                 } else {
-                    // На сервере пользователя нет (первый вход) -> берём всё из localStorage
+                    // На сервере пусто (первый вход) -> берём всё из localStorage
                     console.log("[API] Мастер не найден на сервере, загружаем локальный кэш");
                     loadFallbackLocalData(savedSphere);
                 }
             } catch (error) {
-                // Если сервак лежит или нет интернета -> не паникуем, берём всё из телефона
+                // Если сервак лежит -> берём всё из телефона
                 console.error("[API] Ошибка сети, фоллбэк на localStorage", error);
                 loadFallbackLocalData(savedSphere);
             }
             
-            // 3. ОТРИСОВКА ИНТЕРФЕЙСА (Имя, Аватарка)
+            // 3. ОТРИСОВКА ИНТЕРФЕЙСА
             const storedName = localStorage.getItem(`masterapp_name_${currentTelegramId}`) || "Мастер";
             document.getElementById('profileName').textContent = storedName;
             
@@ -564,13 +566,31 @@
             
             document.getElementById('modalUsername').textContent = tgUsername;
             
+            // Применяем настройки именно нашей сферы
             applySphereSettings(false);
             
-            // На всякий случай пинаем календарь, чтобы обновились кружочки записей
             if (typeof renderCalendar === 'function') renderCalendar();
         }
 
-        // Вспомогательная функция, чтобы не дублировать код загрузки из localStorage
+        // Вспомогательная функция (оставляем без изменений)
+        function loadFallbackLocalData(savedSphere) {
+            const key = getStorageKey(savedSphere);
+            const raw = localStorage.getItem(key);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    state.warehouse = parsed.warehouse || [];
+                    state.templates = parsed.templates || {};
+                    state.orders = parsed.orders || [];
+                    state.expenses = parsed.expenses || [];
+                } catch (e) {
+                    console.error("Ошибка десериализации локальной БД", e);
+                }
+            } else {
+                generateDemoDataForSphere(savedSphere);
+                localStorage.setItem(key, JSON.stringify(state));
+            }
+        }
         function loadFallbackLocalData(savedSphere) {
             const key = getStorageKey(savedSphere);
             const raw = localStorage.getItem(key);
