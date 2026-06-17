@@ -439,23 +439,21 @@
                     localStorage.setItem(`masterapp_name_${currentTelegramId}`, user.first_name || "Мастер");
                 }
 
-                // --- НАША КОРРЕКТИРОВКА: ПОДГРУЖАЕМ АВАТАРКУ ИЗ ТГ ---
+                // ВРЕМЕННЫЙ ТЕСТ: Выведет окно в телеге с тем, что видит код
+                window.Telegram.WebApp.showAlert("Ссылка на фото: " + user.photo_url);
+
                 const avatarContainer = document.getElementById('profileAvatar');
                 if (avatarContainer) {
                     if (user.photo_url) {
-                        // Если аватарка в Телеграме есть — ставим картинку
                         avatarContainer.innerHTML = `<img src="${user.photo_url}" alt="Avatar" class="w-full h-full object-cover">`;
                     } else {
-                        // Если аватарки нет — берём первую букву имени
                         const placeholder = document.getElementById('profileAvatarPlaceholder');
                         if (placeholder && user.first_name) {
                             placeholder.textContent = user.first_name.charAt(0).toUpperCase();
                         }
                     }
                 }
-                // -----------------------------------------------------
             }
-        }
 
         let currentDate = new Date();
         let selectedDateStr = formatDate(new Date());
