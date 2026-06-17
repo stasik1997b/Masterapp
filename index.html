@@ -426,6 +426,7 @@
         let tgUserId = "local_user";
         let tgUsername = "@unknown_master";
         let currentTelegramId = "123456";
+        let hasTgPhoto = false; // Флаг, чтобы знать, загрузилась ли фотка
 
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
@@ -439,11 +440,12 @@
                     localStorage.setItem(`masterapp_name_${currentTelegramId}`, user.first_name || "Мастер");
                 }
 
-                // ПОДГРУЗКА АВАТАРКИ
+                // ПОДГРУЗКА АВАТАРКИ ИЗ ТГ
                 const avatarContainer = document.getElementById('profileAvatar');
                 if (avatarContainer) {
                     if (user.photo_url) {
                         avatarContainer.innerHTML = `<img src="${user.photo_url}" alt="Avatar" class="w-full h-full object-cover">`;
+                        hasTgPhoto = true; // Запомнили, что фото успешно встало
                     } else {
                         const placeholder = document.getElementById('profileAvatarPlaceholder');
                         if (placeholder && user.first_name) {
@@ -467,23 +469,6 @@
             expenses: []
         };
 
-        function getStorageKey(sphereType) {
-            return `masterapp_db_user_${currentTelegramId}_sphere_${sphereType}`;
-        }
-
-        // РАБОТА С ЦВЕТОВЫМИ СХЕМАМИ (ТЕМАМИ)
-        function initTheme() {
-        let selectedDateStr = formatDate(new Date());
-        let activeTemplateName = "";
-        let currentActiveTab = "orders";
-
-        let state = {
-            sphere: '',
-            warehouse: [],
-            templates: {},
-            orders: [],
-            expenses: []
-        };
         function getStorageKey(sphereType) {
             return `masterapp_db_user_${currentTelegramId}_sphere_${sphereType}`;
         }
@@ -516,7 +501,7 @@
                 if(icon) icon.className = 'fa-solid fa-moon';
                 localStorage.setItem(`masterapp_theme_${currentTelegramId}`, 'dark');
             }
-            renderCalendar(); // Перерисовываем календарь, чтобы обновить контрастность дат
+            renderCalendar(); 
         }
 
         function loadUserData() {
@@ -553,7 +538,13 @@
             
             const storedName = localStorage.getItem(`masterapp_name_${currentTelegramId}`) || "Мастер";
             document.getElementById('profileName').textContent = storedName;
-            document.getElementById('profileAvatar').textContent = storedName.charAt(0).toUpperCase();
+            
+            // ИСПРАВЛЕНО: Букву подставляем только если у пользователя нет реальной фотки из ТГ
+            if (!hasTgPhoto) {
+                const avatarEl = document.getElementById('profileAvatar');
+                if (avatarEl) avatarEl.textContent = storedName.charAt(0).toUpperCase();
+            }
+            
             document.getElementById('modalUsername').textContent = tgUsername;
             
             applySphereSettings(false);
