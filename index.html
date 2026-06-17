@@ -5,26 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MasterApp</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script>
-    window.tailwind = {
-        config: {
-            darkMode: 'class'
-        }
-    }
-</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-   <style>
+    
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
         
-        /* Указываем Tailwind v4, что темную тему нужно включать по классу .dark на теге html */
-        @variant dark (.dark &);
-
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .modal-backdrop { background-color: rgba(2, 6, 23, 0.75); backdrop-filter: blur(6px); }
+
+        /* Системный CSS-сброс для мгновенного переключения тем, если Tailwind v4 упирается */
+        html:not(.dark) body {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        html:not(.dark) .bg-white, 
+        html:not(.dark) .bg-slate-900 {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+        }
+        html:not(.dark) .bg-slate-50,
+        html:not(.dark) .bg-slate-950 {
+            background-color: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+        html:not(.dark) .text-white,
+        html:not(.dark) .text-slate-100,
+        html:not(.dark) .text-slate-300 {
+            color: #0f172a !important;
+        }
+        html:not(.dark) .text-slate-400,
+        html:not(.dark) .text-slate-500 {
+            color: #64748b !important;
+        }
+        html:not(.dark) nav {
+            background-color: #ffffff !important;
+            border-top-color: #e2e8f0 !important;
+        }
+        html:not(.dark) nav button.text-white {
+            background-color: #f1f5f9 !important;
+            color: #4f46e5 !important;
+            border-color: #e2e8f0 !important;
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col justify-between pb-24 transition-colors duration-200">
