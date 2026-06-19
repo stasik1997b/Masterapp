@@ -508,68 +508,71 @@
         }
 
         async function loadUserData() {
-            const savedSphere = localStorage.getItem(`masterapp_global_sphere_${currentTelegramId}`);
-            
-            if (!savedSphere) {
-                document.getElementById('welcome-screen').classList.remove('hidden');
-                document.getElementById('main-app-content').classList.add('hidden');
-                return;
-            }
+    const savedSphere = localStorage.getItem(`masterapp_global_sphere_${currentTelegramId}`);
+    
+    if (!savedSphere) {
+        document.getElementById('welcome-screen').classList.remove('hidden');
+        document.getElementById('main-app-content').classList.add('hidden');
+        return;
+    }
 
-            document.getElementById('welcome-screen').classList.add('hidden');
-            document.getElementById('main-app-content').classList.remove('hidden');
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('main-app-content').classList.remove('hidden');
 
-            // 1. Инициализируем чистый каркас состояния
-            state = { sphere: savedSphere, warehouse: [], templates: {}, orders: [], expenses: [] };
+    // 1. Инициализируем чистый каркас состояния
+    state = { sphere: savedSphere, warehouse: [], templates: {}, orders: [], expenses: [] };
 
-            // 2. Сначала ВСЕГДА берем локальный кэш из телефона (чтобы вернуть правильные заказы)
-            const key = getStorageKey(savedSphere);
-            const raw = localStorage.getItem(key);
-            if (raw) {
-                try {
-                    const parsed = JSON.parse(raw);
-                    state.warehouse = parsed.warehouse || [];
-                    state.templates = parsed.templates || {};
-                    state.orders = parsed.orders || [];
-                    state.expenses = parsed.expenses || [];
-                } catch (e) {
-                    console.error("Ошибка десериализации локальной БД", e);
-                }
-            } else {
-                generateDemoDataForSphere(savedSphere);
-            }
-
-            // 3. А теперь пробуем обновить заказы с сервера, если они там есть конкретно для этой сферы
-            try {
-                const response = await fetch(`${BACKEND_URL}/get_data/${currentTelegramId}`);
-                const resData = await response.json();
-                
-                if (resData.status === "success" && resData.data && resData.data.spheres_data) {
-                    const sphereData = resData.data.spheres_data[savedSphere];
-                    if (sphereData && sphereData.orders) {
-                        // Обновляем заказы только если сервер прислал массив именно для нашей сферы
-                        state.orders = sphereData.orders;
-                        console.log(`[API] Заказы для сферы "${savedSphere}" успешно синхронизированы с сервером`);
-                    }
-                }
-            } catch (error) {
-                console.error("[API] Ошибка сети при обновлении, остаемся на локальных данных", error);
-            }
-            
-            // 4. ОТРИСОВКА ИНТЕРФЕЙСА
-            const storedName = localStorage.getItem(`masterapp_name_${currentTelegramId}`) || "Мастер";
-            document.getElementById('profileName').textContent = storedName;
-            
-            if (!hasTgPhoto) {
-                const avatarEl = document.getElementById('profileAvatar');
-                if (avatarEl) avatarEl.textContent = storedName.charAt(0).toUpperCase();
-            }
-            
-            document.getElementById('modalUsername').textContent = tgUsername;
-            
-            applySphereSettings(false);
-            if (typeof renderCalendar === 'function') renderCalendar();
+    // 2. Сначала ВСЕГДА берем локальный кэш из телефона (чтобы вернуть правильные заказы)
+    const key = getStorageKey(savedSphere);
+    const raw = localStorage.getItem(key);
+    if (raw) {
+        try {
+            const parsed = JSON.parse(raw);
+            state.warehouse = parsed.warehouse || [];
+            state.templates = parsed.templates || {};
+            state.orders = parsed.orders || [];
+            state.expenses = parsed.expenses || [];
+        } catch (e) {
+            console.error("Ошибка десериализации локальной БД", e);
         }
+    } else {
+        generateDemoDataForSphere(savedSphere);
+    }
+
+    // 3. А теперь обновляем ВСЕ данные с сервера (из Supabase) конкретно для этой сферы
+    try {
+        const response = await fetch(`${BACKEND_URL}/get_data/${currentTelegramId}`);
+        const resData = await response.json();
+        
+        if (resData.status === "success" && resData.data && resData.data.spheres_data) {
+            const sphereData = resData.data.spheres_data[savedSphere];
+            if (sphereData) {
+                // Вытягиваем абсолютно все массивы из Supabase
+                state.orders = sphereData.orders || [];
+                state.warehouse = sphereData.warehouse || [];
+                state.templates = sphereData.templates || {};
+                state.expenses = sphereData.expenses || [];
+                console.log(`[API] Все данные сферы "${savedSphere}" успешно синхронизированы с Supabase`);
+            }
+        }
+    } catch (error) {
+        console.error("[API] Ошибка сети при обновлении, остаемся на локальных данных", error);
+    }
+    
+    // 4. ОТРИСОВКА ИНТЕРФЕЙСА
+    const storedName = localStorage.getItem(`masterapp_name_${currentTelegramId}`) || "Мастер";
+    document.getElementById('profileName').textContent = storedName;
+    
+    if (!hasTgPhoto) {
+        const avatarEl = document.getElementById('profileAvatar');
+        if (avatarEl) avatarEl.textContent = storedName.charAt(0).toUpperCase();
+    }
+    
+    document.getElementById('modalUsername').textContent = tgUsername;
+    
+    applySphereSettings(false);
+    if (typeof renderCalendar === 'function') renderCalendar();
+}
         function loadFallbackLocalData(savedSphere) {
             const key = getStorageKey(savedSphere);
             const raw = localStorage.getItem(key);
@@ -607,34 +610,37 @@
             }
         }
         async function saveUserData() {
-            if (!state.sphere) return;
-            
-            // 1. Локальное сохранение в телефоне
-            localStorage.setItem(getStorageKey(state.sphere), JSON.stringify(state));
-            localStorage.setItem(`masterapp_global_sphere_${currentTelegramId}`, state.sphere);
-            localStorage.setItem(`masterapp_name_${currentTelegramId}`, document.getElementById('profileName').textContent);
+    if (!state.sphere) return;
+    
+    // 1. Локальное сохранение в телефоне
+    localStorage.setItem(getStorageKey(state.sphere), JSON.stringify(state));
+    localStorage.setItem(`masterapp_global_sphere_${currentTelegramId}`, state.sphere);
+    localStorage.setItem(`masterapp_name_${currentTelegramId}`, document.getElementById('profileName').textContent);
 
-            // 2. СИНХРОНИЗАЦИЯ С БЭКЕНДОМ (отправляем текущую сферу)
-            const payload = {
-                chat_id: currentTelegramId,
-                user_name: document.getElementById('profileName').textContent,
-                sphere: state.sphere, // Передаем, например, "Кондитер" или "Муж на час"
-                orders: state.orders
-            };
+    // 2. СИНХРОНИЗАЦИЯ С БЭКЕНДОМ (Теперь отправляем абсолютно ВСЁ в Supabase)
+    const payload = {
+        chat_id: currentTelegramId,
+        user_name: document.getElementById('profileName').textContent,
+        sphere: state.sphere, 
+        orders: state.orders || [],
+        warehouse: state.warehouse || [],  // <-- Добавили склад
+        templates: state.templates || {},  // <-- Добавили шаблоны
+        expenses: state.expenses || []     // <-- Добавили расходы
+    };
 
-            try {
-                await fetch(`${BACKEND_URL}/sync`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-                console.log(`[API] Данные сферы "${state.sphere}" отправлены на сервер`);
-            } catch (error) {
-                console.error("[API] Ошибка отправки бэкапа на бэкенд", error);
-            }
-        }
+    try {
+        await fetch(`${BACKEND_URL}/sync`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+        console.log(`[API] Полный слепок сферы "${state.sphere}" (заказы, склад, шаблоны) успешно улетел в Supabase!`);
+    } catch (error) {
+        console.error("[API] Ошибка отправки бэкапа на бэкенд", error);
+    }
+}
         function selectInitialSphere(sphereType) {
             localStorage.setItem(`masterapp_global_sphere_${currentTelegramId}`, sphereType);
             loadUserData();
